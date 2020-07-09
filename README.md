@@ -1,5 +1,8 @@
 [TOC]
 # grid-table
+
+author blog: 秋叶博客[http://www.mizuiren.com](http://www.mizuiren.com)
+
 满足各种使用场景的响应式表格组件(Responsive table grid)，具备：宽高设置、拖拽排序、调节列宽、编辑单元格（勾选、点选、单双击编辑）、表头固定等...
 
 它包含的一些特性有：
