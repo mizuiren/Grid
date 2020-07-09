@@ -276,7 +276,7 @@ multiEdit：是否需要取消上一个编辑状态， multiEdit为true则不取
 ### 15.getSelectedData()
 获取选中行的数据
 
-### 16.getCheckedData
+### 16.getCheckedData()
 获取勾选行的数据
 
 ### 17.getColumLength()
