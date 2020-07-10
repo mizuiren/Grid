@@ -17,7 +17,9 @@ author blog: 秋叶博客[http://www.mizuiren.com](http://www.mizuiren.com)
 
 如何使用？
 如渲染一个表格：
+```
 let myGrid = new Grid(data, container);
+```
 myGrid.data绑定了所有渲染表格所要用到的数据，可灵活手动更新
 
 data是表格的数据，为一个对象。container为表格的容器，为jq对象。
