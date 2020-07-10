@@ -15,7 +15,14 @@ author blog: 秋叶博客[http://www.mizuiren.com](http://www.mizuiren.com)
 7.排序icon
 8.flex布局，更加美观紧凑
 
-## 参数设置：
+如何使用？
+如渲染一个表格：
+let myGrid = new Grid(data, container);
+myGrid.data绑定了所有渲染表格所要用到的数据，可灵活手动更新
+
+data是表格的数据，为一个对象。container为表格的容器，为jq对象。
+
+## 参数设置（data）：
 
 ### 1.header:
 表头数据（每列的配置），数组，数组里面每一项就是对应每一列，
@@ -218,9 +225,6 @@ cellData单元格数据
 evt事件对象
 
 ## 方法函数
-如渲染一个表格：
-let myGrid = new Grid(data, container);
-myGrid.data绑定了所有渲染表格所要用到的数据，可灵活手动更新
 
 ### 1.getData()
 获取表格数据
