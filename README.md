@@ -301,7 +301,7 @@ rowData:行数据，数组
 删除行
 rowNum:行数
 
-### 20.checkById(id);
+### 20.checkRowById(id);
 id:id值，指的是渲染数据所绑定的id
 比如数据：
 1.[[5,5,5,5,5,5], [1,2,3,4,5,{id: 'firstRow',value: 6},7,8,9]]
