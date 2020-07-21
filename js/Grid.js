@@ -110,7 +110,9 @@ Grid.prototype = {
             if(this.data.rowHeight) {
                 bodyGridStyles.push('grid-template-rows: repeat(' + this.data.rows.length + ',' + this.numberToPx(this.data.rowHeight, '30px') + ')');
             }
-            bodyGridStyles.push('margin-top:-1px');
+            if(this.data.showHeader) {
+                bodyGridStyles.push('margin-top:-1px');
+            }
             var scrolBoxStyles = [];
             if(!this.data.width || this.data.width !== '100%') {
                 scrolBoxStyles.push('width: ' + (parseInt(this.data.width)) + 'px');
