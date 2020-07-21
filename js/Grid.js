@@ -65,7 +65,7 @@ Grid.prototype = {
         return cwidth.join(' ');
     },
     renderGrid: function() {
-        this.container.empty().css('max-height', this.numberToPx(this.data.height, this.minHeight));
+        this.container.empty().css('min-height', this.numberToPx(this.data.height, this.minHeight));
         if(!this.data.freezeHeader) {
             this.container.css({'overflow-y': 'auto'});
             this.container.css({'overflow-y':'overlay'});
@@ -274,8 +274,8 @@ Grid.prototype = {
             }
         }
     },
-    selectOneById: function(idValue, multiSelect) {
-        var $cell = $('.cell[data-id="' + idValue + '"]', this.container), _this = this;
+    selectRowById: function(rowId, multiSelect) {
+        var $cell = $('.cell[data-id="' + rowId + '"]', this.container), _this = this;
         if($cell.length) {
             $cell.each(function() {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
@@ -309,22 +309,27 @@ Grid.prototype = {
             }
         });
     },
+    checkRowById: function(rowId) {
+        var $cell = $('.cell[data-id="' + rowId + '"]', this.container), _this = this;
+        if($cell.length) {
+            $cell.each(function() {
+                var rowNum = $(this).attr(_this.rowIndexAttrName);
+                _this.checkOne(rowNum);
+            });
+        }
+    },
     checkAll: function() {
         var rowNum, _this = this;
         $('.body .checkbox input', this.container).each(function() {
-            if(!$(this).prop('disabled')) {
-                rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
-                _this.checkOne(rowNum);
-            }  
+            rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
+            _this.checkOne(rowNum);
         });
     },
     unCheckAll: function() {
         var rowNum, _this = this;
         $('.body .checkbox input', this.container).each(function() {
-            if(!$(this).prop('disabled')) {
-                rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
-                _this.unCheckOne(rowNum);
-            }
+            rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
+            _this.unCheckOne(rowNum);
         });
     },
     isAllChecked: function() {
@@ -338,7 +343,11 @@ Grid.prototype = {
         return isAllChecked;
     },
     checkOne: function(rowNum) {
-        $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container).prop('checked', true);
+        var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
+        if($input.prop('disabled')) {
+            return;
+        }
+        $input.prop('checked', true);
         if(this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', true);
         }
@@ -683,7 +692,7 @@ Grid.prototype = {
     },
     endEditOne: function($cell) {
         var _this = this;
-        var value = $cell.find('input').val() || $cell.find('select').val() || '';
+        var value = _this.htmlEncode($cell.find('input').val() || $cell.find('select').val() || '');
         var rowNum = $cell.attr(_this.rowIndexAttrName);
         var columnNum = $cell.attr(_this.columnIndexAttrName);
         var cellNum = typeof _this.data.rows[parseInt(rowNum)][0] === 'object' && _this.data.rows[parseInt(rowNum)][0].type === 'checkbox' ? columnNum : columnNum - 1;
@@ -716,7 +725,7 @@ Grid.prototype = {
         if($cell.hasClass('editing') || $cell.hasClass('checkbox')) {
             return;
         }
-        var text = $cell.text(), _this = this;
+        var text = $cell.text() || '', _this = this;
         if(!multiEdit) {
             _this.endEdit();
         }

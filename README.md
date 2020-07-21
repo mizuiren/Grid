@@ -243,13 +243,14 @@ rowNum：行号
 evt：事件对象，没有的话可传空对象
 multiSelect：此参数为true则不会清除已经选择的行，反之
 
-### 5.selectOneById(id, Value);
-idValue:id值，指的是渲染数据所绑定的id
+### 5.selectOneById(id, isMulti);
+id:id值，指的是渲染数据所绑定的id
+isMulti: 是否要保留之前的选择
 比如数据：
-1.[[5,5,5,5,5,5], [1,2,3,4,5,{id: 'name',value: 6},7,8,9]]
-myGrid.selectOneById('name', 6);则会选中第二行
-2.[[5,5,5,5,5,5], [{id: 'id',type: 'checkbox'},2,3,4,5,6,7,8,9]]
-myGrid.selectOneById('id', 1);则会选中第二行
+1.[[5,5,5,5,5,5], [1,2,3,4,5,{id: 'firstRow',value: 6},7,8,9]]
+myGrid.selectOneById('firstRow');则会选中第二行
+2.[[5,5,5,5,5,5], [{id: 'secondRow',type: 'checkbox'},2,3,4,5,6,7,8,9]]
+myGrid.selectOneById('secondRow', true);则会选中第二行
 注意：一般会用在第二种情况，就是通过隐藏的唯一id(不受编辑影响)进行选中。当然其它非隐藏的也可以，但不太推荐这么做，因为相应值编辑后就会变了，也很难保证唯一性，除非配置不可编辑且唯一，若不是唯一则会选中多行，前提是selectable:true以及multiselect:true
 
 ### 6.unSelectOne(rowNum);
@@ -299,3 +300,11 @@ rowData:行数据，数组
 ### 19.deleteRow(rowNum)
 删除行
 rowNum:行数
+
+### 20.checkById(id);
+id:id值，指的是渲染数据所绑定的id
+比如数据：
+1.[[5,5,5,5,5,5], [1,2,3,4,5,{id: 'firstRow',value: 6},7,8,9]]
+myGrid.checkById('firstRow');则会选中第二行
+2.[[5,5,5,5,5,5], [{id: 'secondRow',type: 'checkbox'},2,3,4,5,6,7,8,9]]
+myGrid.checkById('secondRow', true);则会选中第二行
