@@ -419,7 +419,7 @@ Grid.prototype = {
                 if(!$cell.hasClass('selected')) {
                    _this.selectOne(rowNum, evt, _this.data.multiSelect && evt.ctrlKey); 
                } else {
-                    if(!evt.ctrlKey) {
+                    if(!evt.ctrlKey && !evt.shiftKey) {
                         var _rowNum;
                         $('.body .cell.checkbox.selected', _this.container).each(function() {
                             _rowNum = $(this).attr('data-row-index');
