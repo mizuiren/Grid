@@ -97,10 +97,6 @@ Grid.prototype = {
             newHeader.unshift({value:'<input type="checkbox" class="check-all"/><span></span>', id: 'id'});
 
             header = $('<header class="q-grid header" style="' + this.gridStyles.join(';') + '"></header>');
-            if(this.isFirefox() && this.data.freezeHeader && this.data.height && this.data.height !== 'auto') {
-                var fixWidth = 'calc(' + this.data.width + ' - 17px)';
-                header.css('width', fixWidth);
-            }
             header.append(this.renderCell(newHeader, 0, true));
             this.gridBox.append(header);
         }
@@ -131,6 +127,16 @@ Grid.prototype = {
             scrolBox.append(contentBox);
             this.gridBox.append(scrolBox);
 
+            //判断有没有滚动条，又滚动条火狐要特殊处理，保证表头和表体单元格对齐
+            if(this.isFirefox()) {
+                scrolBox.scrollTop(10);//控制滚动条下移10px
+                if(scrolBox.scrollTop() > 0){
+                    var fixWidth = 'calc(' + this.data.width + ' - 17px)';
+                    header.css('width', fixWidth);
+                }
+                scrolBox.scrollTop(0);//滚动条返回顶部
+            }
+            
             var _this = this, needDisabledHeader = true;
             this.data.rows.forEach(function(arr, index) {
                 if(typeof arr[0] === 'object' && arr[0].type === 'checkbox') {
