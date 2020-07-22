@@ -127,11 +127,11 @@ Grid.prototype = {
             scrolBox.append(contentBox);
             this.gridBox.append(scrolBox);
 
-            //判断有没有滚动条，又滚动条火狐要特殊处理，保证表头和表体单元格对齐
+            //判断有没有滚动条，有滚动条火狐要特殊处理，保证表头和表体单元格对齐
             if(this.isFirefox()) {
                 scrolBox.scrollTop(10);//控制滚动条下移10px
                 if(scrolBox.scrollTop() > 0){
-                    var fixWidth = 'calc(' + this.data.width + ' - 17px)';
+                    var fixWidth = 'calc(' + this.data.width + ' - 17px)';//火狐下滚动条宽度固定为17px
                     header.css('width', fixWidth);
                 }
                 scrolBox.scrollTop(0);//滚动条返回顶部
