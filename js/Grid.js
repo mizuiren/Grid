@@ -15,9 +15,16 @@ Grid.prototype = {
     minHeight: '30px',
     rowIndexAttrName: 'data-row-index',
     columnIndexAttrName: 'data-cell-index',
+    updateTimer: null,
     updateData: function(rowsData) {
         this.data.rows = rowsData;
-        new Grid(this.data, this.container);
+        var _this = this;
+        if(this.updateTimer) {
+            clearTimeout(this.updateTimer);
+        }
+        this.updateTimer = setTimeout(function(){
+            new Grid(_this.data, _this.container);
+        },30);
     },
     deleteRow: function(rownum) {
         this.data.rows.splice(rownum, 1);
