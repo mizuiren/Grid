@@ -37,9 +37,9 @@ header.q-grid .cell{
     background-color: #999;
     position: relative;
 }
-.q-grid-scroll::-webkit-scrollbar{ 
-    /* width:0px; */
-}
+/* .q-grid-scroll::-webkit-scrollbar{ 
+    width:0px;
+} */
 .q-grid-box {
     width: 100%;
 }
