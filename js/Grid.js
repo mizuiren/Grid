@@ -35,6 +35,7 @@ Grid.prototype = {
         new Grid(this.data, this.container);
     },
     updateCell: function($cell, newValue) {
+        newValue = this.htmlEncode(newValue);
     	var rowIndex = $cell.attr(this.rowIndexAttrName);
     	var columnIndex = $cell.attr(this.columnIndexAttrName);
     	var rowData = this.data.rows[rowIndex];
