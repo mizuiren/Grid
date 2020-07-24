@@ -152,7 +152,7 @@ Grid.prototype = {
                         _this.checkOne(index);
                     }
                     if(_this.data.selectable && arr[0].selected) {
-                        _this.selectOne(index, {}, _this.data.multiSelect);
+                        _this.selectRow(index, {}, _this.data.multiSelect);
                     }
                     if(!arr[0].disabled) {
                         needDisabledHeader = false;
@@ -268,7 +268,7 @@ Grid.prototype = {
         }
         return rowsHtml;
     },
-    selectOne: function(rowNum, evt, multiSelect) {
+    selectRow: function(rowNum, evt, multiSelect) {
         evt = evt || {};
         var _this = this, $parent = $('.body', _this.container);
         if(_this.data.onBeforeSelect) {
@@ -296,12 +296,12 @@ Grid.prototype = {
             $cell.each(function() {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 if(_this.data.selectable) {
-                    _this.selectOne(rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
+                    _this.selectRow(rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
                 }
             });
         }
     },
-    unSelectOne: function(rowNum) {
+    unSelectRow: function(rowNum) {
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
     },
     selectAll: function() {
@@ -310,7 +310,7 @@ Grid.prototype = {
         $('.body .cell', this.container).each(function() {
             rowNum = $(this).attr(_this.rowIndexAttrName);
             if(!hadSelectRow[rowNum]) {
-                _this.selectOne(rowNum, {}, true);
+                _this.selectRow(rowNum, {}, true);
                 hadSelectRow[rowNum] = true;
             }
         });
@@ -320,7 +320,7 @@ Grid.prototype = {
         $('.body .cell.selected', this.container).each(function() {
             rowNum = $(this).attr(_this.rowIndexAttrName);
             if(!hadUnSelectRow[rowNum]) {
-                _this.unSelectOne(rowNum);
+                _this.unSelectRow(rowNum);
                 hadUnSelectRow[rowNum] = true;
             }
         });
@@ -372,7 +372,7 @@ Grid.prototype = {
             this.data.onCheck(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.selectWhenCheck && this.data.selectable) {
-            this.selectOne(rowNum, {},  !!this.data.multiSelect);
+            this.selectRow(rowNum, {},  !!this.data.multiSelect);
         }
         if(this.data.editable) {
             this.endEdit();
@@ -388,7 +388,7 @@ Grid.prototype = {
             this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.selectWhenCheck) {
-            this.unSelectOne(rowNum);
+            this.unSelectRow(rowNum);
         }
     },
     bindEvent: function() {
@@ -425,14 +425,14 @@ Grid.prototype = {
             
             if(_this.data.selectable) {
                 if(!$cell.hasClass('selected')) {
-                   _this.selectOne(rowNum, evt, _this.data.multiSelect && evt.ctrlKey); 
+                   _this.selectRow(rowNum, evt, _this.data.multiSelect && evt.ctrlKey); 
                } else {
                     if(!evt.ctrlKey && !evt.shiftKey) {
                         var _rowNum;
                         $('.body .cell.checkbox.selected', _this.container).each(function() {
                             _rowNum = $(this).attr('data-row-index');
                             if(_rowNum !== rowNum) {
-                                _this.unSelectOne(_rowNum);
+                                _this.unSelectRow(_rowNum);
                             }
                         });
                     }
