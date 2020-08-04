@@ -22,9 +22,12 @@ Grid.prototype = {
         if(this.updateTimer) {
             clearTimeout(this.updateTimer);
         }
-        this.updateTimer = setTimeout(function(){
-            new Grid(_this.data, _this.container);
-        },30);
+        return new Promise(function(resolve, reject) {
+            _this.updateTimer = setTimeout(function(){
+                new Grid(_this.data, _this.container);
+                resolve
+            },30);
+        });
     },
     deleteRow: function(rownum) {
         this.data.rows.splice(rownum, 1);
