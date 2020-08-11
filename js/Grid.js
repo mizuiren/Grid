@@ -293,16 +293,23 @@ Grid.prototype = {
             }
         }
     },
-    selectRowById: function(rowId, multiSelect) {
+    toggleSelectById: function(rowId, selectStatu, multiSelect) {
         var $cell = $('.cell[data-id="' + rowId + '"]', this.container), _this = this;
         if($cell.length) {
             $cell.each(function() {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 if(_this.data.selectable) {
-                    _this.selectRow(rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
+                    let selectFn = selectStatu ? _this.selectRow : _this.unSelectRow;
+                    selectFn(rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
                 }
             });
         }
+    },
+    selectRowById: function(rowId, multiSelect) {
+        _this.toggleSelectById(rowId, true, multiSelect);
+    },
+    unSelectRowById: function(rowId, multiSelect) {
+        _this.toggleSelectById(rowId, false, multiSelect);
     },
     unSelectRow: function(rowNum) {
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
@@ -387,7 +394,7 @@ Grid.prototype = {
             $('.check-all', this.container).prop('checked', false);
         }
 
-        if(this.data.onCheck) {   
+        if(this.data.onUnCheck) {   
             this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.selectWhenCheck) {
