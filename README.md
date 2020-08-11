@@ -253,55 +253,59 @@ myGrid.selectRowById('firstRow');则会选中第二行
 myGrid.selectRowById('secondRow', true);则会选中第二行
 注意：一般会用在第二种情况，就是通过隐藏的唯一id(不受编辑影响)进行选中。当然其它非隐藏的也可以，但不太推荐这么做，因为相应值编辑后就会变了，也很难保证唯一性，除非配置不可编辑且唯一，若不是唯一则会选中多行，前提是selectable:true以及multiselect:true
 
-### 6.unSelectRow(rowNum);
+### 6.unSelectRowById(id, isMulti);
+根据id取消选中
+跟selectRowById类似
+
+### 7.unSelectRow(rowNum);
 取消选择某一行
 rowNum：行号
 
-### 7.selectAll()
+### 8.selectAll()
 选择全部
 
-### 8.unSelectAll()
+### 9.unSelectAll()
 取消全部选择
 
-### 9.checkAll()
+### 10.checkAll()
 勾选全部
 
-### 10.unCheckAll()
+### 11.unCheckAll()
 取消勾选全部
 
-### 11.checkOne(rowNum)
+### 12.checkOne(rowNum)
 勾选某条数据
 rowNum：行号
 
-### 12.unCheckOne(rowNum)
+### 13.unCheckOne(rowNum)
 取消勾选某条数据
 rowNum：行号
 
-### 13.endEdit()
+### 14.endEdit()
 结束并应用编辑
 
-### 14.editCell($cell, multiEdit)
+### 15.editCell($cell, multiEdit)
 $cell：单元格jq对象
 multiEdit：是否需要取消上一个编辑状态， multiEdit为true则不取消，multiEdit为false则取消
 
-### 15.getSelectedData()
+### 16.getSelectedData()
 获取选中行的数据
 
-### 16.getCheckedData()
+### 17.getCheckedData()
 获取勾选行的数据
 
-### 17.getColumLength()
+### 18.getColumLength()
 获取列的数据
 
-### 18.appendRow(rowData)
+### 19.appendRow(rowData)
 新增行数据
 rowData:行数据，数组
 
-### 19.deleteRow(rowNum)
+### 20.deleteRow(rowNum)
 删除行
 rowNum:行数
 
-### 20.checkRowById(id);
+### 21.checkRowById(id);
 id:id值，指的是渲染数据所绑定的id
 比如数据：
 1.[[5,5,5,5,5,5], [1,2,3,4,5,{id: 'firstRow',value: 6},7,8,9]]
