@@ -15,6 +15,8 @@ author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
 7.排序icon
 8.flex布局，更加美观紧凑
 
+声明：支持主流前沿浏览器，不支持IE浏览器！
+
 如何使用？
 如渲染一个表格：
 ```
