@@ -711,7 +711,11 @@ Grid.prototype = {
     },
     endEditOne: function($cell) {
         var _this = this;
-        var value = _this.htmlEncode($cell.find('input').val() || $cell.find('select').val() || '');
+        var $input = $cell.find('input');
+        if(!$input.length && !$cell.find('select').length) {
+            return;
+        }
+        var value = _this.htmlEncode($input.length ? $input.val() : $cell.find('select').length ? $cell.find('select').val() : '');
         var rowNum = $cell.attr(_this.rowIndexAttrName);
         var columnNum = $cell.attr(_this.columnIndexAttrName);
         var cellNum = typeof _this.data.rows[parseInt(rowNum)][0] === 'object' && _this.data.rows[parseInt(rowNum)][0].type === 'checkbox' ? columnNum : columnNum - 1;
