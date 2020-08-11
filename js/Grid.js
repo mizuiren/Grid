@@ -306,10 +306,10 @@ Grid.prototype = {
         }
     },
     selectRowById: function(rowId, multiSelect) {
-        _this.toggleSelectById(rowId, true, multiSelect);
+        this.toggleSelectById(rowId, true, multiSelect);
     },
     unSelectRowById: function(rowId, multiSelect) {
-        _this.toggleSelectById(rowId, false, multiSelect);
+        this.toggleSelectById(rowId, false, multiSelect);
     },
     unSelectRow: function(rowNum) {
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
