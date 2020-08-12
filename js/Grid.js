@@ -300,7 +300,7 @@ Grid.prototype = {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 if(_this.data.selectable) {
                     let selectFn = selectStatu ? _this.selectRow : _this.unSelectRow;
-                    selectFn(rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
+                    selectFn.call(_this, rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
                 }
             });
         }
