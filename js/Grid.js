@@ -436,7 +436,7 @@ Grid.prototype = {
             if(_this.data.selectable) {
                 if(!$cell.hasClass('selected')) {
                    _this.selectRow(rowNum, evt, _this.data.multiSelect && evt.ctrlKey); 
-               } else {
+                } else {
                     if(!evt.ctrlKey && !evt.shiftKey) {
                         var _rowNum;
                         $('.body .cell.checkbox.selected', _this.container).each(function() {
@@ -445,6 +445,8 @@ Grid.prototype = {
                                 _this.unSelectRow(_rowNum);
                             }
                         });
+                    } else {
+                        _this.unSelectRow(rowNum); 
                     }
                }
             }
