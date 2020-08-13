@@ -325,13 +325,17 @@ Grid.prototype = {
             }
         });
     },
-    unSelectAll: function() {
+    unSelectAll: function(filterRows) {
         var hadUnSelectRow = {}, rowNum, _this = this;
         $('.body .cell.selected', this.container).each(function() {
             rowNum = $(this).attr(_this.rowIndexAttrName);
-            if(!hadUnSelectRow[rowNum]) {
-                _this.unSelectRow(rowNum);
-                hadUnSelectRow[rowNum] = true;
+            if(filterRows && filterRows.length && filterRows.indexOf(+rowNum) > -1) {
+                return;
+            } else {
+                if(!hadUnSelectRow[rowNum]) {
+                    _this.unSelectRow(rowNum);
+                    hadUnSelectRow[rowNum] = true;
+                }
             }
         });
     },
@@ -401,10 +405,13 @@ Grid.prototype = {
             this.unSelectRow(rowNum);
         }
     },
+    isRowSelected: function(rowNum) {
+        return !!$('.body .cell.checkbox.selected[data-row-index="' + rowNum + '"]', this.container).length;
+    },
     bindEvent: function() {
         var _this = this;
         _this.container.off('click').on('click', '.body .cell', function(evt) {
-            var rowNum = $(this).attr(_this.rowIndexAttrName);
+            var rowNum = +$(this).attr(_this.rowIndexAttrName);
             var $cell = $(evt.target).closest('.cell');
             if(evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                 return;
@@ -425,8 +432,8 @@ Grid.prototype = {
                 _this.endEdit();
             }
             if(_this.data.onClick) {
-                var cellNum = typeof _this.data.rows[parseInt(rowNum)][0] === 'object' && _this.data.rows[parseInt(rowNum)][0].type === 'checkbox' ? columnNum : columnNum - 1;
-                _this.data.onClick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                var cellNum = typeof _this.data.rows[rowNum][0] === 'object' && _this.data.rows[rowNum][0].type === 'checkbox' ? columnNum : columnNum - 1;
+                _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
             }
             
             if(_this.data.editable && !$(this).hasClass('editing') && _this.data.editWhenClick) {
@@ -434,21 +441,48 @@ Grid.prototype = {
             }
             
             if(_this.data.selectable) {
-                if(!$cell.hasClass('selected')) {
-                   _this.selectRow(rowNum, evt, _this.data.multiSelect && evt.ctrlKey); 
-                } else {
-                    if(!evt.ctrlKey && !evt.shiftKey) {
-                        var _rowNum;
-                        $('.body .cell.checkbox.selected', _this.container).each(function() {
-                            _rowNum = $(this).attr('data-row-index');
-                            if(_rowNum !== rowNum) {
-                                _this.unSelectRow(_rowNum);
-                            }
-                        });
-                    } else {
-                        _this.unSelectRow(rowNum); 
+                if(!evt.shiftKey) {
+                    _this.continuSelectStartRowNum = rowNum;
+                }            
+                
+                if(!evt.ctrlKey && !evt.shiftKey) {
+                    _this.unSelectAll([rowNum]);
+                    if(!$cell.hasClass('selected')) {
+                       _this.selectRow(rowNum, evt); 
                     }
-               }
+                } else if(evt.ctrlKey) {
+                    if(!$cell.hasClass('selected')) {
+                        _this.selectRow(rowNum, evt, _this.data.multiSelect);
+                    } else {
+                        _this.unSelectRow(rowNum, evt);
+                    }
+                } else if(evt.shiftKey) {
+                    if(_this.data.multiSelect) {
+                        var needSelects = [], notNeedSelects = [], i;
+                        if(_this.continuSelectStartRowNum > rowNum) {
+                            for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
+                                if(_this.isRowSelected(i)) {
+                                    notNeedSelects.push(i);
+                                } else {
+                                    needSelects.push(i);
+                                }
+                            }
+                            _this.continuSelectStartRowNum = rowNum;
+                        } else {
+                            for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
+                                if(_this.isRowSelected(i)) {
+                                    notNeedSelects.push(i);
+                                } else {
+                                    needSelects.push(i);
+                                }
+                            }
+                        }
+                        _this.unSelectAll(notNeedSelects);
+                        needSelects.forEach(function(item) {
+                            _this.selectRow(item, evt, true);
+                        });
+                    }      
+                }
             }
         }).off('mousedown.grid').on('mousedown.grid', 'header.q-grid .cell .resizebar', function(evt) {
             var $cell = $(this).parent(), cellLeft = $cell.offset().left;

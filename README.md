@@ -266,8 +266,9 @@ rowNum：行号
 ### 8.selectAll()
 选择全部
 
-### 9.unSelectAll()
-取消全部选择
+### 9.unSelectAll(filterRows)
+filterRows: 可选，意为排除哪些行，没有则取消全部
+取消除filterRows之外的全部选择
 
 ### 10.checkAll()
 勾选全部
