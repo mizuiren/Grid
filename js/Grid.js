@@ -470,7 +470,6 @@ Grid.prototype = {
                                     needSelects.push(i);
                                 }
                             }
-                            _this.continuSelectStartRowNum = rowNum;
                         } else {
                             for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
                                 if(_this.isRowSelected(i)) {
