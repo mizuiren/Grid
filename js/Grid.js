@@ -457,6 +457,9 @@ Grid.prototype = {
                         _this.unSelectRow(rowNum, evt);
                     }
                 } else if(evt.shiftKey) {
+                    if(!_this.getSelectedData().length) {
+                        _this.continuSelectStartRowNum = rowNum;
+                    }
                     if(_this.data.multiSelect) {
                         var needSelects = [], notNeedSelects = [], i;
                         if(_this.continuSelectStartRowNum > rowNum) {
