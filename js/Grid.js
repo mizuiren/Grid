@@ -272,7 +272,7 @@ Grid.prototype = {
         return rowsHtml;
     },
     selectRow: function(rowNum, evt, multiSelect) {
-        if(this.isRowSelected()) {
+        if(this.isRowSelected(rowNum)) {
             return;
         }
         evt = evt || {};
@@ -315,12 +315,12 @@ Grid.prototype = {
         this.toggleSelectById(rowId, false, multiSelect);
     },
     unSelectRow: function(rowNum) {
-        if(!this.isRowSelected()) {
+        if(!this.isRowSelected(rowNum)) {
             return;
         }
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
-        if(this.data.onSelect) {
-            this.data.onSelect(this.data.rows[parseInt(rowNum)]);
+        if(this.data.onUnSelect) {
+            this.data.onUnSelect(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.onUnSelectAll) {
             if(!$('.cell.seleted', $('.body', this.container)).length) {
