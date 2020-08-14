@@ -170,10 +170,9 @@ grid.updateData(rowsData);
 
 ## 事件监听：
 
-### 1.onSelect: function(rowData, evt) {}
+### 1.onSelect: function(rowData) {}
 选中表格行触发
 rowData选中行的数据
-evt事件对象
 
 ### 2.onClick: function(rowData, cellData, evt) {}
 点击单元格触发
@@ -181,48 +180,59 @@ rowData选中行的数据
 cellData单元格数据
 evt事件对象
 
-### 3.onUnSelect: function(rowData, evt) {}
+### 3.onUnSelect: function(rowData) {}
 取消选中表格行触发
 rowData选中行的数据
-evt事件对象
 
-### 4.onSelectAll: function(data, evt) {}
+### 4.onSelectAll: function(data) {}
 全选触发
 data表格的数据
 evt事件对象
 
-### 5.onBeforeSelect: function(rowData, evt) {}
+### 5.onUnSelectAll: function(data) {}
+取消全选触发
+data表格的数据
+
+### 6.onBeforeSelect: function(rowData, evt) {}
 选中表格行之前触发，可以终止选择，只需要return false,适用与一些定制化表格行不让选择的情景
 rowData选中行的数据
 evt事件对象
 
-### 6.onCheck: function(rowData) {}
+### 7.onCheck: function(rowData) {}
 勾选的时候触发
 rowData表格行的数据
 
-### 7.onUnCheck: function(rowData) {}
+### 8.onUnCheck: function(rowData) {}
 取消勾选的时候触发
 rowData表格行的数据
 
-### 8.onBeforEdit: function(rowNum, columnNum, oldValue) {}
+### 9.onCheckAll: function(rowData) {}
+勾选全部的时候触发
+rowData表格行的数据
+
+### 10.onUnCheckAll: function(rowData) {}
+取消勾选全部的时候触发
+rowData表格行的数据
+
+### 11.onBeforEdit: function(rowNum, columnNum, oldValue) {}
 编辑前触发，可以终止编辑，只需要return false,适用与一些定制化表格行不让编辑的情景
 rowNum行号
 columnNum列号
 oldValue编辑前的旧值
 
-### 9.onEdit: function(rowNum, columnNum, oldValue, newValue) {}
+### 12.onEdit: function(rowNum, columnNum, oldValue, newValue) {}
 编辑结束触发
 rowNum行号
 columnNum列号
 oldValue编辑前的旧值
 
-### 10.onContextmenu: function(rowData, cellData, evt) {}
+### 13.onContextmenu: function(rowData, cellData, evt) {}
 右键的时候触发
 rowData选中行的数据
 cellData单元格数据
 evt事件对象
 
-### 11.onDblclick: function(rowData, cellData, evt) {}
+### 14.onDblclick: function(rowData, cellData, evt) {}
 双击的时候触发
 rowData选中行的数据
 cellData单元格数据

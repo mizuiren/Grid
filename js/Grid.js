@@ -272,6 +272,9 @@ Grid.prototype = {
         return rowsHtml;
     },
     selectRow: function(rowNum, evt, multiSelect) {
+        if(this.isRowSelected()) {
+            return;
+        }
         evt = evt || {};
         var _this = this, $parent = $('.body', _this.container);
         if(_this.data.onBeforeSelect) {
@@ -285,11 +288,11 @@ Grid.prototype = {
         }
         $('.cell[data-row-index="' + rowNum + '"]', $parent).addClass('selected');
         if(_this.data.onSelect) {
-            _this.data.onSelect(_this.data.rows[parseInt(rowNum)], evt);
+            _this.data.onSelect(_this.data.rows[parseInt(rowNum)]);
         }
         if(_this.data.onSelectAll) {
             if(!$('.cell:not(".seleted")', $parent).length) {
-                _this.data.onSelectAll(_this.data.rows, evt);
+                _this.data.onSelectAll(_this.data.rows);
             }
         }
     },
@@ -312,7 +315,18 @@ Grid.prototype = {
         this.toggleSelectById(rowId, false, multiSelect);
     },
     unSelectRow: function(rowNum) {
+        if(!this.isRowSelected()) {
+            return;
+        }
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
+        if(this.data.onSelect) {
+            this.data.onSelect(this.data.rows[parseInt(rowNum)]);
+        }
+        if(this.data.onUnSelectAll) {
+            if(!$('.cell.seleted', $('.body', this.container)).length) {
+                this.data.onUnSelectAll(this.data.rows);
+            }
+        }
     },
     selectAll: function() {
         var hadSelectRow = {}, rowNum;
@@ -377,6 +391,9 @@ Grid.prototype = {
         if($input.prop('disabled')) {
             return;
         }
+        if($input.prop('checked')) {
+            return;
+        }
         $input.prop('checked', true);
         if(this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', true);
@@ -384,6 +401,11 @@ Grid.prototype = {
         
         if(this.data.onCheck) {   
             this.data.onCheck(this.data.rows[parseInt(rowNum)]);
+        }
+        if(this.data.onCheckAll) {
+            if(!$('.cell.checkbox input:not(":checked")', $('.body', this.container)).length) {
+                this.data.onCheckAll(this.data.rows);
+            }
         }
         if(this.data.selectWhenCheck && this.data.selectable) {
             this.selectRow(rowNum, {},  !!this.data.multiSelect);
@@ -393,13 +415,22 @@ Grid.prototype = {
         }
     },
     unCheckOne: function(rowNum) {
-        $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container).prop('checked', false);
+        var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
+        if(!$input.prop('checked')) {
+            return;
+        }
+        $input.prop('checked', false);
         if(!this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', false);
         }
 
         if(this.data.onUnCheck) {   
             this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
+        }
+        if(this.data.onUnCheckAll) {
+            if(!$('.cell.checkbox input:checked', $('.body', this.container)).length) {
+                this.data.onUnCheckAll(this.data.rows);
+            }
         }
         if(this.data.selectWhenCheck) {
             this.unSelectRow(rowNum);
