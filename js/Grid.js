@@ -494,7 +494,6 @@ Grid.prototype = {
             var $resizeBar = $(this);
             var columnWidths = _this.getColumnWidth().split(' ');
             var currentX;
-            console.log($header.css('grid-template-columns'))
             $resizeBar.addClass('isDraging');
             $(document).on('mousemove.grid', function(e) {
                 currentX = e.pageX;
