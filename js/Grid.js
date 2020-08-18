@@ -362,18 +362,18 @@ Grid.prototype = {
             });
         }
     },
-    checkAll: function() {
+    checkAll: function(fromEvent) {
         var rowNum, _this = this;
         $('.body .checkbox input', this.container).each(function() {
             rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
-            _this.checkOne(rowNum);
+            _this.checkOne(rowNum, fromEvent);
         });
     },
-    unCheckAll: function() {
+    unCheckAll: function(fromEvent) {
         var rowNum, _this = this;
         $('.body .checkbox input', this.container).each(function() {
             rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
-            _this.unCheckOne(rowNum);
+            _this.unCheckOne(rowNum, fromEvent);
         });
     },
     isAllChecked: function() {
@@ -386,15 +386,18 @@ Grid.prototype = {
         }
         return isAllChecked;
     },
-    checkOne: function(rowNum) {
+    checkOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        if($input.prop('disabled')) {
-            return;
-        }
-        if($input.prop('checked')) {
+        var oldChecked = firstObj ? !!this.data.rows[rowNum][0].checked : false;
+        if($input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', true);
+        var firstObj = typeof this.data.rows[rowNum][0] === 'object' && this.data.rows[rowNum][0].type === 'checkbox';
+        if(firstObj) {
+            this.data.rows[rowNum][0].checked = true;
+        }
+
         if(this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', true);
         }
@@ -414,12 +417,17 @@ Grid.prototype = {
             this.endEdit();
         }
     },
-    unCheckOne: function(rowNum) {
+    unCheckOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        if(!$input.prop('checked')) {
+        if(!$input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', false);
+        var firstObj = typeof this.data.rows[rowNum][0] === 'object' && this.data.rows[rowNum][0].type === 'checkbox';
+
+        if(firstObj) {
+            this.data.rows[rowNum][0].checked = false;
+        }
         if(!this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', false);
         }
@@ -517,6 +525,20 @@ Grid.prototype = {
                     }      
                 }
             }
+        }).on('click', '.header .cell', function(evt) {
+            var $cell = $(evt.target).closest('.cell');
+            if($cell.hasClass('checkbox')) {               
+                var $input = $(evt.target).closest('.cell').find('input');
+                if(!$input.prop('disabled')) {
+                    if($input.closest('.header').length) {
+                        if($input.prop('checked') === true) {
+                            $input.prop('checked', false).trigger('change');
+                        } else {
+                            $input.prop('checked', true).trigger('change');
+                        }
+                    }
+                }
+            }
         }).off('mousedown.grid').on('mousedown.grid', 'header.q-grid .cell .resizebar', function(evt) {
             var $cell = $(this).parent(), cellLeft = $cell.offset().left;
             var cellIndex = $cell.attr(_this.columnIndexAttrName) - 1;
@@ -604,17 +626,17 @@ Grid.prototype = {
             var $cell = $(this).closest('.cell');
             if($(this).prop('checked') === true) {
                 if($(this).hasClass('check-all')) {
-                    _this.checkAll();
+                    _this.checkAll(true);
                 } else {
                     var rowNum = $cell.attr(_this.rowIndexAttrName);
-                    _this.checkOne(rowNum);
+                    _this.checkOne(rowNum, true);
                 }
             } else {
                 if($(this).hasClass('check-all')) {
-                    _this.unCheckAll();
+                    _this.unCheckAll(true);
                 } else {
                     var rowNum = $cell.attr(_this.rowIndexAttrName);
-                    _this.unCheckOne(rowNum);
+                    _this.unCheckOne(rowNum, true);
                 }
             }            
         }).off('dblclick').on('dblclick', '.body .cell', function(evt) {

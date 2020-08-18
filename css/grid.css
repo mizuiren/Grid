@@ -92,3 +92,14 @@ header.q-grid .cell .resizebar:hover {
 header.q-grid .cell .resizebar.isDraging {
     opacity: .3;
 }
+.q-grid .cell.checkbox {
+    position:relative;
+}
+.q-grid .cell.checkbox:after {
+    content:'';
+    position: absolute;
+    width:100%;
+    height:100%;
+    background:red;
+    opacity:0;
+}
