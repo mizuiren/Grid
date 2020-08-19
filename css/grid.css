@@ -20,6 +20,9 @@
     word-break: break-all;
     background-color: #fff;
 }
+.q-grid .cell.checkbox {
+    padding:0;
+}
 .q-grid input[type="checkbox"] {
     width: 15px;
     height: 15px;
