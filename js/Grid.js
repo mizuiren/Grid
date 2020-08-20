@@ -125,10 +125,11 @@ Grid.prototype = {
                 scrolBoxStyles.push('width: ' + (parseInt(this.data.width)) + 'px');
             }
             if(this.data.freezeHeader) {
+                var defaultHeaderHeight = 24; //dom不可兼得情况下渲染表格header.outerHeight()取不到高度，所以这种情况暂时给个默认高度
                 if(this.data.height && this.data.height !== 'auto') {
-                    scrolBoxStyles.push('max-height: ' + (parseInt(this.data.height) - (header ? header.outerHeight() : 0)) +'px;overflow-y: auto;overflow-y:overlay;');
+                    scrolBoxStyles.push('max-height: ' + (parseInt(this.data.height) - (header ? (header.outerHeight() || defaultHeaderHeight) : 0)) +'px;overflow-y: auto;overflow-y:overlay;');
                 } else {
-                    scrolBoxStyles.push('max-height: calc(100% - ' + (header ? header.outerHeight() : 0) +'px);overflow-y: auto;overflow-y:overlay;');
+                    scrolBoxStyles.push('max-height: calc(100% - ' + (header ? (header.outerHeight() || defaultHeaderHeight) : 0) +'px);overflow-y: auto;overflow-y:overlay;');
                 }
             }
             var scrolBox = $('<div style="' + scrolBoxStyles.join(';') + '" class="q-grid-scroll"></div>');
