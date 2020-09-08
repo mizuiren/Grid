@@ -867,7 +867,7 @@ Grid.prototype = {
             } else {
                 targetCellObj = _this.data.rows[rowNum][columnNum - 1];
             }
-            if(typeof targetCellObj !== 'string' && targetCellObj.editType) {
+            if(targetCellObj && typeof targetCellObj !== 'string' && targetCellObj.editType) {
                 editType = targetCellObj.editType.type || 'input';
                 options = targetCellObj.editType.options;
             }
