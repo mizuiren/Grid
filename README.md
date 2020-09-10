@@ -310,9 +310,10 @@ multiEdit：是否需要取消上一个编辑状态， multiEdit为true则不取
 ### 18.getColumLength()
 获取列的数据
 
-### 19.appendRow(rowData)
+### 19.appendRow(rowData, index)
 新增行数据
 rowData:行数据，数组
+index: 插在第几行
 
 ### 20.deleteRow(rowNum)
 删除行

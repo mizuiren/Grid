@@ -7,7 +7,7 @@
 function Grid(data, $container) {
     this.data = data;
     this.container = $container;
-    this.columLength = this.getColumLength();
+    this.columLength = this.getColumnLength();
     this.bindEvent(data);
     this.renderGrid(data, $container);  
 }
@@ -25,17 +25,76 @@ Grid.prototype = {
         return new Promise(function(resolve, reject) {
             _this.updateTimer = setTimeout(function(){
                 new Grid(_this.data, _this.container);
-                resolve
+                resolve();
             },30);
         });
     },
-    deleteRow: function(rownum) {
-        this.data.rows.splice(rownum, 1);
-        new Grid(this.data, this.container);
+    appendRow: function(rowData, index) {
+        if(!this.validRowData(rowData)) {
+            return;
+        }
+        if(index === undefined || index > this.data.rows.length) {
+            index = this.data.rows.length;
+        }
+        if(index < 0) {
+            index = 0;
+        }
+        this.data.rows.splice(index, 0, rowData);
+        var newRowHtml = this.renderRow(rowData, index);
+        var $gridBody = $('.q-grid.body', this.container);
+        var _this = this;
+        if(index < this.data.rows.length) {
+            $('.cell['+this.rowIndexAttrName+']', $gridBody).each(function() {
+                var oldIndex = +$(this).attr(_this.rowIndexAttrName);
+                if(oldIndex >= index) {
+                    $(this).attr(_this.rowIndexAttrName, oldIndex + 1);
+                }
+            });
+        }
+        if(index === 0) {
+            $gridBody.prepend(newRowHtml);
+        } else if(index === this.data.rows.length) {
+            $gridBody.append(newRowHtml);
+        } else {
+            var $after = $('['+this.rowIndexAttrName+'="'+(index - 1)+'"]:last');
+            $after.after(newRowHtml);
+        }
+        
     },
-    appendRow: function(rowData) {
-        this.data.rows.push(rowData);
-        new Grid(this.data, this.container);
+    deleteRow: function(rowIndex) {
+        this.data.rows.splice(rowIndex, 1);
+        var $gridBody = $('.q-grid.body', this.container);
+        var _this = this;
+        $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $gridBody).remove();
+        if(rowIndex < this.data.rows.length) {
+            $('.cell['+this.rowIndexAttrName+']', $gridBody).each(function() {
+                var oldIndex = +$(this).attr(_this.rowIndexAttrName);
+                if(oldIndex >= rowIndex) {
+                    $(this).attr(_this.rowIndexAttrName, oldIndex - 1);
+                }
+            });
+        }
+    },
+    validRowData: function(rowData) {
+        if(!$.isArray(rowData)) {
+            console.error('Invalid data format!');
+            return false;
+        }
+        var realLength = this.getCellLength(rowData);
+        if(!this.isCheckboxCell(rowData[0])) {
+            realLength = realLength + 1;
+        }
+        if(realLength > this.columLength) {
+            console.error('Cell length exceed!');
+            return false;
+        }
+        for(var i = 0; i < rowData.length; i++) {
+            if(typeof rowData[i] !== 'number' && typeof rowData[i] !== 'string' && typeof rowData[i] !== 'object') {//简单粗暴判断下
+                console.error('Invalid data format!');
+                return false;
+            }
+        }
+        return true;
     },
     updateCell: function($cell, newValue) {
         newValue = this.htmlEncode(newValue);
@@ -43,7 +102,7 @@ Grid.prototype = {
     	var columnIndex = $cell.attr(this.columnIndexAttrName);
     	var rowData = this.data.rows[rowIndex];
     	if(rowData) {
-    		if(rowData[0].type === 'checkbox') {
+    		if(this.isCheckboxCell(rowData[0])) {
                 if(typeof rowData[columnIndex] === 'string') {
                     rowData[columnIndex] = newValue;
                 } else {
@@ -105,10 +164,10 @@ Grid.prototype = {
         var header;
         if(this.data.showHeader) {
             var newHeader = JSON.parse(JSON.stringify(this.data.header));
-            newHeader.unshift({value:'<input type="checkbox" class="check-all"/><span></span>', id: 'id'});
+            newHeader.unshift({value:'<input type="checkbox" class="check-all"/><span></span>', id: 'id', type: 'checkbox'});
 
             header = $('<header class="q-grid header" style="' + this.gridStyles.join(';') + '"></header>');
-            header.append(this.renderCell(newHeader, 0, true));
+            header.append(this.renderRow(newHeader, 0, 'header'));
             this.gridBox.append(header);
         }
         this.gridStyles.push('padding-bottom: 1px');
@@ -135,7 +194,14 @@ Grid.prototype = {
             var scrolBox = $('<div style="' + scrolBoxStyles.join(';') + '" class="q-grid-scroll"></div>');
             var contentBox = $('<div class="q-grid body" style="' + bodyGridStyles.join(';') + '"></div>');
             contentBox.css('width', '100%');
-            contentBox.append(this.renderRow(this.data.rows, 'body'));
+
+            var rowsHtml = '';
+            var _this = this;
+            this.data.rows.forEach(function(rowData, index) {
+                rowsHtml += _this.renderRow(rowData, index);
+            });
+            contentBox.append(rowsHtml);
+
             scrolBox.append(contentBox);
             this.gridBox.append(scrolBox);
 
@@ -149,9 +215,9 @@ Grid.prototype = {
                 scrolBox.scrollTop(0);//滚动条返回顶部
             }
             
-            var _this = this, needDisabledHeader = true;
+            var needDisabledHeader = true;
             this.data.rows.forEach(function(arr, index) {
-                if(typeof arr[0] === 'object' && arr[0].type === 'checkbox') {
+                if(_this.isCheckboxCell(arr[0])) {
                     if(_this.data.checkbox && arr[0].checked) {
                         _this.checkOne(index);
                     }
@@ -170,14 +236,28 @@ Grid.prototype = {
             }
         }
     },
-    renderCell: function(columData, rowIndex, isHeader) {
+    renderRow: function(rowData, rowIndex, isHeader) {
         var cellsHtml = '';
+        if(!this.validRowData(rowData)) {
+            return cellsHtml;
+        }
         var _this = this;
-        var id = '', hadRowId = typeof columData[0] === 'object' && columData[0].type === 'checkbox';
-        columData.forEach(function(item, index) {
+        var id = '', hadRowId = _this.isCheckboxCell(rowData[0]);
+        var cloneRowData = JSON.parse(JSON.stringify(rowData));
+        if(!isHeader) {
+            if(hadRowId) {
+                cloneRowData[0].value = '<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>';
+            } else {
+                cloneRowData.unshift({value:'<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
+            } 
+        }
+        if(_this.getCellLength(cloneRowData) < _this.columLength) {
+            cloneRowData = cloneRowData.concat(new Array(_this.columLength - cloneRowData.length).fill(''));
+        }
+        cloneRowData.forEach(function(item, index) {
             var cellStyles = [];
             if(hadRowId && index === 0) {
-                id = 'data-id="' + columData[0].id + '"';
+                id = 'data-id="' + cloneRowData[0].id + '"';
             } else if(index !== 0) {
                 id = _this.data.header[index - 1] && _this.data.header[index - 1].id ? 'data-id="' + _this.data.header[index - 1].id + '"' : 'data-id="' + index + '"';
             } else {
@@ -233,44 +313,25 @@ Grid.prototype = {
         });
         return cellsHtml;
     },
+    getCellLength: function(arr) {
+        var count = 0;
+        arr.forEach(function(item) {
+            if(typeof item !== 'object') {
+                count++;
+            } else if(item.size && item.size > 1) {
+                count += item.size;
+            } else {
+                count++;
+            }
+        });
+        return count;
+    },
     htmlEncode:function (html){
         var temp = document.createElement ("div");
         (temp.textContent != undefined ) ? (temp.textContent = html) : (temp.innerText = html);
         var output = temp.innerHTML;
         temp = null;
         return output;
-    },
-    renderRow: function(rowData, isBody) {
-        var rowsHtml = '';
-        var _this = this;
-        var cloneData = JSON.parse(JSON.stringify(rowData));
-        cloneData.forEach(function(item, index) {
-            if(isBody) {
-                if(typeof item[0] === 'object' && item[0].type === 'checkbox') {
-                    item[0].value = '<input type="checkbox" ' + (item[0].disabled ? 'disabled' : '') + '/><span></span>';
-                } else {
-                    item.unshift({value:'<input type="checkbox" ' + (item[0].disabled ? 'disabled' : '') + '/><span></span>', id: index, type: 'checkbox'});
-                } 
-            }
-            if(getCellLength(item) < _this.columLength) {
-                item = item.concat(new Array(_this.columLength - item.length).fill(''));
-            }
-            rowsHtml += _this.renderCell(item, index, !isBody);
-        });
-        function getCellLength(arr) {
-            var count = 0;
-            arr.forEach(function(item) {
-                if(typeof item !== 'object') {
-                    count++;
-                } else if(item.size && item.size > 1) {
-                    count += item.size;
-                } else {
-                    count++;
-                }
-            });
-            return count;
-        }
-        return rowsHtml;
     },
     selectRow: function(rowNum, evt, multiSelect) {
         if(this.isRowSelected(rowNum)) {
@@ -389,13 +450,12 @@ Grid.prototype = {
     },
     checkOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        var oldChecked = firstObj ? !!this.data.rows[rowNum][0].checked : false;
         if($input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', true);
-        var firstObj = typeof this.data.rows[rowNum][0] === 'object' && this.data.rows[rowNum][0].type === 'checkbox';
-        if(firstObj) {
+        var checkObj = this.isCheckboxCell(this.data.rows[rowNum][0]);
+        if(checkObj) {
             this.data.rows[rowNum][0].checked = true;
         }
 
@@ -424,9 +484,9 @@ Grid.prototype = {
             return;
         }
         $input.prop('checked', false);
-        var firstObj = typeof this.data.rows[rowNum][0] === 'object' && this.data.rows[rowNum][0].type === 'checkbox';
+        var checkObj = this.isCheckboxCell(this.data.rows[rowNum][0]);
 
-        if(firstObj) {
+        if(checkObj) {
             this.data.rows[rowNum][0].checked = false;
         }
         if(!this.isAllChecked()) {
@@ -472,7 +532,7 @@ Grid.prototype = {
                 _this.endEdit();
             }
             if(_this.data.onClick) {
-                var cellNum = typeof _this.data.rows[rowNum][0] === 'object' && _this.data.rows[rowNum][0].type === 'checkbox' ? columnNum : columnNum - 1;
+                var cellNum =  _this.isCheckboxCell( _this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
                 _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
             }
             
@@ -526,7 +586,7 @@ Grid.prototype = {
                     }      
                 }
             }
-        }).on('click', '.header .cell', function(evt) {
+        }).on('click.grid', '.header .cell', function(evt) {
             var $cell = $(evt.target).closest('.cell');
             if($cell.hasClass('checkbox')) {               
                 var $input = $(evt.target).closest('.cell').find('input');
@@ -591,10 +651,10 @@ Grid.prototype = {
                 _this.data.rows.sort(function(a, b) {
                     var _a = JSON.parse(JSON.stringify(a));
                     var _b = JSON.parse(JSON.stringify(b));
-                    if(typeof _a[0] === 'object' && _a[0].type === 'checkbox') {
+                    if(_this.isCheckboxCell(_a[0])) {
                         _a.splice(0, 1);
                     }
-                    if(typeof _b[0] === 'object' && _b[0].type === 'checkbox') {
+                    if(_this.isCheckboxCell(_b[0])) {
                         _b.splice(0, 1);
                     }
                     if(useUserFn) {
@@ -609,10 +669,10 @@ Grid.prototype = {
                 _this.data.rows.sort(function(a, b) {
                     var _a = JSON.parse(JSON.stringify(a));
                     var _b = JSON.parse(JSON.stringify(b));
-                    if(typeof _a[0] === 'object' && _a[0].type === 'checkbox') {
+                    if(_this.isCheckboxCell(_a[0])) {
                         _a.splice(0,1);
                     }
-                    if(typeof _b[0] === 'object' && _b[0].type === 'checkbox') {
+                    if(_this.isCheckboxCell(_b[0])) {
                         _b.splice(0,1);
                     }
                     if(useUserFn) {
@@ -653,7 +713,7 @@ Grid.prototype = {
             if(_this.data.onDblclick) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 var columnNum = $(this).attr(_this.columnIndexAttrName);
-                var cellNum = typeof _this.data.rows[parseInt(rowNum)][0] === 'object' && _this.data.rows[parseInt(rowNum)][0].type === 'checkbox' ? columnNum : columnNum - 1;
+                var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
                 _this.data.onDblclick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
             }
         }).off('contextmenu').on('contextmenu', '.body .cell', function(evt) {
@@ -663,7 +723,7 @@ Grid.prototype = {
             if(_this.data.onContextmenu) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 var columnNum = $(this).attr(_this.columnIndexAttrName);
-                var cellNum = typeof _this.data.rows[parseInt(rowNum)][0] === 'object' && _this.data.rows[parseInt(rowNum)][0].type === 'checkbox' ? columnNum : columnNum - 1;
+                var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
                 _this.data.onContextmenu(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
             }
             return false;
@@ -817,7 +877,7 @@ Grid.prototype = {
         var value = _this.htmlEncode($input.length ? $input.val() : $select.length ? $select.val() : '');
         var rowNum = $cell.attr(_this.rowIndexAttrName);
         var columnNum = $cell.attr(_this.columnIndexAttrName);
-        var cellNum = typeof _this.data.rows[parseInt(rowNum)][0] === 'object' && _this.data.rows[parseInt(rowNum)][0].type === 'checkbox' ? columnNum : columnNum - 1;
+        var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
         var oldValue;
         if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum]) {
             if(typeof _this.data.rows[rowNum][cellNum] !== 'object') {
@@ -862,7 +922,7 @@ Grid.prototype = {
         var editType = 'input', options = '';
         if(_this.data.rows[rowNum]) {
             var targetCellObj;
-            if(typeof _this.data.rows[rowNum][0] !== 'string' && _this.data.rows[rowNum][0].type === 'checkbox') {
+            if(_this.isCheckboxCell(_this.data.rows[rowNum][0])) {
                 targetCellObj = _this.data.rows[rowNum][columnNum];
             } else {
                 targetCellObj = _this.data.rows[rowNum][columnNum - 1];
@@ -914,24 +974,28 @@ Grid.prototype = {
         $('.q-grid.body .cell.checkbox', this.container).each(function() {
             if($(this).find('input').prop('checked') === true) {
                 rowIndex = $(this).attr(_this.rowIndexAttrName);
-                rowData = JSON.parse(JSON.stringify(_this.data.rows[parseInt(rowIndex)]));
-                data.push(rowData);
+                rowData = _this.data.rows[parseInt(rowIndex)];
+                rowData && data.push(JSON.parse(JSON.stringify(rowData)));
             }   
         });
         return data;
     },
-    getColumLength: function() {
+    isCheckboxCell: function(obj) {
+        return typeof obj === 'object' && obj.type === 'checkbox'
+    },
+    getColumnLength: function() {
         let count = 1;
         if(this.data.header && this.data.header.length) {
             if(this.data.header.length > count) {
                 count = this.data.header.length;
             }
         }
+        var _this = this;
         if(this.data.rows) {
             this.data.rows.forEach(function(item) {
                 var leng = item.length;
                 item.forEach(function(_item, index) {
-                    if(index === 0 && typeof _item === 'object' && _item.type === 'checkbox') {
+                    if(index === 0 && _this.isCheckboxCell(_item)) {
                         leng = leng - 1;
                     }
                     if(typeof _item === 'object' && _item.size) {
