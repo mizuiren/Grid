@@ -10,7 +10,6 @@ author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
     它包含的一些特性有：
 
 
-
 **1.参数数据易配置性，简单的列数据只需要字符串即可。**
 
 **2.列宽自由化绝对化，不像table的td难以控制**
