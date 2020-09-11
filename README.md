@@ -1,6 +1,3 @@
-[TOC]
-# grid-table
-
 author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
 
 Responsive table grid to meet various usage scenarios, with: width and height settings, drag and drop sorting, adjustment of column width, editing of cells (check, click, single double-click editing), fixed table header, etc...<br>
