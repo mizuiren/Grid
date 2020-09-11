@@ -18,16 +18,20 @@ Grid.prototype = {
     updateTimer: null,
     updateData: function(rowsData) {
         this.data.rows = rowsData;
+        var rowsHtml = '';
         var _this = this;
-        if(this.updateTimer) {
-            clearTimeout(this.updateTimer);
-        }
-        return new Promise(function(resolve, reject) {
-            _this.updateTimer = setTimeout(function(){
-                new Grid(_this.data, _this.container);
-                resolve();
-            },30);
+        this.data.rows.forEach(function(rowData, index) {
+            if(!_this.validRowData(rowData)) {
+                return;
+            }
+            rowsHtml += _this.renderRow(rowData, index);
         });
+        var $gridBody = $('.q-grid.body', this.container);
+        $gridBody.html(rowsHtml);
+        if(this.data.rowHeight) {
+            $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+        }
+        this.initUi();
     },
     appendRow: function(rowData, index) {
         if(!this.validRowData(rowData)) {
@@ -56,10 +60,13 @@ Grid.prototype = {
         } else if(index === this.data.rows.length) {
             $gridBody.append(newRowHtml);
         } else {
-            var $after = $('['+this.rowIndexAttrName+'="'+(index - 1)+'"]:last');
+            var $after = $('['+this.rowIndexAttrName+'="'+(index - 1)+'"]:last', $gridBody);
             $after.after(newRowHtml);
         }
-        
+        if(this.data.rowHeight) {
+            $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+        }
+        this.initUi();
     },
     deleteRow: function(rowIndex) {
         this.data.rows.splice(rowIndex, 1);
@@ -74,6 +81,16 @@ Grid.prototype = {
                 }
             });
         }
+        if(this.data.rowHeight) {
+            $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+        }
+    },
+    updateRow: function(rowData, rowIndex) {
+        if(!this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
+            return;
+        }
+        this.deleteRow(rowIndex);
+        this.appendRow(rowData, rowIndex);
     },
     validRowData: function(rowData) {
         if(!$.isArray(rowData)) {
@@ -205,35 +222,46 @@ Grid.prototype = {
             scrolBox.append(contentBox);
             this.gridBox.append(scrolBox);
 
-            //判断有没有滚动条，有滚动条火狐要特殊处理，保证表头和表体单元格对齐
-            if(this.isFirefox()) {
-                scrolBox.scrollTop(10);//控制滚动条下移10px
+            this.initUi();
+        }
+    },
+    initUi:function() {
+        var scrolBox = $('.q-grid-scroll', this.container);
+        var header = $('.q-grid.header', this.container);
+        var scrollTop = scrolBox.scrollTop();
+        var _this = this;
+        //判断有没有滚动条，有滚动条火狐要特殊处理，保证表头和表体单元格对齐
+        if(this.isFirefox()) {
+            var fixWidth = 'calc(' + this.data.width + ' - 17px)';//火狐下滚动条宽度固定为17px
+            if(scrollTop > 0) {
+                header.css('width', fixWidth);
+            } else {
+                 scrolBox.scrollTop(10);//控制滚动条下移10px
                 if(scrolBox.scrollTop() > 0){
-                    var fixWidth = 'calc(' + this.data.width + ' - 17px)';//火狐下滚动条宽度固定为17px
                     header.css('width', fixWidth);
                 }
-                scrolBox.scrollTop(0);//滚动条返回顶部
-            }
-            
-            var needDisabledHeader = true;
-            this.data.rows.forEach(function(arr, index) {
-                if(_this.isCheckboxCell(arr[0])) {
-                    if(_this.data.checkbox && arr[0].checked) {
-                        _this.checkOne(index);
-                    }
-                    if(_this.data.selectable && arr[0].selected) {
-                        _this.selectRow(index, {}, _this.data.multiSelect);
-                    }
-                    if(!arr[0].disabled) {
-                        needDisabledHeader = false;
-                    }
-                } else {
+                scrolBox.scrollTop(scrollTop);//滚动条返回原位
+            }           
+        }
+        
+        var needDisabledHeader = true;
+        this.data.rows.forEach(function(arr, index) {
+            if(_this.isCheckboxCell(arr[0])) {
+                if(_this.data.checkbox && arr[0].checked) {
+                    _this.checkOne(index);
+                }
+                if(_this.data.selectable && arr[0].selected) {
+                    _this.selectRow(index, {}, _this.data.multiSelect);
+                }
+                if(!arr[0].disabled) {
                     needDisabledHeader = false;
                 }
-            });
-            if(needDisabledHeader) {
-                $('.check-all', this.container).prop('disabled', true);
+            } else {
+                needDisabledHeader = false;
             }
+        });
+        if(needDisabledHeader) {
+            $('.check-all', this.container).prop('disabled', true);
         }
     },
     renderRow: function(rowData, rowIndex, isHeader) {

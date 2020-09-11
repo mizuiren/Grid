@@ -319,7 +319,12 @@ index: 插在第几行
 删除行
 rowNum:行数
 
-### 21.checkRowById(id);
+### 21.updateRow(rowData, rowIndex);
+更新行
+rowData：行新数据
+rowIndex: 行号
+
+### 22.checkRowById(id);
 id:id值，指的是渲染数据所绑定的id
 比如数据：
 1.[[5,5,5,5,5,5], [1,2,3,4,5,{id: 'firstRow',value: 6},7,8,9]]
