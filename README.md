@@ -3,28 +3,55 @@
 
 author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
 
-    Responsive table grid to meet various usage scenarios, with: width and height settings, drag and drop sorting, adjustment of column width, editing of cells (check, click, single double-click editing), fixed table header, etc...
-    满足各种使用场景的响应式表格组件(Responsive table grid)，具备：宽高设置、拖拽排序、调节列宽、编辑单元格（勾选、点选、单双击编辑）、表头固定等...
 
-    Some of the features it contains are:
-    它包含的一些特性有：
+Responsive table grid to meet various usage scenarios, with: width and height settings, drag and drop sorting, adjustment of column width, editing of cells (check, click, single double-click editing), fixed table header, etc...
+
+满足各种使用场景的响应式表格组件(Responsive table grid)，具备：宽高设置、拖拽排序、调节列宽、编辑单元格（勾选、点选、单双击编辑）、表头固定等...
 
 
-**1.参数数据易配置性，简单的列数据只需要字符串即可。**
+Some of the features it contains are:
 
-**2.列宽自由化绝对化，不像table的td难以控制**
+它包含的一些特性有：
 
-**3.dom结构简易化**
 
-**4.单元格样式全自定义化**
+**1.Parameter data is easy to configure, simple column data only needs character strings.**
 
-**5.响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。**
+1.参数数据易配置性，简单的列数据只需要字符串即可。
 
-**6.列数自动根据数据变化**
 
-**7.排序icon**
+**2.Column width liberalization and absoluteization, unlike table td is difficult to control**
 
-**8.flex布局，更加美观紧凑**
+2.列宽自由化绝对化，不像table的td难以控制
+
+
+**3.Simplified dom structure**
+
+3.dom结构简易化
+
+
+**4.Fully customizable cell styles**
+
+4.单元格样式全自定义化
+
+
+**5.Responsive width, width change does not require re-rendering. The width depends on the width of the container, which is the responsibility of the page.**
+
+5.响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。
+
+
+**6.The number of columns automatically changes according to the data**
+
+6.列数自动根据数据变化
+
+
+**7.Sort icon**
+
+7.排序icon
+
+
+**8.flex layout, more beautiful and compact**
+
+8.flex布局，更加美观紧凑
 
 声明：支持主流前沿浏览器，不支持IE浏览器！
 
