@@ -961,14 +961,14 @@ Grid.prototype = {
             }
         }
         $cell.addClass('editing');
+        var align = $cell.css('justify-content');
         if(editType === 'input') {
-            var align = $cell.css('justify-content');
             $cell.html('<input value="' + text + '" type="text" style="text-align:' + align + '">');
             if(!multiEdit) {
                 $cell.find('input').select().focus();
             }
         } else if(editType === 'select') {
-            var select = $('<select style="width:100%;"></select>');
+            var select = $('<select style="width:100%;text-align-last:' + align + '"></select>');
             if(options && $.isArray(options)) {
                 options.forEach(function(v, index) {
                     select.append('<option class="i18n" value="' + v + '">' + v + '</option>');
