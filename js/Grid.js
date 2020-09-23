@@ -2,7 +2,7 @@
  * by 秋叶(Author blog: https://www.mizuiren.com)
  * [Grid description]
  * @param {[type]} data       [渲染表格用到的数据]
- * @param {[type]} $container [渲染到得容器（jq对象）]
+ * @param {[type]} $container [渲染到的容器（jq对象）]
  */
 function Grid(data, $container) {
     this.data = data;
@@ -20,6 +20,7 @@ Grid.prototype = {
         this.data.rows = rowsData;
         var rowsHtml = '';
         var _this = this;
+        rowsHtml += this.getFilterRow();
         this.data.rows.forEach(function(rowData, index) {
             if(!_this.validRowData(rowData)) {
                 return;
@@ -89,8 +90,12 @@ Grid.prototype = {
         if(!this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
             return;
         }
+        var isSelected = $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $('.q-grid.body', this.container)).hasClass('selected');
         this.deleteRow(rowIndex);
         this.appendRow(rowData, rowIndex);
+        if(isSelected) {
+            $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $('.q-grid.body', this.container)).addClass('selected');
+        }
     },
     validRowData: function(rowData) {
         if(!$.isArray(rowData)) {
@@ -214,6 +219,7 @@ Grid.prototype = {
 
             var rowsHtml = '';
             var _this = this;
+            rowsHtml += this.getFilterRow();
             this.data.rows.forEach(function(rowData, index) {
                 rowsHtml += _this.renderRow(rowData, index);
             });
@@ -223,6 +229,14 @@ Grid.prototype = {
             this.gridBox.append(scrolBox);
 
             this.initUi();
+        }
+    },
+    getFilterRow: function() {
+        if(this.data.filter) {
+            let filterInputs = new Array(this.columLength - 1).fill('<input class="filter" placeholder="Filter"/>');
+            return this.renderRow(filterInputs, 'filterRow');
+        } else {
+            return '';
         }
     },
     initUi:function() {
@@ -276,7 +290,7 @@ Grid.prototype = {
             if(hadRowId) {
                 cloneRowData[0].value = '<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>';
             } else {
-                cloneRowData.unshift({value:'<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
+                cloneRowData.unshift(rowIndex === 'filterRow' ? '' : {value:'<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
             } 
         }
         if(_this.getCellLength(cloneRowData) < _this.columLength) {
@@ -478,7 +492,7 @@ Grid.prototype = {
     },
     checkOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        if($input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
+        if(isNaN(rowNum) || $input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', true);
@@ -541,7 +555,7 @@ Grid.prototype = {
         _this.container.off('click').on('click', '.body .cell', function(evt) {
             var rowNum = +$(this).attr(_this.rowIndexAttrName);
             var $cell = $(evt.target).closest('.cell');
-            if(evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
+            if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                 return;
             }
             if($cell.hasClass('checkbox')) {               
@@ -628,6 +642,32 @@ Grid.prototype = {
                     }
                 }
             }
+        }).off('input.grid').on('input.grid', '.cell input.filter', function() {
+            $('.q-grid.body .cell['+_this.rowIndexAttrName+']', _this.container).show();
+            var $filterInputs = $('.cell input.filter', _this.container);
+            var matched, cellIndex, val, string, shouldMatchData;
+            _this.data.rows.forEach(function(rowData, index) {
+                matched = true;
+                for (var i = 0; i < $filterInputs.length; i++) {
+                    cellIndex = $filterInputs.eq(i).parent().attr(_this.columnIndexAttrName) - 1;
+                    shouldMatchData = _this.isCheckboxCell(rowData[0]) ? rowData[cellIndex + 1] : rowData[cellIndex];
+                    string = typeof shouldMatchData === 'string' ||  typeof shouldMatchData === 'number' ? shouldMatchData + '' : shouldMatchData.value;
+                    val = $filterInputs.eq(i).val();
+                    if(!val) {
+                        continue;
+                    }
+                    if(string.indexOf(val) === -1) {
+                        matched = false;
+                        break;
+                    }
+                }
+
+                if(matched) {
+                    $('.q-grid.body .cell['+_this.rowIndexAttrName+'="'+index+'"]', _this.container).show();
+                } else {
+                    $('.q-grid.body .cell['+_this.rowIndexAttrName+'="'+index+'"]', _this.container).hide();
+                }
+            });
         }).off('mousedown.grid').on('mousedown.grid', 'header.q-grid .cell .resizebar', function(evt) {
             var $cell = $(this).parent(), cellLeft = $cell.offset().left;
             var cellIndex = $cell.attr(_this.columnIndexAttrName) - 1;
@@ -734,15 +774,19 @@ Grid.prototype = {
             }
             if(_this.data.editable) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
-                $('.q-grid.body .cell[data-row-index="' + rowNum + '"]:not(.checkbox)', _this.container).each(function() {
-                    _this.editCell($(this), true);
-                });
+                if(!isNaN(rowNum)) {
+                    $('.q-grid.body .cell[data-row-index="' + rowNum + '"]:not(.checkbox)', _this.container).each(function() {
+                        _this.editCell($(this), true);
+                    });
+                }
             }
             if(_this.data.onDblclick) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
-                var columnNum = $(this).attr(_this.columnIndexAttrName);
-                var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
-                _this.data.onDblclick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                if(!isNaN(rowNum)) {
+                    var columnNum = $(this).attr(_this.columnIndexAttrName);
+                    var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
+                    _this.data.onDblclick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                }
             }
         }).off('contextmenu').on('contextmenu', '.body .cell', function(evt) {
             if(evt.target.tagName === 'INPUT') {

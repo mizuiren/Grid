@@ -2,6 +2,7 @@ let gridData = {
     checkbox: true,
     showHeader: true,
     dragable: false,
+    filter:true,
     header: [
         {
             value:'姓名', 
