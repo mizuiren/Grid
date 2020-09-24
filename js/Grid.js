@@ -233,7 +233,7 @@ Grid.prototype = {
     },
     getFilterRow: function() {
         if(this.data.filter) {
-            let filterInputs = new Array(this.columLength - 1).fill('<input class="filter" placeholder="Filter"/>');
+            let filterInputs = new Array(this.columLength - 1).fill('<input class="filter" placeholder="Filter" type="text"/>');
             return this.renderRow(filterInputs, 'filterRow');
         } else {
             return '';
@@ -351,7 +351,7 @@ Grid.prototype = {
             }
             var value = typeof item !== 'object' ? item : item.value;
             cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' #ccc');
-            cellsHtml += '<div ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 ? '' : _this.htmlEncode(value)) + '">' + resizeLine + value + (needSort ? ' <span class="sort-icon"> </span>' : '') +'</div>';  
+            cellsHtml += '<div ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.htmlEncode(value)) + '">' + resizeLine + value + (needSort ? ' <span class="sort-icon"> </span>' : '') +'</div>';  
         });
         return cellsHtml;
     },
