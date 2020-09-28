@@ -108,6 +108,7 @@ let gridData = {
     onDblclick: function(rowData, cellData, evt) {
         //console.log('onDblclick', rowData, cellData, evt);
     }
+    //more...
 }
 
 let index = 0, grid, 
