@@ -336,9 +336,6 @@ Grid.prototype = {
                 if(_this.data.header[index - 1].sort) {
                     classes.push('sort');
                     needSort = true;
-                    if(_this.data.sortClassRecord && _this.data.sortClassRecord[index - 1]) {
-                        classes.push(_this.data.sortClassRecord[index - 1]);
-                    }
                 }
                 if(_this.data.header[index - 1].resizeable) {
                     resizeLine = '<span class="resizebar"></span>';
@@ -702,12 +699,10 @@ Grid.prototype = {
                 return;
             }
             var useUserFn = typeof _this.data.header[cellIndex].sort === 'function';
-            _this.data.sortClassRecord = {};
             $(this).siblings('.sort').removeClass('sort-1').removeClass('sort-2');
        		var sortType;
        		if($(this).hasClass('sort-1')) {
                 $(this).removeClass('sort-1');
-                _this.data.sortClassRecord[cellIndex] = '';
                 sortType = 0;
                 var originData = _this.container.data('originData');
                 if(originData) {
@@ -716,12 +711,10 @@ Grid.prototype = {
        		} else if($(this).hasClass('sort-2')) {
        			$(this).addClass('sort-1');//顺序
                 $(this).removeClass('sort-2');
-                _this.data.sortClassRecord[cellIndex] = 'sort-1';
                 sortType = 2;
        		} else {
                 $(this).addClass('sort-2');//倒序
                 sortType = 1;
-                _this.data.sortClassRecord[cellIndex] = 'sort-2';
                 _this.container.data('originData', JSON.parse(JSON.stringify(_this.data.rows)));
             }
        		if(_this.data.sortByCloud) {
