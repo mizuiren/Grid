@@ -38,6 +38,7 @@ Grid.prototype = {
         if(!this.validRowData(rowData)) {
             return;
         }
+        this.clearSortData();
         if(index === undefined || index > this.data.rows.length) {
             index = this.data.rows.length;
         }
@@ -70,6 +71,7 @@ Grid.prototype = {
         this.initUi();
     },
     deleteRow: function(rowIndex) {
+        this.clearSortData();
         this.data.rows.splice(rowIndex, 1);
         var $gridBody = $('.q-grid.body', this.container);
         var _this = this;
@@ -90,11 +92,12 @@ Grid.prototype = {
         if(!this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
             return;
         }
-        var isSelected = $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $('.q-grid.body', this.container)).hasClass('selected');
+        var $body = $('.q-grid.body', this.container);
+        var isSelected = $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $body).hasClass('selected');
         this.deleteRow(rowIndex);
         this.appendRow(rowData, rowIndex);
         if(isSelected) {
-            $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $('.q-grid.body', this.container)).addClass('selected');
+            $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $body).addClass('selected');
         }
     },
     validRowData: function(rowData) {
@@ -119,6 +122,7 @@ Grid.prototype = {
         return true;
     },
     updateCell: function($cell, newValue) {
+        this.clearSortData();
         newValue = this.htmlEncode(newValue);
     	var rowIndex = $cell.attr(this.rowIndexAttrName);
     	var columnIndex = $cell.attr(this.columnIndexAttrName);
@@ -702,54 +706,44 @@ Grid.prototype = {
             $(this).siblings('.sort').removeClass('sort-1').removeClass('sort-2');
        		var sortType;
        		if($(this).hasClass('sort-1')) {
-       			$(this).removeClass('sort-1');
-                $(this).addClass('sort-2');
-                _this.data.sortClassRecord[cellIndex] = 'sort-2';
-                sortType = 1;
-       		} else {
-       			$(this).addClass('sort-1');
+                $(this).removeClass('sort-1');
+                _this.data.sortClassRecord[cellIndex] = '';
+                sortType = 0;
+                var originData = _this.container.data('originData');
+                if(originData) {
+                    return _this.updateData(originData);
+                }
+       		} else if($(this).hasClass('sort-2')) {
+       			$(this).addClass('sort-1');//顺序
                 $(this).removeClass('sort-2');
                 _this.data.sortClassRecord[cellIndex] = 'sort-1';
                 sortType = 2;
-       		}
+       		} else {
+                $(this).addClass('sort-2');//倒序
+                sortType = 1;
+                _this.data.sortClassRecord[cellIndex] = 'sort-2';
+                _this.container.data('originData', JSON.parse(JSON.stringify(_this.data.rows)));
+            }
        		if(_this.data.sortByCloud) {
        			return _this.data.header[cellIndex].sort();
        		}
-            if(sortType === 1) {                                
-                _this.data.rows.sort(function(a, b) {
-                    var _a = JSON.parse(JSON.stringify(a));
-                    var _b = JSON.parse(JSON.stringify(b));
-                    if(_this.isCheckboxCell(_a[0])) {
-                        _a.splice(0, 1);
-                    }
-                    if(_this.isCheckboxCell(_b[0])) {
-                        _b.splice(0, 1);
-                    }
-                    if(useUserFn) {
-                        var _return = _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]);
-                        return _return === -1 ? 1 : (_return === 1 ? -1 : 0);
-                    } else {
-                        var _return = (typeof a[cellIndex] === 'object' ? a[cellIndex].value : a[cellIndex]).localeCompare(typeof b[cellIndex] === 'object' ? b[cellIndex].value : b[cellIndex]);
-                        return _return === -1 ? 1 : (_return === 1 ? -1 : 0);
-                    }                    
-                });    
-            } else {
-                _this.data.rows.sort(function(a, b) {
-                    var _a = JSON.parse(JSON.stringify(a));
-                    var _b = JSON.parse(JSON.stringify(b));
-                    if(_this.isCheckboxCell(_a[0])) {
-                        _a.splice(0,1);
-                    }
-                    if(_this.isCheckboxCell(_b[0])) {
-                        _b.splice(0,1);
-                    }
-                    if(useUserFn) {
-                        return _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]); 
-                    } else {
-                        return (typeof _a[cellIndex] === 'object' ? _a[cellIndex].value : _a[cellIndex]).localeCompare(typeof _b[cellIndex] === 'object' ? _b[cellIndex].value : _b[cellIndex]);
-                    } 
-                });
-            }
+            var _return;
+            _this.data.rows.sort(function(a, b) {
+                var _a = JSON.parse(JSON.stringify(a));
+                var _b = JSON.parse(JSON.stringify(b));
+                if(_this.isCheckboxCell(_a[0])) {
+                    _a.splice(0, 1);
+                }
+                if(_this.isCheckboxCell(_b[0])) {
+                    _b.splice(0, 1);
+                }
+                if(useUserFn) {
+                    _return = _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]);
+                } else {
+                    _return = (typeof a[cellIndex] === 'object' ? a[cellIndex].value : a[cellIndex]).localeCompare(typeof b[cellIndex] === 'object' ? b[cellIndex].value : b[cellIndex]);
+                }
+                return _return * (sortType === 1 ? -1 : 1);
+            });
             _this.updateData(_this.data.rows);
         }).off('change').on('change', '.checkbox input[type="checkbox"]', function(evt) {
             var $cell = $(this).closest('.cell');
@@ -946,6 +940,7 @@ Grid.prototype = {
         if(!$input.length && !$select.length) {
             return;
         }
+        _this.clearSortData();
         var value = _this.htmlEncode($input.length ? $input.val() : $select.length ? $select.val() : '');
         var rowNum = $cell.attr(_this.rowIndexAttrName);
         var columnNum = $cell.attr(_this.columnIndexAttrName);
@@ -974,6 +969,13 @@ Grid.prototype = {
         $('.body.q-grid .cell.editing', this.container).each(function() {
             _this.endEditOne($(this));
         });      
+    },
+    clearSortData: function() {
+        var originData = this.container.data('originData');
+        if(originData) {
+            this.container.data('originData', null);//清除排序原始数据，否则会造成维护不当
+        }
+        $('.cell.sort', this.container).removeClass('sort-1').removeClass('sort-2');
     },
     editCell: function($cell, multiEdit) {
         if($cell.hasClass('editing') || $cell.hasClass('checkbox')) {
