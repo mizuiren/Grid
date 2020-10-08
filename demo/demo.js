@@ -1,8 +1,6 @@
 let gridData = {
-    checkbox: true,
     showHeader: true,
     dragable: false,
-    filter:true,
     header: [
         {
             value:'姓名', 
@@ -112,94 +110,251 @@ let gridData = {
 }
 
 let index = 0, grid, 
-tips = ['checkbox: true', 'checkbox: false 或 无checkbox', 'freezeHeader:false 或 无freezeHeader', 'editable:false 或 无editable', 'multiSelect: false 或 无multiSelect', 'selectable: false 或 无selectable', 'selectWhenCheck: false 或 无selectWhenCheck', 'editWhenClick: true', "width: '50px 200px 1fr 1fr 1fr'", "width: '100px auto auto 50px auto'", '无width', 'border: none','border: solid', 'border: dashed', 'rowGap: 5px 或 rowGap: 5', 'columnGap: 2px 或 columnGap: 2', 'width: 500px 或 width: 500', "rowHeight: '100px'", 'height: "500px" 或 height:500', "height: 'auto'", '单元格支持任意样式', '单元格支持跨越多行', '单元格支持三种对齐方式', '计算得出列的数量','showHeader:false 或 无showHeader', 'dragable:true'];
+tips = [
+    {
+        title:'header字段sort: false或无sort',
+        des: '关闭排序功能',
+        id: -1
+    },
+    {
+        title: 'checkbox: true',
+        des: '',
+        id: 1
+    },
+    {
+        title: 'filter: true',
+        des: '通过过滤框可以过滤数据了，支持并发过滤',
+        id: 2
+    },
+    {
+        title: 'freezeHeader:false 或 无freezeHeader',
+        des: '试试拖动滚动条看效果吧，表头它会跟着内容滚动啦！',
+        id: 3
+    },
+    {
+        title: 'editable:false 或 无editable',
+        des: '试试双击表格，编辑不了啦！',
+        id: 4
+    },
+    {
+        title: 'multiSelect: false 或 无multiSelect',
+        des: '试试按住ctrl，左键点击多行表格，不能多选啦！即使勾选也不能哦。',
+        id: 5
+    },
+    {
+        title: 'selectable: false 或 无selectable',
+        des: '试试单击表格，不能选择高亮所属表格行啦！',
+        id: 6
+    },
+    {
+        title: 'selectWhenCheck: false 或 无selectWhenCheck',
+        des: '试试勾选复选框，不能通过勾选复选框来选择表格行啦！',
+        id: 7
+    },
+    {
+        title: 'editWhenClick: true',
+        des: '试试点击表格，表格可以编辑啦！',
+        id: 8
+    },
+    {
+        title: "width: '50px 200px 1fr 1fr 1fr'",
+        des: '1fr表示剩余可分配宽度/剩余待分配宽度的列的数量，具体看flex布局属性grid-template-columns说明哦！',
+        id: 9
+    },
+    {
+        title: "width: '100px auto auto 50px auto'",
+        des: 'auto会被识别为1fr哦！',
+        id: 10
+    },
+    {
+        title: '无width',
+        des: '没有定义宽度则平均分配哦！',
+        id: 11
+    },
+    {
+        title: 'border: none',
+        des: '',
+        id: 12
+    },
+    {
+        title: 'border: solid',
+        des: '',
+        id: 13
+    },{
+        title: 'border: dashed',
+        des: '',
+        id: 14
+    },
+    {
+        title: 'rowGap: 5px 或 rowGap: 5',
+        des: '',
+        id: 15
+    },
+    {
+        title: 'columnGap: 2px 或 columnGap: 2',
+        des: '',
+        id: 16
+    },
+    {
+        title: 'width: 500px 或 width: 500',
+        des: '',
+        id: 17
+    },
+    {
+        title: "rowHeight: '100px'",
+        des: '',
+        id: 18
+    },
+    {
+        title: 'height: "500px" 或 height:500',
+        des: '',
+        id: 19
+    },
+    {
+        title: "height: 'auto'",
+        des: '',
+        id: 20
+    },
+    {
+        title: '单元格支持任意样式',
+        des: '',
+        id: 21
+    },
+    {
+        title: '单元格支持跨越多行',
+        des: '',
+        id: 22
+    },
+    {
+        title: '单元格支持三种对齐方式',
+        des: '',
+        id: 23
+    },{
+        title: '计算得出列的数量',
+        des: 'header里width注意设置足够或者设置不足的情况下已设置的总宽度小于100%哦, 要给不确定的列留出宽度，否则会看不见哦',
+        id: 24
+    },
+    {
+        title: 'showHeader:false 或 无showHeader',
+        des: '',
+        id: 25
+    },
+    {
+        title: 'dragable:true',
+        des: '试试鼠标拖动表格行，可任意拖拽哦！',
+        id: 26
+    }
+];
 $('#button').click(function() {
+    if(!tips[index]) {
+        return alert('没有了！请刷新页面！');
+    }
     var _copyData = copyData(gridData);
-    tip(index);
-    switch(index) {
+    switch(tips[index].id) {
+        case -1:
+            _copyData.header.forEach(function(item) {
+                delete item.sort;
+            });           
+            break;
         case 1:
-            _copyData.checkbox = false;           
+            _copyData.checkbox = true;           
             break;
         case 2:
-            delete  _copyData.freezeHeader;           
+            _copyData.filter = true;           
             break;
         case 3:
-            delete _copyData.editable;           
+            delete  _copyData.freezeHeader;           
             break;
         case 4:
-            _copyData.multiSelect = false;           
+            delete _copyData.editable;           
             break;
         case 5:
-            _copyData.selectable = false;           
+            _copyData.multiSelect = false;           
             break;
         case 6:
-            _copyData.selectWhenCheck = false;
+            _copyData.selectable = false;           
             break;
         case 7:
-            _copyData.editWhenClick = true;
+            _copyData.checkbox = true;
+            _copyData.selectWhenCheck = false;
             break;
         case 8:
+            _copyData.editWhenClick = true;
+            break;
+        case 9:
             _copyData.header[0].width = '50px';
             _copyData.header[1].width = '200px';
             _copyData.header[2].width = '1fr';
             _copyData.header[3].width = '1fr';
             _copyData.header[4].width = '1fr';
             break;
-        case 9:
+        case 10:
             _copyData.header[0].width = '100px';
             _copyData.header[1].width = 'auto';
             _copyData.header[2].width = 'auto';
             _copyData.header[3].width = '50px';
             _copyData.header[4].width = 'auto';
             break;
-        case 10:
+        case 11:
             delete _copyData.header[0].width;
             delete _copyData.header[1].width;
             delete _copyData.header[2].width;
             delete _copyData.header[3].width;
             delete _copyData.header[4].width;
             break;
-        case 11:
+        case 12:
             _copyData.border = 'none';
             break;
-        case 12:
+        case 13:
             _copyData.border = 'solid';
             break;
-        case 13:
+        case 14:
             _copyData.border = 'dashed';
             break;
-        case 14:
+        case 15:
             _copyData.rowGap = 5;
             break;
-        case 15:
+        case 16:
             _copyData.columnGap = 2;
             break;
-        case 16:
+        case 17:
             _copyData.width = 500;
             break;
-        case 17:
+        case 18:
             _copyData.rowHeight = 100;
             break;
-       case 18:
+       case 19:
             _copyData.height = 500;
             break;
-        case 19:
+        case 20:
             _copyData.height = 'auto';
             break;
-        case 20:
+        case 21:
             _copyData.rows[0][2] = {
                 value: _copyData.rows[0][2],
                 style: 'background:green;color:#fff;'
             };
+            _copyData.rows[2][0] = {
+                value: _copyData.rows[2][0],
+                style: 'background:red;color:#fff;'
+            };
+            _copyData.rows[4][5] = {
+                value: _copyData.rows[4][5],
+                style: 'font-size:25px;font-weight: bold;'
+            };
+            _copyData.rows[6][1] = {
+                value: _copyData.rows[6][1],
+                style: 'text-decoration: underline;font-style: italic;color:red;'
+            };
             break;
-        case 21:
+        case 22:
             _copyData.rows[3][1] = {
                 value: _copyData.rows[3][1],
                 size: 2
             };
             _copyData.rows[3].splice(3,1);
             break;
-        case 22:
+        case 23:
             _copyData.rows[2][2] = {
                 value: _copyData.rows[2][2],
                 align: 'left'
@@ -213,7 +368,7 @@ $('#button').click(function() {
                 align: 'right'
             };
             break;
-        case 23:
+        case 24:
             delete _copyData.header[0].width;
             delete _copyData.header[1].width;
             delete _copyData.header[2].width;
@@ -221,10 +376,10 @@ $('#button').click(function() {
             delete _copyData.header[4].width;
             _copyData.rows[0].push({value:'加1', id: 'add1'}, {value:'加2', id: 'add2'}, {value:'加3', id: 'add3'}, {value:'加4', id: 'add4'}, {value:'加5', id: 'add5'});
             break;
-        case 24:
+        case 25:
             delete _copyData.showHeader;
             break;
-        case 25:
+        case 26:
             _copyData.dragable = true;
             break;
             
@@ -236,54 +391,17 @@ $('#button').click(function() {
         $textarea.val(JSON.stringify(_copyData, null, 2));
     }
     $textarea[0].scrollTop = 0;
-    tip(index);
-    if(index === tips.length - 1) {
-        index = 0;
-    } else {
-        index++;  
-    }    
-});
-$('#button').trigger('click');
-function tip(index) {
+
     let next = tips[index + 1];
     let current = index + '. ' +tips[index];
     if(index === tips.length - 1) {
         next = tips[0];
     }
-    if($('#tip-current').length) {
-        if(index === 2) {
-            current += '（试试拖动滚动条看效果吧，表头它会跟着内容滚动啦！）';
-        } else if(index === 3) {
-            current += '（试试双击表格，编辑不了啦！）';
-        } else if(index === 4) {
-            current += '（试试按住ctrl，左键点击多行表格，不能多选啦！即使勾选也不能哦。）';
-        } else if(index === 5) {
-            current += '（试试单击表格，不能选择高亮所属表格行啦！）';
-        } else if(index === 6) {
-            current += '（试试勾选复选框，不能通过勾选复选框来选择表格行啦！）';
-        } else if(index === 7) {
-            current += '（试试点击表格，表格可以编辑啦！）';
-        } else if(index === 8) {
-            current += '（1fr表示剩余可分配宽度/剩余待分配宽度的列的数量，具体看flex布局属性grid-template-columns说明哦！）';
-        } else if(index === 9) {
-            current += '（auto会被识别为1fr哦！）';
-        } else if(index === 10) {
-            current += '（没有定义宽度则平均分配哦！）';
-        } else if(index === 23) {
-            current += '（header里width注意设置足够或者设置不足的情况下已设置的总宽度小于100%哦, 要给不确定的列留出宽度，否则会看不见哦，除非你故意要让它不被看见哦！）';
-        } else if(index === 25) {
-            current += '（试试鼠标拖动表格行，可任意拖拽哦！）';
-        }
-        $('#tip-current').text(current);
-    } else {
-        console.log(current);
-    }
-    if($('#tip-next').length) {
-        $('#tip-next').text(next);
-    } else {
-        console.log(next);
-    }
-}
+    $('#tip-current').html(tips[index].title + (tips[index].des ? '<span style="font-size:12px;">（'+tips[index].des+'）</span>':''));
+    $('#tip-next').html('<span style="font-size:12px;">'+next.title+'</span>');
+    index++;    
+});
+$('#button').trigger('click');
 function copyData(data) {
   var t = type(data), o, i, ni;
   

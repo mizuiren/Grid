@@ -1000,7 +1000,8 @@ Grid.prototype = {
             }
         }
         $cell.addClass('editing');
-        var align = $cell.css('justify-content') || 'center';
+        var justify = $cell.css('justify-content');
+        var align = justify === 'flex-end' ? 'right' : justify || 'center';
         if(editType === 'input') {
             $cell.html('<input value="' + text + '" type="text" style="text-align:' + align + '">');
             if(!multiEdit) {
