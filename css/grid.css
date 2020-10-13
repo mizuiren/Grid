@@ -4,9 +4,9 @@
     overflow: hidden;
 }
 .q-grid *:not(input) {
-    -moz-user-select:none;
+    /*-moz-user-select:none;
     -webkit-user-select:none;
-    user-select:none;
+    user-select:none;*/
 }
 
 .q-grid .cell {
