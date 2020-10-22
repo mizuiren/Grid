@@ -432,3 +432,7 @@ myGrid.checkById('firstRow');则会选中第二行
 2.[[5,5,5,5,5,5], [{id: 'secondRow',type: 'checkbox'},2,3,4,5,6,7,8,9]]
 
 myGrid.checkById('secondRow', true);则会选中第二行
+
+### 23.getRowDataById(id);
+通过id获取表格行数据
+id: id值，指的是渲染数据所绑定的id
