@@ -1025,6 +1025,11 @@ Grid.prototype = {
         var data = JSON.parse(JSON.stringify(this.data.rows));
         return data;
     },
+    getRowDataById: function(id) {
+        return this.data.rows.filter(function(row) {
+            return typeof row[0] === 'object' && row[0].id === id;
+        })[0];
+    },
     getSelectedData: function() {
         let data = [], hadGetData = {}, rowIndex, rowData, _this = this;
         $('.q-grid.body .cell.selected', this.container).each(function() {
