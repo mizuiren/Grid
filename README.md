@@ -2,6 +2,8 @@ author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
 
 ![表格主要功能演示](http://img.mizuiren.com/grid_test_case.gif)
 
+演示链接：http://htmlpreview.github.io/?https://github.com/mizuiren/Grid/blob/master/demo/demo.html
+
 Responsive table grid to meet various usage scenarios, with: width and height settings, drag and drop sorting, adjustment of column width, editing of cells (check, click, single double-click editing), fixed table header, etc...<br>
 满足各种使用场景的响应式表格组件(Responsive table grid)，具备：宽高设置、拖拽排序、调节列宽、编辑单元格（勾选、点选、单双击编辑）、表头固定等...
 
