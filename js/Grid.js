@@ -6,6 +6,7 @@
  */
 function Grid(data, $container) {
     this.data = data;
+    this.data.borderColor = this.data.borderColor || '#ddd';
     this.container = $container;
     this.columLength = this.getColumnLength();
     this.bindEvent(data);
@@ -25,7 +26,7 @@ Grid.prototype = {
             if(!_this.validRowData(rowData)) {
                 return;
             }
-            rowsHtml += _this.renderRow(rowData, index);
+            rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1);
         });
         var $gridBody = $('.q-grid.body', this.container);
         $gridBody.html(rowsHtml);
@@ -45,9 +46,12 @@ Grid.prototype = {
         if(index < 0) {
             index = 0;
         }
-        this.data.rows.splice(index, 0, rowData);
-        var newRowHtml = this.renderRow(rowData, index);
         var $gridBody = $('.q-grid.body', this.container);
+        var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (this.data.rows.length - 1) +'"]', $gridBody);
+        $lastRows.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
+        this.data.rows.splice(index, 0, rowData);   
+        var newRowHtml = this.renderRow(rowData, index, false, true);
+        
         var _this = this;
         if(index < this.data.rows.length) {
             $('.cell['+this.rowIndexAttrName+']', $gridBody).each(function() {
@@ -72,8 +76,14 @@ Grid.prototype = {
     },
     deleteRow: function(rowIndex) {
         this.clearSortData();
-        this.data.rows.splice(rowIndex, 1);
         var $gridBody = $('.q-grid.body', this.container);
+        if(rowIndex === this.data.rows.length - 1) {
+            var $nextLastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (this.data.rows.length - 2) +'"]', $gridBody);
+            debugger;
+            $nextLastRows.css('border-bottom','none');
+        }
+        this.data.rows.splice(rowIndex, 1);
+        
         var _this = this;
         $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $gridBody).remove();
         if(rowIndex < this.data.rows.length) {
@@ -205,7 +215,7 @@ Grid.prototype = {
             if(this.data.showHeader) {
                 bodyGridStyles.push('margin-top:-1px');
             }
-            var scrolBoxStyles = [];
+            var scrolBoxStyles = ['border-bottom: 1px ' + (this.data.border || 'solid') + this.data.borderColor];
             if(!this.data.width || this.data.width !== '100%') {
                 scrolBoxStyles.push('width: ' + (parseInt(this.data.width)) + 'px');
             }
@@ -225,7 +235,7 @@ Grid.prototype = {
             var _this = this;
             rowsHtml += this.getFilterRow();
             this.data.rows.forEach(function(rowData, index) {
-                rowsHtml += _this.renderRow(rowData, index);
+                rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1);
             });
             contentBox.append(rowsHtml);
 
@@ -282,28 +292,28 @@ Grid.prototype = {
             $('.check-all', this.container).prop('disabled', true);
         }
     },
-    renderRow: function(rowData, rowIndex, isHeader) {
+    renderRow: function(rowData, rowIndex, isHeader, isLastRow) {
         var cellsHtml = '';
         if(!this.validRowData(rowData)) {
             return cellsHtml;
         }
         var _this = this;
         var id = '', hadRowId = _this.isCheckboxCell(rowData[0]);
-        var cloneRowData = JSON.parse(JSON.stringify(rowData));
+        var cloneColumnData = JSON.parse(JSON.stringify(rowData));
         if(!isHeader) {
             if(hadRowId) {
-                cloneRowData[0].value = '<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>';
+                cloneColumnData[0].value = '<input type="checkbox" ' + (cloneColumnData[0].disabled ? 'disabled' : '') + '/><span></span>';
             } else {
-                cloneRowData.unshift(rowIndex === 'filterRow' ? '' : {value:'<input type="checkbox" ' + (cloneRowData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
+                cloneColumnData.unshift(rowIndex === 'filterRow' ? '' : {value:'<input type="checkbox" ' + (cloneColumnData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
             } 
         }
-        if(_this.getCellLength(cloneRowData) < _this.columLength) {
-            cloneRowData = cloneRowData.concat(new Array(_this.columLength - cloneRowData.length).fill(''));
+        if(_this.getCellLength(cloneColumnData) < _this.columLength) {
+            cloneColumnData = cloneColumnData.concat(new Array(_this.columLength - cloneColumnData.length).fill(''));
         }
-        cloneRowData.forEach(function(item, index) {
+        cloneColumnData.forEach(function(item, index) {
             var cellStyles = [];
             if(hadRowId && index === 0) {
-                id = 'data-id="' + cloneRowData[0].id + '"';
+                id = 'data-id="' + cloneColumnData[0].id + '"';
             } else if(index !== 0) {
                 id = _this.data.header[index - 1] && _this.data.header[index - 1].id ? 'data-id="' + _this.data.header[index - 1].id + '"' : 'data-id="' + index + '"';
             } else {
@@ -312,10 +322,16 @@ Grid.prototype = {
             if(!isHeader) {
 				cellStyles.push('margin-bottom: -1px');
             }
-            
-            if(index !== 0) {
-                cellStyles.push('margin-left: -1px');
+            if(_this.checkbox) {
+                if(index !== 0) {
+                    cellStyles.push('margin-left: -1px');
+                } 
+            } else {
+                if(index !== 1 && index !== 0) {
+                    cellStyles.push('margin-left: -1px');
+                }
             }
+            
             var classes = ['cell'], needSort;
             if(typeof item === 'object') {
                 if(item.size) {
@@ -351,7 +367,10 @@ Grid.prototype = {
                 _this.data.border = 'dotted';
             }
             var value = typeof item !== 'object' ? item : item.value;
-            cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' #ccc');
+            cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + _this.data.borderColor);
+            if(isLastRow) {
+                cellStyles.push('border-bottom: none');
+            }
             cellsHtml += '<div ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.htmlEncode(value)) + '">' + resizeLine + value + (needSort ? ' <span class="sort-icon"> </span>' : '') +'</div>';  
         });
         return cellsHtml;
