@@ -9,8 +9,8 @@ function Grid(data, $container) {
     this.data.borderColor = this.data.borderColor || '#ddd';
     this.container = $container;
     this.columLength = this.getColumnLength();
-    this.bindEvent(data);
-    this.renderGrid(data, $container);  
+    this.bindEvent();
+    this.renderGrid();
 }
 Grid.prototype = {
     minHeight: '30px',
@@ -29,9 +29,14 @@ Grid.prototype = {
             rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1);
         });
         var $gridBody = $('.q-grid.body', this.container);
-        $gridBody.html(rowsHtml);
-        if(this.data.rowHeight) {
-            $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+        if(!$gridBody.length) {
+            this.columLength = this.getColumnLength();
+            this.renderGrid();
+        } else {
+            $gridBody.html(rowsHtml);
+            if(this.data.rowHeight) {
+                $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+            }
         }
         this.initUi();
     },
