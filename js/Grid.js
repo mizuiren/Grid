@@ -158,10 +158,15 @@ Grid.prototype = {
     		}
     	}
     	$cell.text(newValue);
-        $cell.attr('title', newValue);
+        if(!this.isContainTag(newValue)) {
+            $cell.attr('title', newValue);
+        }
         if($cell.hasClass('i18n')) {
             $cell.attr('i18n', newValue);
         }
+    },
+    isContainTag: function(string) {
+        return string.match(/<[a-zA-Z]+\s?.*?>/);
     },
     getColumnWidth: function() {
         //每列的宽度
@@ -376,7 +381,7 @@ Grid.prototype = {
             if(isLastRow) {
                 cellStyles.push('border-bottom: none');
             }
-            cellsHtml += '<div ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.htmlEncode(value)) + '">' + resizeLine + value + (needSort ? ' <span class="sort-icon"> </span>' : '') +'</div>';  
+            cellsHtml += '<div ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">' + resizeLine + value + (needSort ? ' <span class="sort-icon"> </span>' : '') +'</div>';  
         });
         return cellsHtml;
     },
@@ -973,7 +978,9 @@ Grid.prototype = {
             }
         } 
         $cell.html(value).removeClass('editing');
-        $cell.attr('title', value);
+        if(!this.isContainTag(value)) {
+            $cell.attr('title', value);
+        }
         if($cell.hasClass('i18n')) {
             $cell.attr('i18n', value);
         }
