@@ -9,6 +9,9 @@ function Grid(data, $container) {
     this.data.borderColor = this.data.borderColor || '#ddd';
     this.container = $container;
     this.columLength = this.getColumnLength();
+    if(this.data.pageCount) {
+        this.page = 1;
+    }
     this.bindEvent();
     this.renderGrid();
 }
@@ -26,19 +29,39 @@ Grid.prototype = {
             if(!_this.validRowData(rowData)) {
                 return;
             }
-            rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1);
+            if(_this.data.pageCount) {
+                if((_this.page - 1) * _this.data.pageCount - 1 >= index || index > _this.page * _this.data.pageCount - 1) {
+                    return;
+                }
+            }
+            rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1  && _this.data.pageCount && _this.data.pageCount >= _this.data.rows.length);
         });
         var $gridBody = $('.q-grid.body', this.container);
         if(!$gridBody.length) {
             this.columLength = this.getColumnLength();
             this.renderGrid();
         } else {
+            rowsHtml += this.getPageControlHtml();
             $gridBody.html(rowsHtml);
-            if(this.data.rowHeight) {
-                $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
-            }
+            this.updateRowHeight();
         }
         this.initUi();
+    },
+    updateRowHeight: function() {
+        var $gridBody = $('.q-grid.body', this.container);
+        if(this.data.rowHeight) {
+            var rowLength;
+            if(this.data.pageCount && this.data.pageCount < this.data.rows.length) {
+                if(this.data.rows.length - (this.page - 1) * this.data.pageCount <= this.data.pageCount) {
+                    rowLength = this.data.rows.length - (this.page - 1) * this.data.pageCount + 1;
+                } else {
+                    rowLength = this.data.pageCount + 1;
+                }
+            } else {
+                rowLength = this.data.rows.length;
+            }
+            $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+        }
     },
     appendRow: function(rowData, index) {
         if(!this.validRowData(rowData)) {
@@ -74,9 +97,7 @@ Grid.prototype = {
             var $after = $('['+this.rowIndexAttrName+'="'+(index - 1)+'"]:last', $gridBody);
             $after.after(newRowHtml);
         }
-        if(this.data.rowHeight) {
-            $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
-        }
+        this.updateRowHeight();
         this.initUi();
     },
     deleteRow: function(rowIndex) {
@@ -99,9 +120,7 @@ Grid.prototype = {
                 }
             });
         }
-        if(this.data.rowHeight) {
-            $gridBody.css('grid-template-rows', 'repeat('+this.data.rows.length+', '+this.numberToPx(this.data.rowHeight, '30px')+')');
-        }
+        this.updateRowHeight();
     },
     updateRow: function(rowData, rowIndex) {
         if(!this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
@@ -157,7 +176,7 @@ Grid.prototype = {
                 }
     		}
     	}
-    	$cell.text(newValue);
+    	$cell.html(newValue);
         if(!this.isContainTag(newValue)) {
             $cell.attr('title', newValue);
         }
@@ -166,7 +185,7 @@ Grid.prototype = {
         }
     },
     isContainTag: function(string) {
-        return string.match(/<[a-zA-Z]+\s?.*?>/);
+        return (string + '').match(/<[a-zA-Z]+\s?.*?>/);
     },
     getColumnWidth: function() {
         //每列的宽度
@@ -219,9 +238,6 @@ Grid.prototype = {
         this.gridStyles.push('padding-bottom: 1px');
         if(this.data.rows && this.data.rows.length) {
             var bodyGridStyles = JSON.parse(JSON.stringify(this.gridStyles));
-            if(this.data.rowHeight) {
-                bodyGridStyles.push('grid-template-rows: repeat(' + this.data.rows.length + ',' + this.numberToPx(this.data.rowHeight, '30px') + ')');
-            }
             if(this.data.showHeader) {
                 bodyGridStyles.push('margin-top:-1px');
             }
@@ -245,15 +261,38 @@ Grid.prototype = {
             var _this = this;
             rowsHtml += this.getFilterRow();
             this.data.rows.forEach(function(rowData, index) {
-                rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1);
+                if(_this.data.pageCount) {
+                    if((_this.page - 1) * _this.data.pageCount - 1 >= index || index > _this.page * _this.data.pageCount - 1) {
+                        return;
+                    }
+                }
+                rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1 && _this.data.pageCount && _this.data.pageCount >= _this.data.rows.length);
             });
+            rowsHtml += this.getPageControlHtml();
             contentBox.append(rowsHtml);
 
             scrolBox.append(contentBox);
             this.gridBox.append(scrolBox);
-
+            this.updateRowHeight();
             this.initUi();
         }
+    },
+    getPageControlHtml: function() {
+        var rowsHtml = '';
+        if(this.data.pageCount && !isNaN(this.data.pageCount)) {
+            if(this.data.pageCount < this.data.rows.length) {
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: center;margin-bottom: -1px;grid-column-start: 1;grid-column-end: '+(this.columLength + 1)+';border: 1px '+this.data.border + ' ' + this.data.borderColor +';border-bottom: none;border-top: none">';
+                if(this.page === 1) {
+                    rowsHtml += '<a href="#" class="next-page change-page">下一页</a>';
+                } else if(this.page > 1 && Math.floor(this.data.rows.length / this.data.pageCount) + 1 === this.page) {
+                    rowsHtml += '<a href="#" class="pre-page change-page">上一页</a>';
+                } else {
+                    rowsHtml += '<a href="#" class="pre-page change-page">上一页</a>&nbsp;&nbsp;&nbsp;<a href="#" class="next-page change-page">下一页</a>';
+                } 
+                rowsHtml += '</div>';
+            }
+        }
+        return rowsHtml;
     },
     getFilterRow: function() {
         if(this.data.filter) {
@@ -377,11 +416,11 @@ Grid.prototype = {
                 _this.data.border = 'dotted';
             }
             var value = typeof item !== 'object' ? item : item.value;
-            cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + _this.data.borderColor);
+            cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' ' + _this.data.borderColor);
             if(isLastRow) {
                 cellStyles.push('border-bottom: none');
             }
-            cellsHtml += '<div ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">' + resizeLine + value + (needSort ? ' <span class="sort-icon"> </span>' : '') +'</div>';  
+            cellsHtml += '<div ' + id + ' class="' + (isHeader ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">' + resizeLine + (isHeader ? '<span class="' + (item.class || '') + '">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '') : value) +'</div>';  
         });
         return cellsHtml;
     },
@@ -658,6 +697,18 @@ Grid.prototype = {
                     }      
                 }
             }
+        }).on('click.grid', '.change-page', function(evt) {
+            if($(this).hasClass('next-page')) {
+                _this.page++;
+            } else if($(this).hasClass('pre-page')) {
+                _this.page--;
+            }
+            if(_this.data.onPageChange) {
+                if(!_this.data.onPageChange(_this.page)) {
+                    return;
+                }
+            }
+            _this.updateData(_this.data.rows);
         }).on('click.grid', '.header .cell', function(evt) {
             var $cell = $(evt.target).closest('.cell');
             if($cell.hasClass('checkbox')) {               
