@@ -278,17 +278,39 @@ Grid.prototype = {
         }
     },
     getPageControlHtml: function() {
+        var _this = this;
+        function pageInit(current, total, link){
+           current = parseInt(current);
+           total = parseInt(total);
+           var count = 6;
+           var i;
+           var preLink = current > 1 ? link + (current-1) : "javascript:void(0)";
+           var nextLink = current < total ? link + (current + 1) : "javascript:void(0)";
+           var html = '<div class="pages">共 <b>' + _this.data.rows.length + '</b> 条记录 <a page="' + preLink + '" '+(current > 1 ? "" : "class=\"no-link\"") +'>上一页</a>';
+           if(total <= count){
+              for(i = 1; i <= total; i++){
+                 var pageTag = i == current ? '<span class="act">' + current + '</span>' : '<a page="' + link + i + '">' + i + '</a>'
+                 html += pageTag;
+              }
+           }else{
+              i = current - count / 2 < 2 ? 2 : current - count / 2;
+              var end = (parseInt(current + count / 2) > (total - 1)) ? (total - 1) : parseInt(current + count / 2);
+              html += (current == 1) ? '<span class="act">1</span>' : '<a page="' + link + '1">1</a> ' + (i > 2 ? "..." : "");
+              for(; i <= end; i++){
+                  var pageTag = (i == current) ? '<span class="act">' + current + '</span>' : '<a page="' + (link + i) + '">' + i + '</a>'
+                  html += pageTag;
+              }
+              html += (end < (total - 2) ? "..." : "") + ((current == total) ? '<span class="act">' + total + '</span>' : ' <a page="' + link + total + '">' + total + '</a>');
+           }
+           html += '<a page="' + nextLink + '" ' + (current < total ? "" : "class=\"no-link\"") + '>下一页</a></div>';
+           return html;
+        }
+
         var rowsHtml = '';
         if(this.data.pageCount && !isNaN(this.data.pageCount)) {
             if(this.data.pageCount < this.data.rows.length) {
-                rowsHtml += '<div style="display: flex;align-items: center;justify-content: center;margin-bottom: -1px;grid-column-start: 1;grid-column-end: '+(this.columLength + 1)+';border: 1px '+this.data.border + ' ' + this.data.borderColor +';border-bottom: none;border-top: none">';
-                if(this.page === 1) {
-                    rowsHtml += '<a href="#" class="next-page change-page">下一页</a>';
-                } else if(this.page > 1 && Math.floor(this.data.rows.length / this.data.pageCount) + 1 === this.page) {
-                    rowsHtml += '<a href="#" class="pre-page change-page">上一页</a>';
-                } else {
-                    rowsHtml += '<a href="#" class="pre-page change-page">上一页</a>&nbsp;&nbsp;&nbsp;<a href="#" class="next-page change-page">下一页</a>';
-                } 
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: center;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none;border-top: none">';
+                rowsHtml += pageInit(this.page, Math.ceil(this.data.rows.length / this.data.pageCount), '');
                 rowsHtml += '</div>';
             }
         }
@@ -697,18 +719,19 @@ Grid.prototype = {
                     }      
                 }
             }
-        }).on('click.grid', '.change-page', function(evt) {
-            if($(this).hasClass('next-page')) {
-                _this.page++;
-            } else if($(this).hasClass('pre-page')) {
-                _this.page--;
+        }).on('click.grid', '.pages a', function(evt) {
+            var page = $(this).attr('page');
+            if(isNaN(page)) {
+                return false;
             }
+            _this.page = page * 1;
             if(_this.data.onPageChange) {
                 if(!_this.data.onPageChange(_this.page)) {
                     return;
                 }
             }
             _this.updateData(_this.data.rows);
+            return false;
         }).on('click.grid', '.header .cell', function(evt) {
             var $cell = $(evt.target).closest('.cell');
             if($cell.hasClass('checkbox')) {               

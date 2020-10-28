@@ -8,7 +8,30 @@
     -webkit-user-select:none;
     user-select:none;*/
 }
-
+.q-grid.body .pages {
+    font-size: 14px;
+}
+.q-grid.body .pages a {
+    text-decoration: none;
+    color: #bf6d6d;
+    padding: 0 5px;
+    border: 1px solid #ddd;
+    margin: 3px;
+    cursor: pointer;
+}
+.q-grid.body .pages b {
+    color: red;
+}
+.q-grid.body .pages a.no-link {
+    color: #ccc;
+    cursor: default;
+}
+.q-grid.body .pages span.act {
+    border: 1px solid #ddd;
+    background: #ccc;
+    padding: 0 5px;
+    color: #fff;
+}
 .q-grid .cell {
     display: flex;
     align-items: center;
@@ -29,11 +52,6 @@
 }
 .q-grid.body .cell {
     overflow: hidden;
-}
-.q-grid.body .change-page {
-    text-decoration: none;
-    font-size: 14px;
-    color: #bf6d6d;
 }
 .q-grid.body .cell.selected {
     background: #c5edfc;
