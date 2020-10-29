@@ -381,12 +381,14 @@ Grid.prototype = {
         if(_this.getCellLength(cloneColumnData) < _this.columLength) {
             cloneColumnData = cloneColumnData.concat(new Array(_this.columLength - cloneColumnData.length).fill(''));
         }
+        var cellStyles, classes, needSort, resizeLine, value, columnSeting;
         cloneColumnData.forEach(function(item, index) {
-            var cellStyles = [];
+            cellStyles = [];
+            columnSeting = _this.data.header && index !== 0 && _this.data.header[index - 1];
             if(hadRowId && index === 0) {
                 id = 'data-id="' + cloneColumnData[0].id + '"';
             } else if(index !== 0) {
-                id = _this.data.header[index - 1] && _this.data.header[index - 1].id ? 'data-id="' + _this.data.header[index - 1].id + '"' : 'data-id="' + index + '"';
+                id = columnSeting && columnSeting.id ? 'data-id="' + columnSeting.id + '"' : 'data-id="' + index + '"';
             } else {
                 id = 'data-id="0"';
             }
@@ -403,7 +405,7 @@ Grid.prototype = {
                 }
             }
             
-            var classes = ['cell'], needSort;
+            classes = ['cell'];
             if(typeof item === 'object') {
                 if(item.size) {
                     cellStyles.push('grid-column-start: ' + (index + 1) + ';grid-column-end: ' + (index + 1 + item.size));
@@ -418,17 +420,17 @@ Grid.prototype = {
                     classes.push(item.class);
                 }
             }
-            var resizeLine = '';
-            if(isHeader && _this.data.header[index - 1] && index !== 0) {
-                if(_this.data.header[index - 1].sort) {
+            resizeLine = '';
+            if(isHeader && columnSeting) {
+                if(columnSeting.sort) {
                     classes.push('sort');
                     needSort = true;
                 }
-                if(_this.data.header[index - 1].resizeable) {
+                if(columnSeting.resizeable) {
                     resizeLine = '<span class="resizebar"></span>';
                 }
             }
-            if(_this.data.header[index - 1] && parseInt(_this.data.header[index - 1].width) === 0) {
+            if(columnSeting && parseInt(columnSeting.width) === 0) {
                 cellStyles.push('height:0');
             }
             if(index === 0) {
@@ -437,12 +439,22 @@ Grid.prototype = {
             if(!_this.data.border) {
                 _this.data.border = 'dotted';
             }
-            var value = typeof item !== 'object' ? item : item.value;
+            value = typeof item !== 'object' ? item : item.value;
             cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' ' + _this.data.borderColor);
             if(isLastRow) {
                 cellStyles.push('border-bottom: none');
             }
-            cellsHtml += '<div ' + id + ' class="' + (isHeader ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">' + resizeLine + (isHeader ? '<span class="' + (item.class || '') + '">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '') : value) +'</div>';  
+            //ellipsis
+            cellsHtml += '<div ' + id + ' class="' + (isHeader || (columnSeting && columnSeting.ellipsis) ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">';
+            if(isHeader) {
+                cellsHtml += resizeLine;
+            }
+            if(isHeader || (columnSeting && columnSeting.ellipsis)) {
+                cellsHtml += '<span class="' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
+            } else {
+                cellsHtml += value;
+            }
+            cellsHtml += '</div>'
         });
         return cellsHtml;
     },
@@ -1031,11 +1043,13 @@ Grid.prototype = {
     },
     endEditOne: function($cell) {
         var _this = this;
-        var $input = $cell.find('input');
-        var $select = $cell.find('select');
+        var $textContain = $cell.find('.txt').length ? $cell.find('.txt') : $cell;
+        var $input = $textContain.find('input').not('.q-select-input');
+        var $select = $textContain.find('select');
         if(!$input.length && !$select.length) {
             return;
         }
+
         _this.clearSortData();
         var value = _this.htmlEncode($input.length ? $input.val() : $select.length ? $select.val() : '');
         var rowNum = $cell.attr(_this.rowIndexAttrName);
@@ -1051,12 +1065,13 @@ Grid.prototype = {
                 _this.data.rows[rowNum][cellNum].value = value;
             }
         } 
-        $cell.html(value).removeClass('editing');
+        $textContain.html(value).removeClass('contents');
+        $cell.removeClass('editing');
         if(!this.isContainTag(value)) {
             $cell.attr('title', value);
         }
-        if($cell.hasClass('i18n')) {
-            $cell.attr('i18n', value);
+        if($textContain.hasClass('i18n')) {
+            $textContain.attr('i18n', value);
         }
         if(_this.data.onEdit) {
             _this.data.onEdit(rowNum, cellNum, oldValue, value);
@@ -1079,7 +1094,9 @@ Grid.prototype = {
         if($cell.hasClass('editing') || $cell.hasClass('checkbox')) {
             return;
         }
-        var text = $cell.text() || '', _this = this;
+        var $txt = $cell.find('.txt');
+        var $textContain = $txt.length ? $txt : $cell;
+        var text = $textContain.text() || '', _this = this;
         if(!multiEdit) {
             _this.endEdit();
         }
@@ -1105,12 +1122,13 @@ Grid.prototype = {
             }
         }
         $cell.addClass('editing');
+        $txt.addClass('contents');
         var justify = $cell.css('justify-content');
         var align = justify === 'flex-end' ? 'right' : justify || 'center';
         if(editType === 'input') {
-            $cell.html('<input value="' + text + '" type="text" style="text-align:' + align + '">');
+            $textContain.html('<input value="' + text + '" type="text" style="text-align:' + align + '">');
             if(!multiEdit) {
-                $cell.find('input').select().focus();
+                $textContain.find('input').select().focus();
             }
         } else if(editType === 'select') {
             var select = $('<select style="width:100%;text-align-last:' + align + '"></select>');
@@ -1123,7 +1141,7 @@ Grid.prototype = {
                     select.val(text);
                 }
             }
-            $cell.html('').append(select);   
+            $textContain.html('').append(select);   
         }  
     },
     getData: function() {

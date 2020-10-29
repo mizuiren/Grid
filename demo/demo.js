@@ -23,6 +23,7 @@ let gridData = {
             value:'年龄', 
             id: 'age', 
             width: '20%', 
+            ellipsis: true,
             sort: false,
             resizeable: true
         }, 

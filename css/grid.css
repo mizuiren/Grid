@@ -22,6 +22,14 @@
 .q-grid.body .pages b {
     color: red;
 }
+.q-grid .ellipsis {
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.q-grid .contents {
+    display: contents;
+}
 .q-grid.body .pages a.no-link {
     color: #ccc;
     cursor: default;
