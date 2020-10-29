@@ -384,6 +384,7 @@ Grid.prototype = {
         var cellStyles, classes, needSort, resizeLine, value, columnSeting;
         cloneColumnData.forEach(function(item, index) {
             cellStyles = [];
+            needSort = false;
             columnSeting = _this.data.header && index !== 0 && _this.data.header[index - 1];
             if(hadRowId && index === 0) {
                 id = 'data-id="' + cloneColumnData[0].id + '"';
@@ -848,7 +849,9 @@ Grid.prototype = {
                 if(useUserFn) {
                     _return = _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]);
                 } else {
-                    _return = (typeof a[cellIndex] === 'object' ? a[cellIndex].value : a[cellIndex]).localeCompare(typeof b[cellIndex] === 'object' ? b[cellIndex].value : b[cellIndex]);
+                    var value1 = (typeof a[cellIndex] === 'object' ? a[cellIndex].value : a[cellIndex]) + '';//转成字符串
+                    var value2 = (typeof b[cellIndex] === 'object' ? b[cellIndex].value : b[cellIndex]) + '';//转成字符串
+                    _return = (value1).localeCompare(value2);
                 }
                 return _return * (sortType === 1 ? -1 : 1);
             });
