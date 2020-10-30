@@ -286,7 +286,7 @@ Grid.prototype = {
            var i;
            var preLink = current > 1 ? link + (current-1) : "javascript:void(0)";
            var nextLink = current < total ? link + (current + 1) : "javascript:void(0)";
-           var html = '<div class="pages">共 <b>' + _this.data.rows.length + '</b> 条记录 <a page="' + preLink + '" '+(current > 1 ? "" : "class=\"no-link\"") +'>上一页</a>';
+           var html = '<div class="pages">共 <b>' + _this.data.rows.length + '</b> 条记录 <a page="' + preLink + '" '+(current > 1 ? "" : "class=\"no-link\"") +'>&lt;&lt;</a>';
            if(total <= count){
               for(i = 1; i <= total; i++){
                  var pageTag = i == current ? '<span class="act">' + current + '</span>' : '<a page="' + link + i + '">' + i + '</a>'
@@ -302,16 +302,16 @@ Grid.prototype = {
               }
               html += (end < (total - 2) ? "..." : "") + ((current == total) ? '<span class="act">' + total + '</span>' : ' <a page="' + link + total + '">' + total + '</a>');
            }
-           html += '<a page="' + nextLink + '" ' + (current < total ? "" : "class=\"no-link\"") + '>下一页</a></div>';
+           html += '<a page="' + nextLink + '" ' + (current < total ? "" : "class=\"no-link\"") + '>&gt;&gt;</a></div>';
            return html;
         }
 
         var rowsHtml = '';
         if(this.data.pageCount && !isNaN(this.data.pageCount)) {
             if(this.data.pageCount < this.data.rows.length) {
-                rowsHtml += '<div style="display: flex;align-items: center;justify-content: center;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none;border-top: none">';
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none;border-top: none">';
                 rowsHtml += pageInit(this.page, Math.ceil(this.data.rows.length / this.data.pageCount), '');
-                rowsHtml += '</div>';
+                rowsHtml += '&nbsp;&nbsp;&nbsp;&nbsp;</div>';
             }
         }
         return rowsHtml;
