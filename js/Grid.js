@@ -745,6 +745,10 @@ Grid.prototype = {
             }
             _this.updateData(_this.data.rows);
             return false;
+        }).on('keyup', '.editting-ele', function(evt) {
+            if(evt.keyCode === 13) {
+                _this.endEditOne($(this).closest('.cell'));
+            }
         }).on('click.grid', '.header .cell', function(evt) {
             var $cell = $(evt.target).closest('.cell');
             if($cell.hasClass('checkbox')) {               
@@ -1047,14 +1051,13 @@ Grid.prototype = {
     endEditOne: function($cell) {
         var _this = this;
         var $textContain = $cell.find('.txt').length ? $cell.find('.txt') : $cell;
-        var $input = $textContain.find('input').not('.q-select-input');
-        var $select = $textContain.find('select');
-        if(!$input.length && !$select.length) {
+        var $input = $textContain.find('.editting-ele');
+        if(!$input.length) {
             return;
         }
 
         _this.clearSortData();
-        var value = _this.htmlEncode($input.length ? $input.val() : $select.length ? $select.val() : '');
+        var value = _this.htmlEncode($input.val() || '');
         var rowNum = $cell.attr(_this.rowIndexAttrName);
         var columnNum = $cell.attr(_this.columnIndexAttrName);
         var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
@@ -1129,12 +1132,12 @@ Grid.prototype = {
         var justify = $cell.css('justify-content');
         var align = justify === 'flex-end' ? 'right' : justify || 'center';
         if(editType === 'input') {
-            $textContain.html('<input value="' + text + '" type="text" style="text-align:' + align + '">');
+            $textContain.html('<input class="editting-ele" value="' + text + '" type="text" style="text-align:' + align + '">');
             if(!multiEdit) {
                 $textContain.find('input').select().focus();
             }
         } else if(editType === 'select') {
-            var select = $('<select style="width:100%;text-align-last:' + align + '"></select>');
+            var select = $('<select class="editting-ele" style="width:100%;text-align-last:' + align + '"></select>');
             if(options && $.isArray(options)) {
                 options.forEach(function(v, index) {
                     select.append('<option class="i18n" value="' + v + '">' + v + '</option>');
