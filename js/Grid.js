@@ -1108,8 +1108,8 @@ Grid.prototype = {
         }
         var rowNum = $cell.attr(_this.rowIndexAttrName);
         var columnNum = $cell.attr(_this.columnIndexAttrName);
-        if(_this.data.onBeforEdit) {
-            var _edit = _this.data.onBeforEdit(rowNum, columnNum, text);
+        if(_this.data.onBeforeEdit) {
+            var _edit = _this.data.onBeforeEdit(rowNum, columnNum, text);
             if(_edit === false) {
                 return;
             }
