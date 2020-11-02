@@ -96,8 +96,8 @@ let gridData = {
     onUnCheck: function(rowData) {
         //console.log('onUnCheck', rowData);
     },
-    onBeforEdit: function(rowNum, columnNum, oldValue) {
-        //console.log('onBeforEdit', rowNum, columnNum, oldValue);
+    onBeforeEdit: function(rowNum, columnNum, oldValue) {
+        //console.log('onBeforeEdit', rowNum, columnNum, oldValue);
     },
     onEdit: function(rowNum, columnNum, oldValue, newValue) {
         //console.log('onEdit', rowNum, columnNum, oldValue, newValue);

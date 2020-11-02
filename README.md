@@ -279,7 +279,7 @@ rowData表格行的数据
 
 rowData表格行的数据
 
-### 11.onBeforEdit: function(rowNum, columnNum, oldValue) {}
+### 11.onBeforeEdit: function(rowNum, columnNum, oldValue) {}
 编辑前触发，可以终止编辑，只需要return false,适用与一些定制化表格行不让编辑的情景
 
 rowNum行号
