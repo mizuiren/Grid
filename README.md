@@ -335,6 +335,9 @@ evt事件对象
 ### 15.onPageChange:
 翻页触发函数，renturn false将不执行系统预设翻页，用户可自定义翻页内容展示
 
+### 16.onSort:
+执行排序后监听的事件
+
 ## 方法函数
 
 ### 1.getData()
