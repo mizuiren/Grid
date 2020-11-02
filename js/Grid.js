@@ -826,7 +826,11 @@ Grid.prototype = {
                 sortType = 0;
                 var originData = _this.container.data('originData');
                 if(originData) {
-                    return _this.updateData(originData);
+                    _this.updateData(originData);
+                    if(_this.data.onSort) {
+                        _this.data.onSort(sortType);
+                    }
+                    return；
                 }
        		} else if($(this).hasClass('sort-2')) {
        			$(this).addClass('sort-1');//顺序
