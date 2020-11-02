@@ -1062,7 +1062,7 @@ Grid.prototype = {
         var columnNum = $cell.attr(_this.columnIndexAttrName);
         var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
         var oldValue;
-        if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum]) {
+        if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum] !== undefined) {
             if(typeof _this.data.rows[rowNum][cellNum] !== 'object') {
                 oldValue = _this.data.rows[rowNum][cellNum];
                 _this.data.rows[rowNum][cellNum] = value;
