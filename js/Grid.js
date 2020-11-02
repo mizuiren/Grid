@@ -838,7 +838,7 @@ Grid.prototype = {
                 _this.container.data('originData', JSON.parse(JSON.stringify(_this.data.rows)));
             }
        		if(_this.data.sortByCloud) {
-       			return _this.data.header[cellIndex].sort();
+       			return _this.data.header[cellIndex].sort(sortType);
        		}
             var _return;
             _this.data.rows.sort(function(a, b) {
@@ -860,6 +860,9 @@ Grid.prototype = {
                 return _return * (sortType === 1 ? -1 : 1);
             });
             _this.updateData(_this.data.rows);
+            if(_this.data.onSort) {
+                _this.data.onSort(sortType);
+            }
         }).off('change').on('change', '.checkbox input[type="checkbox"]', function(evt) {
             var $cell = $(this).closest('.cell');
             if($(this).prop('checked') === true) {
