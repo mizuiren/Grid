@@ -72,6 +72,7 @@ data是表格的数据，为一个对象。container为表格的容器，为jq�
         id: 'age', 
         width: '20%', 
         sort: false,
+        ellipsis: true
     }
 ]
 ```
@@ -104,6 +105,8 @@ sort: function(a,b) {}
 参数a，b是每一行该列对应的数据，返回值需要是1或者-1或者0
 
 ##### resizeable:该列需不需要调节列宽，true/false
+
+##### ellipsis:该列的内容超出表格宽度需不需要用省略号显示
 
 ### 2.checkbox:
 显示勾选框：checkbox:true
@@ -154,33 +157,47 @@ dashed:短划线
 
 solid:实线
 
-### 11.rowGap:
+### 11.borderColor:
+单元格边框颜色，css颜色值如：
+#ddd 
+red
+rbg(200,200,200)
+
+### 12.rowGap:
 行间距，支持纯数字和任意css单位，纯数字默认为px
 
-### 12.columnGap:
+### 13.columnGap:
 列间距，支持纯数字和任意css单位，纯数字默认为px
 
-### 13.width:
+### 14.width:
 表格的宽度，支持纯数字和任意css单位，以及百分比和auto,纯数字默认为px
 
-### 14.rowHeight:
+### 15.rowHeight:
 行高，支持纯数字和任意css单位和auto，不设置默认是auto, 纯数字默认为px
 
-### 15.height:
+### 16.height:
 表格高度，此高度包含表头。支持纯数字和任意css单位
 
-### 16.dragable:
+### 17.dragable:
 是否可拖拽调整表格行顺序，数据也会进行排序
 
-### 17.rows:
+### 18.rows:
 表格的数据，数组，数组的每一项为表格的每一行数据
 
-### 18.filter:
+### 19.filter:
 开启过滤功能：filter:true
 
 关闭过滤功能：filter:false或者不设置filter
 
+### 20.pageCount:
+number类型，设置是否分页且每页的数目，主要用于针对大数据避免dom过多造成页面卡顿问题
+
+不分页：不设置pageCount
+
 表格行数据：
+
+### 21.sortByCloud:
+是否使用云端排序
 
 1.数组，数组每一项为每一个单元格数据, 可以为纯数字，对象，任意字符串（包括dom字符串）
 
@@ -314,6 +331,9 @@ rowData选中行的数据
 cellData单元格数据
 
 evt事件对象
+
+### 15.onPageChange:
+翻页触发函数，renturn false将不执行系统预设翻页，用户可自定义翻页内容展示
 
 ## 方法函数
 
