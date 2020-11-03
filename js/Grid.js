@@ -796,14 +796,43 @@ Grid.prototype = {
             var $body = $('.q-grid.body', _this.container);
             var $resizeBar = $(this);
             var columnWidths = _this.getColumnWidth().split(' ');
+            var originX = evt.pageX;
             var currentX;
             $resizeBar.addClass('isDraging');
+            var width;
+            if(_this.data.width) {
+                if((_this.data.width + '').match(/\d+%$/)) {
+                    width = (parseFloat(_this.data.width)) / 100 * _this.container.width();
+                } else {
+                    width = parseFloat(_this.data.width)
+                }
+            } else {
+                width = _this.container.width();
+            }
             $(document).on('mousemove.grid', function(e) {
                 currentX = e.pageX;
                 if(currentX > cellLeft + 10) {
-                    columnWidths[cellIndex + 1] = (currentX - cellLeft) + 'px';
-                    $header.css('grid-template-columns', columnWidths.join(' '));
-                    $body.css('grid-template-columns', columnWidths.join(' '));
+                    var pxWidth = currentX - cellLeft;
+                    var allPxWidth = 0;
+                    if(currentX - originX > 0) {
+                        columnWidths.forEach(function(setting, index) {
+                            if(typeof setting === 'number' || !isNaN(setting)) {
+                                allPxWidth += setting * 1;
+                            } else if(setting.match(/\d+%$/)) {
+                                allPxWidth += (parseFloat(setting)) / 100 * width;
+                            } else  if(setting.match(/\d+px$/)) {
+                                allPxWidth += parseFloat(setting);
+                            }
+                        });
+                    }
+                    if(allPxWidth < (cellIndex + 2 === _this.columLength ? width : width - 5)) {
+                        var percent = (pxWidth / width * 100) + '%';
+                        columnWidths[cellIndex + 1] = percent;
+                        _this.data.header[cellIndex].width = percent;
+                        $header.css('grid-template-columns', columnWidths.join(' '));
+                        $body.css('grid-template-columns', columnWidths.join(' ')); 
+                    }
+                    
                 }
             });
             
@@ -812,6 +841,39 @@ Grid.prototype = {
                 $(document).off('mouseup.grid');
                 $resizeBar.removeClass('isDraging');
             });
+        }).off('dblclick.grid').on('dblclick.grid', 'header.q-grid .cell .resizebar', function(evt) {
+            var $cell = $(this).parent();
+            var cellIndex = $cell.attr(_this.columnIndexAttrName) - 1;
+            if(_this.data.rows.length) {
+                var maxLength = 0, maxLengthValue = 'xxx', cellValue;
+                _this.data.rows.forEach(function(rowData, index) {
+                    cellValue = _this.isCheckboxCell(rowData[0]) ? rowData[cellIndex + 1] : cellValue = rowData[cellIndex];
+                    if(cellValue) {
+                        if(typeof cellValue !== 'string') {
+                            cellValue = cellValue.value;
+                        }
+                        cellValue = cellValue + '';
+                        if(!_this.isContainTag(cellValue)) {
+                            if(cellValue.length > maxLength) {
+                                maxLength = cellValue.length;
+                                maxLengthValue = cellValue;
+                            }
+                        }
+                    }
+                });
+                var spanContainer = $('<span>' + maxLengthValue + '</span>');
+                $('body').append(spanContainer);
+                var maxLengthWidth = spanContainer.width();
+                $(spanContainer).remove();
+                var $header = $('.q-grid.header', _this.container);
+                var headerWidth = $header.width();
+                var percent = (maxLengthWidth / headerWidth * 100) + '%';
+                _this.data.header[cellIndex].width = percent;
+                var columnWidths = _this.getColumnWidth().split(' ');
+                $header.css('grid-template-columns', columnWidths.join(' '));
+                $('.q-grid.body', _this.container).css('grid-template-columns', columnWidths.join(' '));
+            }
+            
         }).on('mousedown.grid', 'header.q-grid .cell.sort', function(evt) {
             _this.endEdit();
             var cellIndex = $(this).attr(_this.columnIndexAttrName) - 1;
@@ -830,7 +892,7 @@ Grid.prototype = {
                     if(_this.data.onSort) {
                         _this.data.onSort(sortType);
                     }
-                    return；
+                    return;
                 }
        		} else if($(this).hasClass('sort-2')) {
        			$(this).addClass('sort-1');//顺序
@@ -884,7 +946,7 @@ Grid.prototype = {
                     _this.unCheckOne(rowNum, true);
                 }
             }            
-        }).off('dblclick').on('dblclick', '.body .cell', function(evt) {
+        }).on('dblclick', '.body .cell', function(evt) {
             if($(this).hasClass('checkbox')) {
                 return;
             }
