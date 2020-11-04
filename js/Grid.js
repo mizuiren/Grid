@@ -880,7 +880,7 @@ Grid.prototype = {
             if($(evt.target).hasClass('resizebar')) {    
                 return;
             }
-            var useUserFn = typeof _this.data.header[cellIndex].sort === 'function';
+            var useUserFn = typeof _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort === 'function';
             $(this).siblings('.sort').removeClass('sort-1').removeClass('sort-2');
        		var sortType;
        		if($(this).hasClass('sort-1')) {
@@ -904,7 +904,7 @@ Grid.prototype = {
                 _this.container.data('originData', JSON.parse(JSON.stringify(_this.data.rows)));
             }
        		if(_this.data.sortByCloud) {
-       			return _this.data.header[cellIndex].sort(sortType);
+       			return _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort(sortType);
        		}
             var _return;
             _this.data.rows.sort(function(a, b) {
@@ -919,8 +919,10 @@ Grid.prototype = {
                 if(useUserFn) {
                     _return = _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]);
                 } else {
-                    var value1 = (typeof a[cellIndex] === 'object' ? a[cellIndex].value : a[cellIndex]) + '';//转成字符串
-                    var value2 = (typeof b[cellIndex] === 'object' ? b[cellIndex].value : b[cellIndex]) + '';//转成字符串
+                    var aCellIndex = _this.isCheckboxCell(a[0]) ? cellIndex + 1 : cellIndex;
+                    var bCellIndex = _this.isCheckboxCell(b[0]) ? cellIndex + 1 : cellIndex;
+                    var value1 = (typeof a[aCellIndex] === 'object' ? a[aCellIndex].value : a[aCellIndex]) + '';//转成字符串
+                    var value2 = (typeof b[bCellIndex] === 'object' ? b[bCellIndex].value : b[bCellIndex]) + '';//转成字符串
                     _return = (value1).localeCompare(value2);
                 }
                 return _return * (sortType === 1 ? -1 : 1);
