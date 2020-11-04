@@ -861,7 +861,7 @@ Grid.prototype = {
                         }
                     }
                 });
-                var spanContainer = $('<span>' + maxLengthValue + '</span>');
+                var spanContainer = $('<span>' + maxLengthValue  + '占位</span>');
                 $('body').append(spanContainer);
                 var maxLengthWidth = spanContainer.width();
                 $(spanContainer).remove();
