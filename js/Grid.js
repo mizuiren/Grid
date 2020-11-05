@@ -381,7 +381,7 @@ Grid.prototype = {
         if(_this.getCellLength(cloneColumnData) < _this.columLength) {
             cloneColumnData = cloneColumnData.concat(new Array(_this.columLength - cloneColumnData.length).fill(''));
         }
-        var cellStyles, classes, needSort, resizeLine, value, columnSeting;
+        var cellStyles, classes, needSort, resizeLine, value, columnSeting, attrs;
         cloneColumnData.forEach(function(item, index) {
             cellStyles = [];
             needSort = false;
@@ -407,6 +407,7 @@ Grid.prototype = {
             }
             
             classes = ['cell'];
+            attrs = '';
             if(typeof item === 'object') {
                 if(item.size) {
                     cellStyles.push('grid-column-start: ' + (index + 1) + ';grid-column-end: ' + (index + 1 + item.size));
@@ -419,6 +420,13 @@ Grid.prototype = {
                 }
                 if(item.class) {
                     classes.push(item.class);
+                }
+                if(item.attributes) {
+                    for(var name in item.attributes) {
+                        if(item.attributes.hasOwnProperty(name)) {
+                            attrs += ' ' + name + '="' + item.attributes[name] + '"';
+                        }
+                    }
                 }
             }
             resizeLine = '';
@@ -445,13 +453,14 @@ Grid.prototype = {
             if(isLastRow) {
                 cellStyles.push('border-bottom: none');
             }
-            //ellipsis
-            cellsHtml += '<div ' + id + ' class="' + (isHeader || (columnSeting && columnSeting.ellipsis) ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">';
+            
+            var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
+            cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + (needSpan ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">';
             if(isHeader) {
                 cellsHtml += resizeLine;
             }
-            if(isHeader || (columnSeting && columnSeting.ellipsis)) {
-                cellsHtml += '<span class="' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
+            if(needSpan) {
+                cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
             } else {
                 cellsHtml += value;
             }
