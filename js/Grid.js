@@ -779,7 +779,7 @@ Grid.prototype = {
             _this.data.rows.forEach(function(rowData, index) {
                 matched = true;
                 for (var i = 0; i < $filterInputs.length; i++) {
-                    cellIndex = $filterInputs.eq(i).parent().attr(_this.columnIndexAttrName) - 1;
+                    cellIndex = $filterInputs.eq(i).closest('.cell').attr(_this.columnIndexAttrName) - 1;
                     shouldMatchData = _this.isCheckboxCell(rowData[0]) ? rowData[cellIndex + 1] : rowData[cellIndex];
                     string = typeof shouldMatchData === 'string' ||  typeof shouldMatchData === 'number' ? shouldMatchData + '' : shouldMatchData.value;
                     val = $filterInputs.eq(i).val();
