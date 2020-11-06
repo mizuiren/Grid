@@ -460,7 +460,7 @@ Grid.prototype = {
                 cellsHtml += resizeLine;
             }
             if(needSpan) {
-                cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
+                cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (rowIndex === 'filterRow' ? 'contents' : '') + ' ' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
             } else {
                 cellsHtml += value;
             }
