@@ -236,27 +236,28 @@ Grid.prototype = {
             this.gridBox.append(header);
         }
         this.gridStyles.push('padding-bottom: 1px');
-        if(this.data.rows && this.data.rows.length) {
-            var bodyGridStyles = JSON.parse(JSON.stringify(this.gridStyles));
-            if(this.data.showHeader) {
-                bodyGridStyles.push('margin-top:-1px');
-            }
-            var scrolBoxStyles = ['border-bottom: 1px ' + (this.data.border || 'solid') + this.data.borderColor];
-            if(!this.data.width || this.data.width !== '100%') {
-                scrolBoxStyles.push('width: ' + (parseInt(this.data.width)) + 'px');
-            }
-            if(this.data.freezeHeader) {
-                var defaultHeaderHeight = 24; //dom不可兼得情况下渲染表格header.outerHeight()取不到高度，所以这种情况暂时给个默认高度
-                if(this.data.height && this.data.height !== 'auto') {
-                    scrolBoxStyles.push('max-height: ' + (parseInt(this.data.height) - (header ? (header.outerHeight() || defaultHeaderHeight) : 0)) +'px;overflow-y: auto;overflow-y:overlay;');
-                } else {
-                    scrolBoxStyles.push('max-height: calc(100% - ' + (header ? (header.outerHeight() || defaultHeaderHeight) : 0) +'px);overflow-y: auto;overflow-y:overlay;');
-                }
-            }
-            var scrolBox = $('<div style="' + scrolBoxStyles.join(';') + '" class="q-grid-scroll"></div>');
-            var contentBox = $('<div class="q-grid body" style="' + bodyGridStyles.join(';') + '"></div>');
-            contentBox.css('width', '100%');
 
+        var bodyGridStyles = JSON.parse(JSON.stringify(this.gridStyles));
+        if(this.data.showHeader) {
+            bodyGridStyles.push('margin-top:-1px');
+        }
+        var scrolBoxStyles = ['border-bottom: 1px ' + (this.data.border || 'solid') + this.data.borderColor];
+        if(!this.data.width || this.data.width !== '100%') {
+            scrolBoxStyles.push('width: ' + (parseInt(this.data.width)) + 'px');
+        }
+        if(this.data.freezeHeader) {
+            var defaultHeaderHeight = 24; //dom不可兼得情况下渲染表格header.outerHeight()取不到高度，所以这种情况暂时给个默认高度
+            if(this.data.height && this.data.height !== 'auto') {
+                scrolBoxStyles.push('max-height: ' + (parseInt(this.data.height) - (header ? (header.outerHeight() || defaultHeaderHeight) : 0)) +'px;overflow-y: auto;overflow-y:overlay;');
+            } else {
+                scrolBoxStyles.push('max-height: calc(100% - ' + (header ? (header.outerHeight() || defaultHeaderHeight) : 0) +'px);overflow-y: auto;overflow-y:overlay;');
+            }
+        }
+        var scrolBox = $('<div style="' + scrolBoxStyles.join(';') + '" class="q-grid-scroll"></div>');
+        var contentBox = $('<div class="q-grid body" style="' + bodyGridStyles.join(';') + '"></div>');
+        contentBox.css('width', '100%');
+
+        if(this.data.rows && this.data.rows.length) {
             var rowsHtml = '';
             var _this = this;
             rowsHtml += this.getFilterRow();
@@ -270,12 +271,12 @@ Grid.prototype = {
             });
             rowsHtml += this.getPageControlHtml();
             contentBox.append(rowsHtml);
-
-            scrolBox.append(contentBox);
-            this.gridBox.append(scrolBox);
-            this.updateRowHeight();
-            this.initUi();
         }
+
+        scrolBox.append(contentBox);
+        this.gridBox.append(scrolBox);
+        this.updateRowHeight();
+        this.initUi();
     },
     getPageControlHtml: function() {
         var _this = this;
@@ -342,25 +343,26 @@ Grid.prototype = {
                 scrolBox.scrollTop(scrollTop);//滚动条返回原位
             }           
         }
-        
-        var needDisabledHeader = true;
-        this.data.rows.forEach(function(arr, index) {
-            if(_this.isCheckboxCell(arr[0])) {
-                if(_this.data.checkbox && arr[0].checked) {
-                    _this.checkOne(index);
-                }
-                if(_this.data.selectable && arr[0].selected) {
-                    _this.selectRow(index, {}, _this.data.multiSelect);
-                }
-                if(!arr[0].disabled) {
+        if(this.data.rows && this.data.rows.length) {
+            var needDisabledHeader = true;
+            this.data.rows.forEach(function(arr, index) {
+                if(_this.isCheckboxCell(arr[0])) {
+                    if(_this.data.checkbox && arr[0].checked) {
+                        _this.checkOne(index);
+                    }
+                    if(_this.data.selectable && arr[0].selected) {
+                        _this.selectRow(index, {}, _this.data.multiSelect);
+                    }
+                    if(!arr[0].disabled) {
+                        needDisabledHeader = false;
+                    }
+                } else {
                     needDisabledHeader = false;
                 }
-            } else {
-                needDisabledHeader = false;
+            });
+            if(needDisabledHeader) {
+                $('.check-all', this.container).prop('disabled', true);
             }
-        });
-        if(needDisabledHeader) {
-            $('.check-all', this.container).prop('disabled', true);
         }
     },
     renderRow: function(rowData, rowIndex, isHeader, isLastRow) {
