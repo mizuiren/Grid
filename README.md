@@ -218,6 +218,7 @@ number类型，设置是否分页且每页的数目，主要用于针对大数�
         type: 'select',目前支持input和select, 默认input
         options: ['a','b','c','d','e'] 如果type是select的话，这是下拉框的选项（数组）
     }
+    attributes:(可选) 属性对象
 }
 ```
 id只有当有通过数据去选中表格行的需求情况下才需要用到，大部分情况下不需要这个。
