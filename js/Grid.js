@@ -689,8 +689,10 @@ Grid.prototype = {
                 _this.endEdit();
             }
             if(_this.data.onClick) {
-                var cellNum =  _this.isCheckboxCell( _this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
-                _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
+                if(_this.data.rows.length) {
+                    var cellNum =  _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
+                    _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
+                }
             }
             
             if(_this.data.editable && !$(this).hasClass('editing') && _this.data.editWhenClick) {
