@@ -497,16 +497,19 @@ Grid.prototype = {
         evt = evt || {};
         var _this = this, $parent = $('.body', _this.container);
         if(_this.data.onBeforeSelect) {
-            let needSelect = _this.data.onBeforeSelect(_this.data.rows[parseInt(rowNum)], evt);
-            if(needSelect === false) {
-                return;
+            if(_this.data.rows && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
+                let needSelect = _this.data.onBeforeSelect(_this.data.rows[parseInt(rowNum)], evt);
+                if(needSelect === false) {
+                    return;
+                } 
             }
+            
         }
         if(!multiSelect) {
             _this.unSelectAll();
         }
         $('.cell[data-row-index="' + rowNum + '"]', $parent).addClass('selected');
-        if(_this.data.onSelect) {
+        if(_this.data.onSelect && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
             _this.data.onSelect(_this.data.rows[parseInt(rowNum)]);
         }
         if(_this.data.onSelectAll) {
@@ -538,7 +541,7 @@ Grid.prototype = {
             return;
         }
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
-        if(this.data.onUnSelect) {
+        if(this.data.onUnSelect && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {
             this.data.onUnSelect(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.onUnSelectAll) {
@@ -620,7 +623,7 @@ Grid.prototype = {
             $('.check-all', this.container).prop('checked', true);
         }
         
-        if(this.data.onCheck) {   
+        if(this.data.onCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
             this.data.onCheck(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.onCheckAll) {
@@ -650,7 +653,7 @@ Grid.prototype = {
             $('.check-all', this.container).prop('checked', false);
         }
 
-        if(this.data.onUnCheck) {   
+        if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
             this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
         }
         if(this.data.onUnCheckAll) {
@@ -689,7 +692,7 @@ Grid.prototype = {
                 _this.endEdit();
             }
             if(_this.data.onClick) {
-                if(_this.data.rows.length) {
+                if(_this.data.rows.length && _this.data.rows[rowNum]) {
                     var cellNum =  _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
                     _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
                 }
@@ -978,7 +981,9 @@ Grid.prototype = {
                 if(!isNaN(rowNum)) {
                     var columnNum = $(this).attr(_this.columnIndexAttrName);
                     var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
-                    _this.data.onDblclick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                    if(_this.data.rows && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
+                        _this.data.onDblclick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                    }
                 }
             }
         }).off('contextmenu').on('contextmenu', '.body .cell', function(evt) {
@@ -989,7 +994,9 @@ Grid.prototype = {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 var columnNum = $(this).attr(_this.columnIndexAttrName);
                 var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
-                _this.data.onContextmenu(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                if(_this.data.rows && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
+                    _this.data.onContextmenu(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                }
             }
             return false;
         }).on('mousedown.grid', '.body .cell', function(evt) {   
