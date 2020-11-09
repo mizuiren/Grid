@@ -48,7 +48,7 @@ Grid.prototype = {
     },
     updateRowHeight: function() {
         var $gridBody = $('.q-grid.body', this.container);
-        if(this.data.rows.length) {
+        if(this.data.rows && this.data.rows.length) {
             if(this.data.rowHeight) {
                 var rowLength;
                 if(this.data.pageCount && this.data.pageCount < this.data.rows.length) {
