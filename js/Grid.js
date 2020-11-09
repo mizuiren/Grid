@@ -33,7 +33,7 @@ Grid.prototype = {
                     return;
                 }
             }
-            rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1  && _this.data.pageCount && _this.data.pageCount >= _this.data.rows.length);
+            rowsHtml += _this.renderRow(rowData, index, false);
         });
         var $gridBody = $('.q-grid.body', this.container);
         if(!$gridBody.length) {
@@ -48,18 +48,37 @@ Grid.prototype = {
     },
     updateRowHeight: function() {
         var $gridBody = $('.q-grid.body', this.container);
-        if(this.data.rowHeight) {
-            var rowLength;
-            if(this.data.pageCount && this.data.pageCount < this.data.rows.length) {
-                if(this.data.rows.length - (this.page - 1) * this.data.pageCount <= this.data.pageCount) {
-                    rowLength = this.data.rows.length - (this.page - 1) * this.data.pageCount + 1;
+        if(this.data.rows.length) {
+            if(this.data.rowHeight) {
+                var rowLength;
+                if(this.data.pageCount && this.data.pageCount < this.data.rows.length) {
+                    if(this.data.rows.length - (this.page - 1) * this.data.pageCount <= this.data.pageCount) {
+                        rowLength = this.data.rows.length - (this.page - 1) * this.data.pageCount;
+                    } else {
+                        rowLength = this.data.pageCount;
+                    }
+                    if(this.data.showPage || this.data.showPage === undefined) {
+                        rowLength += 1;
+                    }
                 } else {
-                    rowLength = this.data.pageCount + 1;
+                    rowLength = this.data.rows.length;
                 }
-            } else {
-                rowLength = this.data.rows.length;
+                $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this.numberToPx(this.data.rowHeight, '30px')+')');
             }
-            $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+        } else {
+            $gridBody.css('grid-template-rows', 'repeat(0, 0)');
+        }
+    },
+    solveLastBorder: function() {
+        var $gridBody = $('.q-grid.body', this.container);
+        var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
+        var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (lastIndex - 1) +'"]', $gridBody);
+        var $scrolBox = $('.q-grid-scroll', this.container);
+        if($lastRows.length) {
+            $scrolBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
+            $lastRows.css('border-bottom', 'none');
+        } else {
+            $scrolBox.css('border-bottom', 'none');
         }
     },
     appendRow: function(rowData, index) {
@@ -74,10 +93,9 @@ Grid.prototype = {
             index = 0;
         }
         var $gridBody = $('.q-grid.body', this.container);
-        var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (this.data.rows.length - 1) +'"]', $gridBody);
-        $lastRows.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
+        
         this.data.rows.splice(index, 0, rowData);   
-        var newRowHtml = this.renderRow(rowData, index, false, true);
+        var newRowHtml = this.renderRow(rowData, index, false);
         
         var _this = this;
         if(index < this.data.rows.length) {
@@ -102,11 +120,6 @@ Grid.prototype = {
     deleteRow: function(rowIndex) {
         this.clearSortData();
         var $gridBody = $('.q-grid.body', this.container);
-        if(rowIndex === this.data.rows.length - 1) {
-            var $nextLastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (this.data.rows.length - 2) +'"]', $gridBody);
-            debugger;
-            $nextLastRows.css('border-bottom','none');
-        }
         this.data.rows.splice(rowIndex, 1);
         
         var _this = this;
@@ -120,6 +133,7 @@ Grid.prototype = {
             });
         }
         this.updateRowHeight();
+        this.initUi();
     },
     updateRow: function(rowData, rowIndex) {
         if(!this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
@@ -132,6 +146,7 @@ Grid.prototype = {
         if(isSelected) {
             $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $body).addClass('selected');
         }
+        this.solveLastBorder();
     },
     validRowData: function(rowData) {
         if(!$.isArray(rowData)) {
@@ -240,7 +255,7 @@ Grid.prototype = {
         if(this.data.showHeader) {
             bodyGridStyles.push('margin-top:-1px');
         }
-        var scrolBoxStyles = ['border-bottom: 1px ' + (this.data.border || 'solid') + this.data.borderColor];
+        var scrolBoxStyles = [];
         if(!this.data.width || this.data.width !== '100%') {
             scrolBoxStyles.push('width: ' + (parseInt(this.data.width)) + 'px');
         }
@@ -266,7 +281,7 @@ Grid.prototype = {
                         return;
                     }
                 }
-                rowsHtml += _this.renderRow(rowData, index, false, index === _this.data.rows.length - 1 && _this.data.pageCount && _this.data.pageCount >= _this.data.rows.length);
+                rowsHtml += _this.renderRow(rowData, index, false);
             });
             rowsHtml += this.getPageControlHtml();
             contentBox.append(rowsHtml);
@@ -278,6 +293,9 @@ Grid.prototype = {
         this.initUi();
     },
     getPageControlHtml: function() {
+        if(this.data.showPage === false) {
+            return '';
+        }
         var _this = this;
         function pageInit(current, total, link){
            current = parseInt(current);
@@ -309,7 +327,7 @@ Grid.prototype = {
         var rowsHtml = '';
         if(this.data.pageCount && !isNaN(this.data.pageCount)) {
             if(this.data.pageCount < this.data.rows.length) {
-                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none;border-top: none">';
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-top: none">';
                 rowsHtml += pageInit(this.page, Math.ceil(this.data.rows.length / this.data.pageCount), '');
                 rowsHtml += '&nbsp;&nbsp;&nbsp;&nbsp;</div>';
             }
@@ -363,8 +381,9 @@ Grid.prototype = {
                 $('.check-all', this.container).prop('disabled', true);
             }
         }
+        this.solveLastBorder();
     },
-    renderRow: function(rowData, rowIndex, isHeader, isLastRow) {
+    renderRow: function(rowData, rowIndex, isHeader) {
         var cellsHtml = '';
         if(!this.validRowData(rowData)) {
             return cellsHtml;
@@ -451,9 +470,6 @@ Grid.prototype = {
             }
             value = typeof item !== 'object' ? item : item.value;
             cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' ' + _this.data.borderColor);
-            if(isLastRow) {
-                cellStyles.push('border-bottom: none');
-            }
             
             var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
             cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + (needSpan ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">';
