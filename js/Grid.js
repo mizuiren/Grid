@@ -71,12 +71,16 @@ Grid.prototype = {
     },
     solveLastBorder: function() {
         var $gridBody = $('.q-grid.body', this.container);
-        var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
-        var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (lastIndex - 1) +'"]', $gridBody);
         var $scrolBox = $('.q-grid-scroll', this.container);
-        if($lastRows.length) {
-            $scrolBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
-            $lastRows.css('border-bottom', 'none');
+        if(this.data.rows && this.data.rows.length) {
+            var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
+            var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (lastIndex - 1) +'"]', $gridBody);
+            if($lastRows.length) {
+                $scrolBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
+                $lastRows.css('border-bottom', 'none');
+            } else {
+                $scrolBox.css('border-bottom', 'none');
+            }
         } else {
             $scrolBox.css('border-bottom', 'none');
         }
