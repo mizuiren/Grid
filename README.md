@@ -196,7 +196,12 @@ number类型，设置是否分页且每页的数目，主要用于针对大数�
 
 表格行数据：
 
-### 21.sortByCloud:
+### 21.showPage:
+布尔值，是否显示翻页控制区域
+显示： true或者不设置showPage字段
+不显示： false
+
+### 22.sortByCloud:
 是否使用云端排序
 
 1.数组，数组每一项为每一个单元格数据, 可以为纯数字，对象，任意字符串（包括dom字符串）
@@ -333,10 +338,15 @@ cellData单元格数据
 
 evt事件对象
 
-### 15.onPageChange:
+### 15.onBeforePageChange(page):
 翻页触发函数，renturn false将不执行系统预设翻页，用户可自定义翻页内容展示
+page: 将要翻的页数
 
-### 16.onSort(sortType):
+### 16.onPageChange(page):
+翻页后触发函数
+page: 目前所处的页数
+
+### 17.onSort(sortType):
 执行排序后监听的事件
 sortType:
 0: 默认排序（初始的顺序）1
