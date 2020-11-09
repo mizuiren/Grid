@@ -19,7 +19,6 @@ Grid.prototype = {
     minHeight: '30px',
     rowIndexAttrName: 'data-row-index',
     columnIndexAttrName: 'data-cell-index',
-    updateTimer: null,
     updateData: function(rowsData) {
         this.data.rows = rowsData;
         var rowsHtml = '';
