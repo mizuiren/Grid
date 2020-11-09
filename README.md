@@ -476,3 +476,13 @@ myGrid.checkById('secondRow', true);则会选中第二行
 ### 23.getRowDataById(id);
 通过id获取表格行数据
 id: id值，指的是渲染数据所绑定的id
+
+### 24.previousPage:
+后退一页
+
+### 25.nextPage:
+前进一页
+
+### 25.jumpToPage(page):
+跳到某一页
+page:要跳到的页数

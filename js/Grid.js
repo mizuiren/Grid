@@ -85,6 +85,48 @@ Grid.prototype = {
             $scrolBox.css('border-bottom', 'none');
         }
     },
+    previousPage: function() {
+        this.page--;
+        if(this.page > 0) {
+           if(this.data.onBeforePageChange) {
+                if(!this.data.onBeforePageChange(this.page)) {
+                    return;
+                }
+            }
+            this.updateData(this.data.rows);
+            if(this.data.onPageChange) {
+                this.data.onPageChange(this.page);
+            } 
+        }
+    },
+    nextPage: function() {
+        this.page++;
+        if(this.page <= Math.ceil(this.data.rows.length / this.data.pageCount)) {
+           if(this.data.onBeforePageChange) {
+                if(!this.data.onBeforePageChange(this.page)) {
+                    return;
+                }
+            }
+            this.updateData(this.data.rows);
+            if(this.data.onPageChange) {
+                this.data.onPageChange(this.page);
+            } 
+        }
+    },
+    jumpToPage: function(page) {
+        this.page = page * 1;
+        if(this.page > 0 && this.page <= Math.ceil(this.data.rows.length / this.data.pageCount)) {
+           if(this.data.onBeforePageChange) {
+                if(!this.data.onBeforePageChange(this.page)) {
+                    return;
+                }
+            }
+            this.updateData(this.data.rows);
+            if(this.data.onPageChange) {
+                this.data.onPageChange(this.page);
+            } 
+        }
+    },
     appendRow: function(rowData, index) {
         if(!this.validRowData(rowData)) {
             return;
