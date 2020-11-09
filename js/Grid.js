@@ -753,12 +753,15 @@ Grid.prototype = {
                 return false;
             }
             _this.page = page * 1;
-            if(_this.data.onPageChange) {
-                if(!_this.data.onPageChange(_this.page)) {
+            if(_this.data.onBeforePageChange) {
+                if(!_this.data.onBeforePageChange(_this.page)) {
                     return;
                 }
             }
             _this.updateData(_this.data.rows);
+            if(_this.data.onPageChange) {
+                _this.data.onPageChange(_this.page);
+            }
             return false;
         }).on('keyup', '.editting-ele', function(evt) {
             if(evt.keyCode === 13) {
