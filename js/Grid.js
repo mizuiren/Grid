@@ -373,7 +373,7 @@ Grid.prototype = {
         var rowsHtml = '';
         if(this.data.pageCount && !isNaN(this.data.pageCount)) {
             if(this.data.pageCount < this.data.rows.length) {
-                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-top: none">';
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none">';
                 rowsHtml += pageInit(this.page, Math.ceil(this.data.rows.length / this.data.pageCount), '');
                 rowsHtml += '&nbsp;&nbsp;&nbsp;&nbsp;</div>';
             }
