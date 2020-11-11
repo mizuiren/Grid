@@ -171,7 +171,7 @@ solid:实线
 
 ### 11.borderColor:
 单元格边框颜色，css颜色值如：
-#ddd 
+\#ddd
 red
 rbg(200,200,200)
 
@@ -256,12 +256,12 @@ grid.updateData(rowsData);
 
 ## 事件监听：
 
-### 1.onSelect: function(rowData) {}
+### 1.onSelect(rowData)
 选中表格行触发
 
 rowData选中行的数据
 
-### 2.onClick: function(rowData, cellData, evt) {}
+### 2.onClick(rowData, cellData, evt)
 点击单元格触发
 
 rowData选中行的数据
@@ -270,51 +270,51 @@ cellData单元格数据
 
 evt事件对象
 
-### 3.onUnSelect: function(rowData) {}
+### 3.onUnSelect(rowData)
 取消选中表格行触发
 
 rowData选中行的数据
 
-### 4.onSelectAll: function(data) {}
+### 4.onSelectAll(data)
 全选触发
 
 data表格的数据
 
 evt事件对象
 
-### 5.onUnSelectAll: function(data) {}
+### 5.onUnSelectAll(data)
 取消全选触发
 
 data表格的数据
 
-### 6.onBeforeSelect: function(rowData, evt) {}
+### 6.onBeforeSelect(rowData, evt)
 选中表格行之前触发，可以终止选择，只需要return false,适用与一些定制化表格行不让选择的情景
 
 rowData选中行的数据
 
 evt事件对象
 
-### 7.onCheck: function(rowData) {}
+### 7.onCheck(rowData)
 勾选的时候触发
 
 rowData表格行的数据
 
-### 8.onUnCheck: function(rowData) {}
+### 8.onUnCheck(rowData)
 取消勾选的时候触发
 
 rowData表格行的数据
 
-### 9.onCheckAll: function(rowData) {}
+### 9.onCheckAll(rowData)
 勾选全部的时候触发
 
 rowData表格行的数据
 
-### 10.onUnCheckAll: function(rowData) {}
+### 10.onUnCheckAll(rowData)
 取消勾选全部的时候触发
 
 rowData表格行的数据
 
-### 11.onBeforeEdit: function(rowNum, columnNum, oldValue) {}
+### 11.onBeforeEdit(rowNum, columnNum, oldValue)
 编辑前触发，可以终止编辑，只需要return false,适用与一些定制化表格行不让编辑的情景
 
 rowNum行号
@@ -323,7 +323,7 @@ columnNum列号
 
 oldValue编辑前的旧值
 
-### 12.onEdit: function(rowNum, columnNum, oldValue, newValue) {}
+### 12.onEdit(rowNum, columnNum, oldValue, newValue)
 编辑结束触发
 
 rowNum行号
@@ -332,7 +332,7 @@ columnNum列号
 
 oldValue编辑前的旧值
 
-### 13.onContextmenu: function(rowData, cellData, evt) {}
+### 13.onContextmenu(rowData, cellData, evt)
 右键的时候触发
 
 rowData选中行的数据
@@ -341,7 +341,7 @@ cellData单元格数据
 
 evt事件对象
 
-### 14.onDblclick: function(rowData, cellData, evt) {}
+### 14.onDblclick(rowData, cellData, evt)
 双击的时候触发
 
 rowData选中行的数据
