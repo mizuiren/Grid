@@ -19,8 +19,8 @@ Some of the features it contains are:<br>
 **3.Simplified dom structure**<br>
 3.dom结构简易化
 
-**4.Fully customizable cell styles**<br>
-4.单元格样式全自定义化
+**4.Fully customizable cell styles and arbitrary attributes can be configured**<br>
+4.单元格样式全自定义化，可配置任意属性
 
 **5.Responsive width, width change does not require re-rendering. The width depends on the width of the container, which is the responsibility of the page.**<br>
 5.响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。
@@ -28,11 +28,23 @@ Some of the features it contains are:<br>
 **6.The number of columns automatically changes according to the data**<br>
 6.列数自动根据数据变化
 
-**7.Sort icon**<br>
-7.排序icon
+**7.Sort Row By Drag**<br>
+7.拖拽排序表格行
 
 **8.flex layout, more beautiful and compact**<br>
 8.flex布局，更加美观紧凑
+
+**9.Rich event monitoring interface**
+9.丰富的事件监听接口
+
+**10.Big data paging function**
+10.大数据分页功能
+
+**11.Multi-choice interaction imitating windows system**
+11.仿windows系统多选交互
+
+**12.Rich data interface for addition, deletion and modification**
+12.丰富的增删改数据接口
 
 声明：支持主流前沿浏览器，不支持IE浏览器！
 
