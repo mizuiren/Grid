@@ -46,6 +46,9 @@ Some of the features it contains are:<br>
 **12.Rich data interface for addition, deletion and modification**
 12.丰富的增删改数据接口
 
+**13.Data filtering function**
+13.数据过滤功能
+
 声明：支持主流前沿浏览器，不支持IE浏览器！
 
 如何使用？
