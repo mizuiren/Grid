@@ -423,9 +423,7 @@ Grid.prototype = {
                     needDisabledHeader = false;
                 }
             });
-            if(needDisabledHeader) {
-                $('.check-all', this.container).prop('disabled', true);
-            }
+            $('.check-all', this.container).prop('disabled', needDisabledHeader);
         }
         this.solveLastBorder();
     },
