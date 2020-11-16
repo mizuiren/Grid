@@ -44,6 +44,8 @@ Grid.prototype = {
             $gridBody.html(rowsHtml);
             this.updateRowHeight();
         }
+        var scrolBox = $('.q-grid-scroll', this.container);
+        scrolBox.scrollTop(0);
         this.initUi();
     },
     updateRowHeight: function() {
