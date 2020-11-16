@@ -261,6 +261,7 @@ Grid.prototype = {
     },
     renderGrid: function() {
         this.container.empty().css('min-height', this.numberToPx(this.data.height, this.minHeight));
+        this.container.attr('tabindex', 1);//使其能捕获keydown/keyup事件
         if(!this.data.freezeHeader) {
             this.container.css({'overflow-y': 'auto'});
             this.container.css({'overflow-y':'overlay'});
@@ -823,9 +824,17 @@ Grid.prototype = {
                 _this.data.onPageChange(_this.page);
             }
             return false;
-        }).on('keyup', '.editting-ele', function(evt) {
+        }).off('keyup.grid').on('keyup.grid', '.editting-ele', function(evt) {
             if(evt.keyCode === 13) {
                 _this.endEditOne($(this).closest('.cell'));
+            }
+        }).on('keyup.grid', function(evt) {
+            if(evt.keyCode === 16) {
+                _this.container.removeClass('noneselect');
+            }
+        }).off('keydown.grid').on('keydown.grid', function(evt) {
+            if(evt.keyCode === 16) {
+                _this.container.addClass('noneselect');
             }
         }).on('click.grid', '.header .cell', function(evt) {
             var $cell = $(evt.target).closest('.cell');

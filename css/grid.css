@@ -3,6 +3,11 @@
     grid-template-rows: minmax(10px, auto);
     overflow: hidden;
 }
+.noneselect {
+    -moz-user-select:none;
+    -webkit-user-select:none;
+    user-select:none;
+}
 .q-grid *:not(input) {
     /*-moz-user-select:none;
     -webkit-user-select:none;
