@@ -56,6 +56,7 @@
     color: #444;
     word-break: break-all;
     background-color: #fff;
+    position: relative;
 }
 .q-grid .cell.checkbox {
     padding:0;
@@ -73,9 +74,31 @@
 .q-grid.body .cell.draging {
     background: yellow !important;
 }
-header.q-grid .cell{
+header.q-grid .cell {
     background-color: #999;
-    position: relative;
+}
+.filter-cancel {
+    position: absolute;
+    right: 8px;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+.filter-cancel:hover:before,.filter-cancel:hover:after {
+    border-top: 1px solid red;
+}
+.filter-cancel:before, .filter-cancel:after {
+    content: '';
+    position: absolute;
+    border-top: 1px solid #ccc;
+    top: 5px;
+    width: 100%;
+}
+.filter-cancel:before {
+    transform: rotate(-45deg);
+}
+.filter-cancel:after {
+    transform: rotate(45deg);
 }
 /* .q-grid-scroll::-webkit-scrollbar{ 
     width:0px;
@@ -88,6 +111,9 @@ header.q-grid .cell{
     height: 100%;
     border-radius: 0;
     text-align: center;
+}
+.q-grid .cell input.filter {
+    padding-right: 20px;
 }
 .q-grid .sort-icon {
     position: absolute;

@@ -65,6 +65,9 @@ Grid.prototype = {
                 } else {
                     rowLength = this.data.rows.length;
                 }
+                if(this.data.filter) {
+                    rowLength += 1;
+                }
                 $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this.numberToPx(this.data.rowHeight, '30px')+')');
             }
         } else {
@@ -376,7 +379,7 @@ Grid.prototype = {
         var rowsHtml = '';
         if(this.data.pageCount && !isNaN(this.data.pageCount)) {
             if(this.data.pageCount < this.data.rows.length) {
-                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;margin-bottom: -1px;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none">';
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none">';
                 rowsHtml += pageInit(this.page, Math.ceil(this.data.rows.length / this.data.pageCount), '');
                 rowsHtml += '&nbsp;&nbsp;&nbsp;&nbsp;</div>';
             }
@@ -385,7 +388,8 @@ Grid.prototype = {
     },
     getFilterRow: function() {
         if(this.data.filter) {
-            let filterInputs = new Array(this.columLength - 1).fill('<input class="filter" placeholder="Filter" type="text"/>');
+            var inputHtml = '<input class="filter" placeholder="Filter" type="text"/><span class="filter-cancel" style="display:none;"></span>';
+            var filterInputs = new Array(this.columLength - 1).fill(inputHtml);
             return this.renderRow(filterInputs, 'filterRow');
         } else {
             return '';
@@ -461,9 +465,9 @@ Grid.prototype = {
                 id = 'data-id="0"';
             }
             if(!isHeader) {
-				cellStyles.push('margin-bottom: -1px');
+				cellStyles.push('margin-top: -1px');
             }
-            if(_this.checkbox) {
+            if(_this.data.checkbox) {
                 if(index !== 0) {
                     cellStyles.push('margin-left: -1px');
                 } 
@@ -560,7 +564,7 @@ Grid.prototype = {
         var _this = this, $parent = $('.body', _this.container);
         if(_this.data.onBeforeSelect) {
             if(_this.data.rows && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
-                let needSelect = _this.data.onBeforeSelect(_this.data.rows[parseInt(rowNum)], evt);
+                var needSelect = _this.data.onBeforeSelect(_this.data.rows[parseInt(rowNum)], evt);
                 if(needSelect === false) {
                     return;
                 } 
@@ -586,7 +590,7 @@ Grid.prototype = {
             $cell.each(function() {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 if(_this.data.selectable) {
-                    let selectFn = selectStatu ? _this.selectRow : _this.unSelectRow;
+                    var selectFn = selectStatu ? _this.selectRow : _this.unSelectRow;
                     selectFn.call(_this, rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
                 }
             });
@@ -661,7 +665,7 @@ Grid.prototype = {
         });
     },
     isAllChecked: function() {
-        let isAllChecked = true, allcheckInput = $('.q-grid.body .checkbox input', this.container), length = allcheckInput.length;
+        var isAllChecked = true, allcheckInput = $('.q-grid.body .checkbox input', this.container), length = allcheckInput.length;
         for(var i = 0; i < length; i++) {
             if(!allcheckInput.eq(i).prop('checked')) {
                 isAllChecked = false;
@@ -826,6 +830,18 @@ Grid.prototype = {
                 _this.data.onPageChange(_this.page);
             }
             return false;
+        }).off('focus.grid').on('focus.grid', '.cell input.filter', function() {
+            $(this).closest('.cell').find('.filter-cancel').show();
+        }).off('blur.grid').on('blur.grid', '.cell input.filter', function() {
+            var eThis = this;
+            setTimeout(function() {
+                if(!$(eThis).val()) {
+                    $(eThis).closest('.cell').find('.filter-cancel').hide();
+                }
+            }, 100);
+        }).on('click', '.filter-cancel', function() {
+            $(this).closest('.cell').find('input').val('').trigger('input');
+            $(this).hide();
         }).off('keyup.grid').on('keyup.grid', '.editting-ele', function(evt) {
             if(evt.keyCode === 13) {//按enter键
                 _this.endEditOne($(this).closest('.cell'));
@@ -1331,7 +1347,7 @@ Grid.prototype = {
         })[0];
     },
     getSelectedData: function() {
-        let data = [], hadGetData = {}, rowIndex, rowData, _this = this;
+        var data = [], hadGetData = {}, rowIndex, rowData, _this = this;
         $('.q-grid.body .cell.selected', this.container).each(function() {
             rowIndex = $(this).attr(_this.rowIndexAttrName);
             if(!hadGetData[rowIndex]) {
@@ -1343,7 +1359,7 @@ Grid.prototype = {
         return data;
     },
     getCheckedData: function() {
-        let data = [], rowIndex, rowData, _this = this;
+        var data = [], rowIndex, rowData, _this = this;
         $('.q-grid.body .cell.checkbox', this.container).each(function() {
             if($(this).find('input').prop('checked') === true) {
                 rowIndex = $(this).attr(_this.rowIndexAttrName);
@@ -1357,7 +1373,7 @@ Grid.prototype = {
         return typeof obj === 'object' && obj.type === 'checkbox'
     },
     getColumnLength: function() {
-        let count = 1;
+        var count = 1;
         if(this.data.header && this.data.header.length) {
             if(this.data.header.length > count) {
                 count = this.data.header.length;
