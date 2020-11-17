@@ -866,7 +866,7 @@ Grid.prototype = {
                     if(!val) {
                         continue;
                     }
-                    if(string.toLowercase().indexOf(val.toLowercase()) === -1) {
+                    if(string.toLowerCase().indexOf(val.toLowerCase()) === -1) {
                         matched = false;
                         break;
                     }
