@@ -89,7 +89,8 @@ header.q-grid .cell{
     text-align: center;
 }
 .q-grid .sort-icon {
-    position: relative;
+    position: absolute;
+    right: 15px;
 }
 .q-grid .sort-icon:before, .q-grid .sort-icon:after {
     display: block;

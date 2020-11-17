@@ -827,15 +827,15 @@ Grid.prototype = {
             }
             return false;
         }).off('keyup.grid').on('keyup.grid', '.editting-ele', function(evt) {
-            if(evt.keyCode === 13) {
+            if(evt.keyCode === 13) {//按enter键
                 _this.endEditOne($(this).closest('.cell'));
             }
         }).on('keyup.grid', function(evt) {
-            if(evt.keyCode === 16) {
+            if(evt.keyCode === 16) {//shift键抬起恢复到可选文字状态
                 _this.container.removeClass('noneselect');
             }
         }).off('keydown.grid').on('keydown.grid', function(evt) {
-            if(evt.keyCode === 16) {
+            if(evt.keyCode === 16) {//shift键按下变成不可选文字状态
                 _this.container.addClass('noneselect');
             }
         }).on('click.grid', '.header .cell', function(evt) {
@@ -879,6 +879,7 @@ Grid.prototype = {
                 }
             });
         }).off('mousedown.grid').on('mousedown.grid', 'header.q-grid .cell .resizebar', function(evt) {
+            clearTimeout(_this.shortTimer);
             var $cell = $(this).parent(), cellLeft = $cell.offset().left;
             var cellIndex = $cell.attr(_this.columnIndexAttrName) - 1;
             var $header = $('.q-grid.header', _this.container);
@@ -900,6 +901,9 @@ Grid.prototype = {
             }
             $(document).on('mousemove.grid', function(e) {
                 currentX = e.pageX;
+                if(Math.abs(currentX - originX) < 3) {//微距防抖，避免双击的时候抖动导致双击错主体
+                    return;
+                }
                 if(currentX > cellLeft + 10) {
                     var pxWidth = currentX - cellLeft;
                     var allPxWidth = 0;
@@ -964,62 +968,65 @@ Grid.prototype = {
             }
             
         }).on('mousedown.grid', 'header.q-grid .cell.sort', function(evt) {
+            var eThis = this;
             _this.endEdit();
-            var cellIndex = $(this).attr(_this.columnIndexAttrName) - 1;
-            if($(evt.target).hasClass('resizebar')) {    
-                return;
-            }
-            var useUserFn = typeof _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort === 'function';
-            $(this).siblings('.sort').removeClass('sort-1').removeClass('sort-2');
-       		var sortType;
-       		if($(this).hasClass('sort-1')) {
-                $(this).removeClass('sort-1');
-                sortType = 0;
-                var originData = _this.container.data('originData');
-                if(originData) {
-                    _this.updateData(originData);
-                    if(_this.data.onSort) {
-                        _this.data.onSort(sortType);
-                    }
+            _this.shortTimer = setTimeout(function() {
+                var cellIndex = $(eThis).attr(_this.columnIndexAttrName) - 1;
+                if($(evt.target).hasClass('resizebar')) {    
                     return;
                 }
-       		} else if($(this).hasClass('sort-2')) {
-       			$(this).addClass('sort-1');//顺序
-                $(this).removeClass('sort-2');
-                sortType = 2;
-       		} else {
-                $(this).addClass('sort-2');//倒序
-                sortType = 1;
-                _this.container.data('originData', JSON.parse(JSON.stringify(_this.data.rows)));
-            }
-       		if(_this.data.sortByCloud) {
-       			return _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort(sortType);
-       		}
-            var _return;
-            _this.data.rows.sort(function(a, b) {
-                var _a = JSON.parse(JSON.stringify(a));
-                var _b = JSON.parse(JSON.stringify(b));
-                if(_this.isCheckboxCell(_a[0])) {
-                    _a.splice(0, 1);
-                }
-                if(_this.isCheckboxCell(_b[0])) {
-                    _b.splice(0, 1);
-                }
-                if(useUserFn) {
-                    _return = _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]);
+                var useUserFn = typeof _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort === 'function';
+                $(eThis).siblings('.sort').removeClass('sort-1').removeClass('sort-2');
+                var sortType;
+                if($(eThis).hasClass('sort-1')) {
+                    $(eThis).removeClass('sort-1');
+                    sortType = 0;
+                    var originData = _this.container.data('originData');
+                    if(originData) {
+                        _this.updateData(originData);
+                        if(_this.data.onSort) {
+                            _this.data.onSort(sortType);
+                        }
+                        return;
+                    }
+                } else if($(eThis).hasClass('sort-2')) {
+                    $(eThis).addClass('sort-1');//顺序
+                    $(eThis).removeClass('sort-2');
+                    sortType = 2;
                 } else {
-                    var aCellIndex = _this.isCheckboxCell(a[0]) ? cellIndex + 1 : cellIndex;
-                    var bCellIndex = _this.isCheckboxCell(b[0]) ? cellIndex + 1 : cellIndex;
-                    var value1 = (typeof a[aCellIndex] === 'object' ? a[aCellIndex].value : a[aCellIndex]) + '';//转成字符串
-                    var value2 = (typeof b[bCellIndex] === 'object' ? b[bCellIndex].value : b[bCellIndex]) + '';//转成字符串
-                    _return = (value1).localeCompare(value2);
+                    $(eThis).addClass('sort-2');//倒序
+                    sortType = 1;
+                    _this.container.data('originData', JSON.parse(JSON.stringify(_this.data.rows)));
                 }
-                return _return * (sortType === 1 ? -1 : 1);
-            });
-            _this.updateData(_this.data.rows);
-            if(_this.data.onSort) {
-                _this.data.onSort(sortType);
-            }
+                if(_this.data.sortByCloud) {
+                    return _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort(sortType);
+                }
+                var _return;
+                _this.data.rows.sort(function(a, b) {
+                    var _a = JSON.parse(JSON.stringify(a));
+                    var _b = JSON.parse(JSON.stringify(b));
+                    if(_this.isCheckboxCell(_a[0])) {
+                        _a.splice(0, 1);
+                    }
+                    if(_this.isCheckboxCell(_b[0])) {
+                        _b.splice(0, 1);
+                    }
+                    if(useUserFn) {
+                        _return = _this.data.header[cellIndex].sort(_a[cellIndex], _b[cellIndex]);
+                    } else {
+                        var aCellIndex = _this.isCheckboxCell(a[0]) ? cellIndex + 1 : cellIndex;
+                        var bCellIndex = _this.isCheckboxCell(b[0]) ? cellIndex + 1 : cellIndex;
+                        var value1 = (typeof a[aCellIndex] === 'object' ? a[aCellIndex].value : a[aCellIndex]) + '';//转成字符串
+                        var value2 = (typeof b[bCellIndex] === 'object' ? b[bCellIndex].value : b[bCellIndex]) + '';//转成字符串
+                        _return = (value1).localeCompare(value2);
+                    }
+                    return _return * (sortType === 1 ? -1 : 1);
+                });
+                _this.updateData(_this.data.rows);
+                if(_this.data.onSort) {
+                    _this.data.onSort(sortType);
+                }
+            }, 200);
         }).off('change').on('change', '.checkbox input[type="checkbox"]', function(evt) {
             var $cell = $(this).closest('.cell');
             if($(this).prop('checked') === true) {
