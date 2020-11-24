@@ -199,26 +199,6 @@ rbg(200,200,200)
 ### 18.rows:
 表格的数据，数组，数组的每一项为表格的每一行数据
 
-### 19.filter:
-开启过滤功能：filter:true
-
-关闭过滤功能：filter:false或者不设置filter
-
-### 20.pageCount:
-number类型，设置是否分页且每页的数目，主要用于针对大数据避免dom过多造成页面卡顿问题
-
-不分页：不设置pageCount
-
-表格行数据：
-
-### 21.showPage:
-布尔值，是否显示翻页控制区域
-显示： true或者不设置showPage字段
-不显示： false
-
-### 22.sortByCloud:
-是否使用云端排序
-
 1.数组，数组每一项为每一个单元格数据, 可以为纯数字，对象，任意字符串（包括dom字符串）
 
 2.如果是个对象, 对象的键值对应的参数意义：
@@ -256,6 +236,26 @@ id只有当有通过数据去选中表格行的需求情况下才需要用到，
 let grid = new Grid(data, div);
 
 grid.updateData(rowsData);
+
+### 19.filter:
+开启过滤功能：filter:true
+
+关闭过滤功能：filter:false或者不设置filter
+
+### 20.pageCount:
+number类型，设置是否分页且每页的数目，主要用于针对大数据避免dom过多造成页面卡顿问题
+
+不分页：不设置pageCount
+
+表格行数据：
+
+### 21.showPage:
+布尔值，是否显示翻页控制区域
+显示： true或者不设置showPage字段
+不显示： false
+
+### 22.sortByCloud:
+是否使用云端排序
 
 ## 事件监听：
 
