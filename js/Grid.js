@@ -242,11 +242,8 @@ Grid.prototype = {
     		}
     	}
     	$cell.html(newValue);
-        if(!this.isContainTag(newValue)) {
+        if(!this.isContainTag(newValue) && this.data.hoverTitle !== false) {
             $cell.attr('title', newValue);
-        }
-        if($cell.hasClass('i18n')) {
-            $cell.attr('i18n', newValue);
         }
     },
     isContainTag: function(string) {
@@ -521,16 +518,17 @@ Grid.prototype = {
             }
             value = typeof item !== 'object' ? item : item.value;
             cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' ' + _this.data.borderColor);
-            
+            var hoverTitle = _this.data.hoverTitle === false ? '': index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value;
             var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
-            cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + (needSpan ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' +(index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value) + '">';
-            if(isHeader) {
-                cellsHtml += resizeLine;
-            }
+            cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + (needSpan ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' + hoverTitle + '">';
+            
             if(needSpan) {
                 cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (rowIndex === 'filterRow' ? 'contents' : '') + ' ' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
             } else {
                 cellsHtml += value;
+            }
+            if(isHeader) {
+                cellsHtml += resizeLine;
             }
             cellsHtml += '</div>'
         });
@@ -896,6 +894,7 @@ Grid.prototype = {
             });
         }).off('mousedown.grid').on('mousedown.grid', 'header.q-grid .cell .resizebar', function(evt) {
             clearTimeout(_this.shortTimer);
+            _this.container.addClass('noneselect');
             var $cell = $(this).parent(), cellLeft = $cell.offset().left;
             var cellIndex = $cell.attr(_this.columnIndexAttrName) - 1;
             var $header = $('.q-grid.header', _this.container);
@@ -949,6 +948,7 @@ Grid.prototype = {
                 $(document).off('mousemove.grid');
                 $(document).off('mouseup.grid');
                 $resizeBar.removeClass('isDraging');
+                _this.container.removeClass('noneselect');
             });
         }).off('dblclick.grid').on('dblclick.grid', 'header.q-grid .cell .resizebar', function(evt) {
             var $cell = $(this).parent();
@@ -984,6 +984,9 @@ Grid.prototype = {
             }
             
         }).on('mousedown.grid', 'header.q-grid .cell.sort', function(evt) {
+            if($(evt.target).hasClass('search-icon' || $(evt.target).hasClass('resizebar'))) {
+                return;
+            }
             var eThis = this;
             _this.endEdit();
             _this.shortTimer = setTimeout(function() {
@@ -1260,11 +1263,8 @@ Grid.prototype = {
         } 
         $textContain.html(value).removeClass('contents');
         $cell.removeClass('editing');
-        if(!this.isContainTag(value)) {
+        if(!this.isContainTag(value) && this.data.hoverTitle !== false) {
             $cell.attr('title', value);
-        }
-        if($textContain.hasClass('i18n')) {
-            $textContain.attr('i18n', value);
         }
         if(_this.data.onEdit) {
             _this.data.onEdit(rowNum, cellNum, oldValue, value);
