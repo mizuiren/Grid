@@ -13,6 +13,9 @@
     -webkit-user-select:none;
     user-select:none;*/
 }
+.q-grid .cell[data-row-index="filterRow"] {
+    background: #fff;
+}
 .q-grid.body .pages {
     font-size: 14px;
 }

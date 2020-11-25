@@ -23,7 +23,6 @@ Grid.prototype = {
         this.data.rows = rowsData;
         var rowsHtml = '';
         var _this = this;
-        rowsHtml += this.getFilterRow();
         this.data.rows.forEach(function(rowData, index) {
             if(!_this.validRowData(rowData)) {
                 return;
@@ -296,6 +295,7 @@ Grid.prototype = {
 
             header = $('<header class="q-grid header" style="' + this.gridStyles.join(';') + '"></header>');
             header.append(this.renderRow(newHeader, 0, 'header'));
+            header.append(this.getFilterRow());
             this.gridBox.append(header);
         }
         this.gridStyles.push('padding-bottom: 1px');
@@ -323,7 +323,6 @@ Grid.prototype = {
         if(this.data.rows && this.data.rows.length) {
             var rowsHtml = '';
             var _this = this;
-            rowsHtml += this.getFilterRow();
             this.data.rows.forEach(function(rowData, index) {
                 if(_this.data.pageCount) {
                     if((_this.page - 1) * _this.data.pageCount - 1 >= index || index > _this.page * _this.data.pageCount - 1) {
@@ -984,7 +983,7 @@ Grid.prototype = {
             }
             
         }).on('mousedown.grid', 'header.q-grid .cell.sort', function(evt) {
-            if($(evt.target).hasClass('search-icon' || $(evt.target).hasClass('resizebar'))) {
+            if($(evt.target).hasClass('search-icon' || $(evt.target).hasClass('resizebar')) || evt.button !== 0) {
                 return;
             }
             var eThis = this;
