@@ -64,9 +64,10 @@ Grid.prototype = {
                 } else {
                     rowLength = this.data.rows.length;
                 }
-                if(this.data.filter) {
+                //目前过滤已经移到表头，所以以下代码不需要了
+                /*if(this.data.filter) {
                     rowLength += 1;
-                }
+                }*/
                 $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this.numberToPx(this.data.rowHeight, '30px')+')');
             }
         } else {
@@ -310,6 +311,9 @@ Grid.prototype = {
         }
         if(this.data.freezeHeader) {
             var defaultHeaderHeight = 24; //dom不可兼得情况下渲染表格header.outerHeight()取不到高度，所以这种情况暂时给个默认高度
+            if(this.data.filter) {
+                defaultHeaderHeight = defaultHeaderHeight * 2;
+            }
             if(this.data.height && this.data.height !== 'auto') {
                 scrolBoxStyles.push('max-height: ' + (parseInt(this.data.height) - (header ? (header.outerHeight() || defaultHeaderHeight) : 0)) +'px;overflow-y: auto;overflow-y:overlay;');
             } else {
