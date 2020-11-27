@@ -1105,20 +1105,21 @@ Grid.prototype = {
             if(!_this.data.dragable) {
                 return;
             }
+            _this.container.addClass('noneselect');
             var rowNum = $(this).attr(_this.rowIndexAttrName);
             var rowCells = $('.body .cell[data-row-index="' + rowNum + '"]', _this.container);
             var offsetY = evt.pageY - $(this).offset().top;
             var beginDrag = false;
             var thisCell = $(this);
             var cacheY = {}, hadReadRow = {}, tipLine;
-            var timer = setTimeout(function() {
+            _this.shortTimer = setTimeout(function() {
                 var thisRowNum;
                 $('.body .cell', _this.container).each(function() {
                     thisRowNum = $(this).attr(_this.rowIndexAttrName);
                     if(!hadReadRow[thisRowNum]) {
                         cacheY[thisRowNum] = {
                             top: $(this).offset().top,
-                            height: $(this).height()
+                            height: $(this).outerHeight()
                         };
                         hadReadRow[thisRowNum] = true;
                     }
@@ -1126,22 +1127,23 @@ Grid.prototype = {
 
                 var lastCell = $(rowCells[rowCells.length - 1]);
                 var lastTop = lastCell.offset().top;
-                var cloneNode = lastCell.clone(true).empty();
-                cloneNode.attr({
+                var placeholder = lastCell.clone(true).empty();
+                placeholder.attr({
                     'class': 'placeholder',
                     'data-row-index': 'null'
                 }).css({
                     'grid-column-start': 1,
                     'grid-column-end': _this.columLength + 1, 
-                    'border': 'none'
+                    'border': 'none',
+                    'height': lastCell.outerHeight(),
                 });
-                lastCell.after(cloneNode);
+                lastCell.after(placeholder);
 
                 tipLine = $('<div></div>').css({
                     'width': thisCell.parent().width(),
                     'height': '1px',
                     'border-top': '1px dotted rgb(228, 108, 108)',
-                    'position': 'absolute',
+                    'position': 'fixed',
                     'top': lastTop,
                     'z-index': 6
                 }).attr('class', 'baseline');
@@ -1150,90 +1152,105 @@ Grid.prototype = {
                 rowCells.each(function() {
                     $(this).css({
                         'left': $(this).offset().left, 
-                        'width': $(this).width(), 
+                        'width': $(this).width(),
                         'height': $(this).height(), 
                         'opacity': .7,
                         'z-index': 5,
                         'top': lastTop
                     }).addClass('draging');
                 });
-                rowCells.css({'position': 'absolute'});//这个必须单独写， 否则获取宽度异常
-                beginDrag = true; 
-            }, 200);
-            
-            var lastY = evt.pageY, currentY;
-            $(document).on('mousemove.grid', function(e) {
-                if(!beginDrag) {
-                    return;
-                }
-                currentY = e.pageY;
-                for(var index in cacheY) {
-                    if(currentY - lastY > 0) {//往下拖
-                        if(currentY < cacheY[index].top + cacheY[index].height / 2) {
-                            tipLine.css('top', cacheY[index].top).attr('index', index);
-                            break;
-                        }
-                    } else {//往上拖
-                        if(currentY < cacheY[index].top + cacheY[index].height) {
-                            tipLine.css('top', cacheY[index].top).attr('index', index);
-                            break;
-                        }
+                rowCells.css({'position': 'fixed'});//这个必须单独写， 否则获取宽度异常
+                beginDrag = true;
+                var lastY = evt.pageY, currentY;
+                var rowsLength = _this.data.rows.length;
+                $(document).on('mousemove.grid', function(e) {
+                    if(!beginDrag) {
+                        return;
                     }
-                }
-                
-                rowCells.each(function() {
-                    $(this).css({
-                        'top': e.pageY - offsetY
-                    });
-                });
-
-                lastY = e.pageY;
-            });
-            
-            $(document).on('mouseup.grid', function(e) {                
-                $(document).off('mousemove.grid');
-                $(document).off('mouseup.grid');
-                clearTimeout(timer);
-                rowCells.each(function() {
-                    $(this).css({
-                        'position': 'relative', 
-                        'left': 0, 
-                        'opacity': 1, 
-                        'top': 0,
-                        'z-index': 0
-                    });
-                    $(this).removeClass('draging');
-                });
-                $('.placeholder', _this.container).remove();
-                var finalIndex = $('.baseline', _this.container).attr('index');
-                if(finalIndex && rowNum !== finalIndex) {
-                    $('.body .cell[data-row-index="' + finalIndex + '"]', _this.container).eq(0).before(rowCells);
-                    var _rowNum;
-                    $('.body .cell', _this.container).each(function() {
-                        _rowNum = $(this).attr(_this.rowIndexAttrName);
-                        if(finalIndex - rowNum > 0) {
-                            if(+_rowNum > +rowNum && +_rowNum < +finalIndex) {
-                                $(this).attr(_this.rowIndexAttrName, _rowNum - 1);
-                            }
-                        } else {
-                            if(+_rowNum >= +finalIndex && +_rowNum < +rowNum) {
-                                $(this).attr(_this.rowIndexAttrName, _rowNum * 1 + 1);
-                            }
-                        }
-                    });
-                    if(finalIndex - rowNum > 0) {
-                        rowCells.attr(_this.rowIndexAttrName, finalIndex - 1);
-                        _this.data.rows.splice(finalIndex, 0, _this.data.rows[rowNum]);
-                        _this.data.rows.splice(rowNum, 1);
+                    currentY = e.pageY;
+                    if(currentY > cacheY[rowsLength - 1].top + cacheY[rowsLength - 1].height / 2) {
+                        tipLine.css('top', cacheY[rowsLength - 1].top + cacheY[rowsLength - 1].height).attr('index', rowsLength);
                     } else {
-                        rowCells.attr(_this.rowIndexAttrName, finalIndex);
-                        _this.data.rows.splice(finalIndex, 0, _this.data.rows[rowNum]);
-                        _this.data.rows.splice(rowNum * 1 + 1, 1);
+                        for(var index in cacheY) {
+                            if(currentY - lastY > 0) {//往下拖
+                                if(currentY < cacheY[index].top + cacheY[index].height / 2) {
+                                    tipLine.css('top', cacheY[index].top).attr('index', index);
+                                    break;
+                                }
+                            } else {//往上拖
+                                if(currentY < cacheY[index].top + cacheY[index].height) {
+                                    tipLine.css('top', cacheY[index].top).attr('index', index);
+                                    break;
+                                }
+                            }
+                        }
                     }
-                }
-                $('.baseline', _this.container).remove();
-                beginDrag = false;                
-            });
+                    
+                    rowCells.each(function() {
+                        $(this).css({
+                            'top': e.pageY - offsetY
+                        });
+                    });
+
+                    lastY = e.pageY;
+                });
+                
+                $(document).on('mouseup.grid', function(e) {                
+                    $(document).off('mousemove.grid');
+                    $(document).off('mouseup.grid');
+                    clearTimeout(_this.shortTimer);
+                    rowCells.each(function() {
+                        $(this).css({
+                            'position': 'relative', 
+                            'left': 0, 
+                            'opacity': 1, 
+                            'top': 0,
+                            'z-index': 0
+                        });
+                        $(this).removeClass('draging');
+                    });
+                    placeholder.remove();
+                    var finalIndex = tipLine.attr('index');
+                    if(finalIndex && rowNum !== finalIndex) {
+                        if(finalIndex >= rowsLength) {
+                            $('.body', _this.container).append(rowCells);
+                        } else {
+                            $('.body .cell[data-row-index="' + finalIndex + '"]', _this.container).eq(0).before(rowCells);
+                        }
+                        rowCells.css('width', '');
+                        rowCells.css('height', '');
+                        var _rowNum;
+                        $('.body .cell', _this.container).each(function() {
+                            _rowNum = $(this).attr(_this.rowIndexAttrName);
+                            if(finalIndex - rowNum > 0) {
+                                if(+_rowNum > +rowNum && +_rowNum < +finalIndex) {
+                                    $(this).attr(_this.rowIndexAttrName, _rowNum - 1);
+                                }
+                            } else {
+                                if(+_rowNum >= +finalIndex && +_rowNum < +rowNum) {
+                                    $(this).attr(_this.rowIndexAttrName, _rowNum * 1 + 1);
+                                }
+                            }
+                        });
+                        if(finalIndex - rowNum > 0) {
+                            rowCells.attr(_this.rowIndexAttrName, finalIndex - 1);
+                            _this.data.rows.splice(finalIndex, 0, _this.data.rows[rowNum]);
+                            _this.data.rows.splice(rowNum, 1);
+                        } else {
+                            rowCells.attr(_this.rowIndexAttrName, finalIndex);
+                            _this.data.rows.splice(finalIndex, 0, _this.data.rows[rowNum]);
+                            _this.data.rows.splice(rowNum * 1 + 1, 1);
+                        }
+                    }
+                    tipLine.remove();
+                    _this.container.removeClass('noneselect');
+                    _this.solveLastBorder();
+                    beginDrag = false;                
+                });
+            }, 200);  
+        }).on('mouseup.grid', '.body .cell', function(evt) {
+            _this.container.removeClass('noneselect');
+            clearTimeout(_this.shortTimer);
         });
         $(document).off('click.grid').on('click.grid', function(evt) {
             if(!$(evt.target).closest('.cell').length) {
@@ -1348,6 +1365,18 @@ Grid.prototype = {
         return this.data.rows.filter(function(row) {
             return typeof row[0] === 'object' && row[0].id === id;
         })[0];
+    },
+    getSelectedrowNumbers: function() {
+        var obj = {}, arr = [], rownum;
+        var _this = this;
+        $('.q-grid.body .cell.selected', this.container).each(function() {
+            rownum = $(this).attr(_this.rowIndexAttrName);
+            if(!obj[rownum]) {
+                arr.push(+rownum);
+                obj[rownum] = true;
+            }
+        });
+        return arr;
     },
     getSelectedData: function() {
         var data = [], hadGetData = {}, rowIndex, rowData, _this = this;
