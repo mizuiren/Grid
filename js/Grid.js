@@ -12,6 +12,7 @@ function Grid(data, $container) {
     if(this.data.pageCount) {
         this.page = 1;
     }
+    $.fn.extend({grid: this});
     this.bindEvent();
     this.renderGrid();
 }
