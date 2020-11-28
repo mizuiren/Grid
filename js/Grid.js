@@ -1156,7 +1156,8 @@ Grid.prototype = {
                         'height': $(this).height(), 
                         'opacity': .7,
                         'z-index': 5,
-                        'top': lastTop
+                        'top': lastTop,
+                        'cursor': 'move'
                     }).addClass('draging');
                 });
                 rowCells.css({'position': 'fixed'});//这个必须单独写， 否则获取宽度异常
@@ -1205,7 +1206,10 @@ Grid.prototype = {
                             'left': 0, 
                             'opacity': 1, 
                             'top': 0,
-                            'z-index': 0
+                            'z-index': 0,
+                            'cursor': 'default',
+                            'width': '',
+                            'height': ''
                         });
                         $(this).removeClass('draging');
                     });
@@ -1217,8 +1221,6 @@ Grid.prototype = {
                         } else {
                             $('.body .cell[data-row-index="' + finalIndex + '"]', _this.container).eq(0).before(rowCells);
                         }
-                        rowCells.css('width', '');
-                        rowCells.css('height', '');
                         var _rowNum;
                         $('.body .cell', _this.container).each(function() {
                             _rowNum = $(this).attr(_this.rowIndexAttrName);
