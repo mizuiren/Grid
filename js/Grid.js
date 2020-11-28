@@ -1183,7 +1183,7 @@ Grid.prototype = {
                                     break;
                                 }
                             } else {//往上拖
-                                if(currentY < cacheY[index].top + cacheY[index].height) {
+                                if(currentY < cacheY[index].top + cacheY[index].height/2) {
                                     tipLine.css('top', cacheY[index].top).attr('index', index);
                                     break;
                                 }
