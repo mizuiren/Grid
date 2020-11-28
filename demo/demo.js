@@ -114,144 +114,150 @@ tips = [
     {
         title:'header字段sort: false或无sort',
         des: '关闭排序功能',
-        id: -1
     },
     {
         title: 'checkbox: true',
         des: '',
-        id: 1
     },
     {
         title: 'filter: true',
         des: '通过过滤框可以过滤数据了，支持并发过滤',
-        id: 2
     },
     {
         title: 'freezeHeader:false 或 无freezeHeader',
         des: '试试拖动滚动条看效果吧，表头它会跟着内容滚动啦！',
-        id: 3
     },
     {
         title: 'editable:false 或 无editable',
         des: '试试双击表格，编辑不了啦！',
-        id: 4
     },
     {
         title: 'multiSelect: false 或 无multiSelect',
         des: '试试按住ctrl，左键点击多行表格，不能多选啦！即使勾选也不能哦。',
-        id: 5
     },
     {
         title: 'selectable: false 或 无selectable',
         des: '试试单击表格，不能选择高亮所属表格行啦！',
-        id: 6
     },
     {
         title: 'selectWhenCheck: false 或 无selectWhenCheck',
         des: '试试勾选复选框，不能通过勾选复选框来选择表格行啦！',
-        id: 7
     },
     {
         title: 'editWhenClick: true',
         des: '试试点击表格，表格可以编辑啦！',
-        id: 8
     },
     {
         title: "width: '50px 200px 1fr 1fr 1fr'",
         des: '1fr表示剩余可分配宽度/剩余待分配宽度的列的数量，具体看flex布局属性grid-template-columns说明哦！',
-        id: 9
     },
     {
         title: "width: '100px auto auto 50px auto'",
         des: 'auto会被识别为1fr哦！',
-        id: 10
     },
     {
         title: '无width',
         des: '没有定义宽度则平均分配哦！',
-        id: 11
     },
     {
         title: 'border: none',
         des: '',
-        id: 12
     },
     {
         title: 'border: solid',
         des: '',
-        id: 13
     },{
         title: 'border: dashed',
         des: '',
-        id: 14
     },
     {
         title: 'rowGap: 5px 或 rowGap: 5',
         des: '',
-        id: 15
     },
     {
         title: 'columnGap: 2px 或 columnGap: 2',
         des: '',
-        id: 16
     },
     {
         title: 'width: 500px 或 width: 500',
         des: '',
-        id: 17
     },
     {
         title: "rowHeight: '100px'",
         des: '',
-        id: 18
     },
     {
         title: 'height: "500px" 或 height:500',
         des: '',
-        id: 19
     },
     {
         title: "height: 'auto'",
         des: '',
-        id: 20
     },
     {
         title: '单元格支持任意样式',
         des: '',
-        id: 21
     },
     {
         title: '单元格支持跨越多行',
         des: '',
-        id: 22
     },
     {
         title: '单元格支持三种对齐方式',
         des: '',
-        id: 23
     },{
         title: '计算得出列的数量',
         des: 'header里width注意设置足够或者设置不足的情况下已设置的总宽度小于100%哦, 要给不确定的列留出宽度，否则会看不见哦',
-        id: 24
     },
     {
         title: 'showHeader:false 或 无showHeader',
         des: '',
-        id: 25
     },
     {
         title: 'dragable:true',
         des: '试试鼠标拖动表格行，可任意拖拽哦！',
-        id: 26
+    },
+    {
+        title: 'pageCount:5',
+        des: '每页5条内容',
+    },
+    {
+        title: 'showPage:false',
+        des: '有pageCount的时候但是不显示分页样式',
     }
 ];
-$('#button').click(function() {
+var options = '';
+tips.forEach(function(item, index){
+    options += '<option value="' + index + '">'+(index+1) + '.' + item.title + ' </option>'
+});
+$('#jump').html(options).change(function() {
+    index = +$(this).val();
+    refreshData();
+    index++;
+});
+
+$('#buttonNext').click(function() {
+    index++;
     if(!tips[index]) {
-        return alert('没有了！请刷新页面！');
+        index = tips.length - 1;
+        return alert('没有了！');
     }
+    refreshData();    
+});
+$('#buttonPre').click(function() {
+    index--;
+    if(!tips[index]) {
+        index = 0;
+        return alert('没有了！');
+    }
+    refreshData();
+});
+function refreshData() {
     var _copyData = copyData(gridData);
-    switch(tips[index].id) {
-        case -1:
+    $('#jump').val(index);
+    location.hash = index;
+    switch(index) {
+        case 0:
             _copyData.header.forEach(function(item) {
                 delete item.sort;
             });           
@@ -263,7 +269,8 @@ $('#button').click(function() {
             _copyData.filter = true;           
             break;
         case 3:
-            delete  _copyData.freezeHeader;           
+            delete  _copyData.freezeHeader;
+            delete  _copyData.pageCount;
             break;
         case 4:
             delete _copyData.editable;           
@@ -382,6 +389,13 @@ $('#button').click(function() {
         case 26:
             _copyData.dragable = true;
             break;
+        case 27:
+            _copyData.pageCount = 5;
+            break;
+        case 28:
+            _copyData.pageCount = 5;
+            _copyData.showPage = false;
+            break;
             
     }
     grid = new Grid(_copyData, $('.container')), $textarea = $('#textarea');
@@ -397,11 +411,14 @@ $('#button').click(function() {
     if(index === tips.length - 1) {
         next = tips[0];
     }
-    $('#tip-current').html(tips[index].title + (tips[index].des ? '<span style="font-size:12px;">（'+tips[index].des+'）</span>':''));
+    $('#tip-current').html(tips[index].title);
+    $('#desc-current').html(tips[index].des ? '提示：' + tips[index].des : '');
     $('#tip-next').html('<span style="font-size:12px;">'+next.title+'</span>');
-    index++;    
-});
-$('#button').trigger('click');
+}
+if(location.hash && location.hash.match(/^#\d+/)) {
+    index = parseInt(location.hash.replace('#', ''));
+}
+refreshData();
 function copyData(data) {
   var t = type(data), o, i, ni;
   
