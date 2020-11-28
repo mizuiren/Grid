@@ -60,6 +60,7 @@
     word-break: break-all;
     background-color: #fff;
     position: relative;
+    box-sizing: border-box;
 }
 .q-grid .cell.checkbox {
     padding:0;

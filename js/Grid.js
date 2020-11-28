@@ -1133,8 +1133,7 @@ Grid.prototype = {
                     'class': 'placeholder',
                     'data-row-index': 'null'
                 }).css({
-                    'grid-column-start': 1,
-                    'grid-column-end': _this.columLength + 1, 
+                    'grid-column': '1 / ' + ( _this.columLength + 1),
                     'border': 'none',
                     'background': '#ddd',
                     'height': lastCell.outerHeight(),
@@ -1154,8 +1153,8 @@ Grid.prototype = {
                 rowCells.each(function() {
                     $(this).css({
                         'left': $(this).offset().left, 
-                        'width': $(this).width(),
-                        'height': $(this).height(), 
+                        'width': $(this).outerWidth(),
+                        'height': $(this).outerHeight(), 
                         'opacity': .7,
                         'z-index': 5,
                         'top': lastTop,
