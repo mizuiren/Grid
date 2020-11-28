@@ -76,7 +76,6 @@ Grid.prototype = {
     },
     solveBorder: function() {
         var $gridBody = $('.q-grid.body', this.container);
-        var $scrolBox = $('.q-grid-scroll', this.container);
         if(this.data.rows && this.data.rows.length) {
             var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
             var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (lastIndex - 1) +'"]', $gridBody);
