@@ -1137,6 +1137,7 @@ Grid.prototype = {
                     'grid-column-start': 1,
                     'grid-column-end': _this.columLength + 1, 
                     'border': 'none',
+                    'background': '#ddd',
                     'height': lastCell.outerHeight(),
                 });
                 lastCell.after(placeholder);
@@ -1180,8 +1181,7 @@ Grid.prototype = {
                         for(var index in cacheY) {
                             if(currentY - lastY > 0) {//往下拖
                                 if(currentY < cacheY[index].top + cacheY[index].height / 2) {
-                                    console.log(index);
-                                    tipLine.css('top', cacheY[index].top).attr('index', index);
+                                    tipLine.css('top', cacheY[index].top).attr('index', +index > rowNum ? index - 1 : index);
                                     break;
                                 }
                             } else {//往上拖
@@ -1206,52 +1206,76 @@ Grid.prototype = {
                     $(document).off('mousemove.grid');
                     $(document).off('mouseup.grid');
                     clearTimeout(_this.shortTimer);
-                    rowCells.each(function() {
-                        $(this).css({
-                            'position': 'relative', 
-                            'left': 0, 
-                            'opacity': 1, 
-                            'top': 0,
-                            'z-index': 0,
-                            'cursor': 'default',
-                            'width': '',
-                            'height': ''
-                        });
-                        $(this).removeClass('draging');
-                    });
-                    placeholder.remove();
                     var finalIndex = +tipLine.attr('index');
-                    if(finalIndex && rowNum !== finalIndex) {
-                        if(finalIndex >= currentPageMaxRowNum) {
-                            console.log(finalIndex, currentPageMaxRowNum);
-                            $('.body .cell[data-row-index="' + finalIndex + '"]:last', _this.container).after(rowCells);
-                        } else {
-                            $('.body .cell[data-row-index="' + finalIndex + '"]:first', _this.container).before(rowCells);
-                        }
-                        var _rowNum;
-                        $('.body .cell', _this.container).each(function() {
-                            _rowNum = +$(this).attr(_this.rowIndexAttrName);
-                            if(finalIndex - rowNum > 0) {
-                                if(_rowNum > rowNum && _rowNum <= finalIndex) {
-                                    $(this).attr(_this.rowIndexAttrName, _rowNum - 1);
+                    var delay = 100; 
+                    placeholder.remove();
+                   $('.body .cell', _this.container).each(function() {
+                        thisRowNum = $(this).attr(_this.rowIndexAttrName);
+                         var __this = this;
+                        if(!isNaN(thisRowNum)) {
+                            thisRowNum = +thisRowNum;
+                            if(finalIndex > rowNum) {
+                                if(thisRowNum > rowNum && thisRowNum <= finalIndex) {
+                                    $(this).animate({'margin-top': -lastCell.outerHeight()}, delay, function() {
+                                        $(__this).css('margin-top', '-1px');
+                                    });
                                 }
                             } else {
-                                if(_rowNum >= finalIndex && _rowNum < rowNum) {
-                                    $(this).attr(_this.rowIndexAttrName, _rowNum + 1);
+                                if(thisRowNum >= finalIndex && thisRowNum <= rowNum) {
+                                    $(this).animate({'margin-bottom': -lastCell.outerHeight()}, delay, function() {
+                                        $(__this).css('margin-bottom', '0px');
+                                    });
                                 }
                             }
+                        } 
+                    });
+                    setTimeout(function() {
+                        rowCells.each(function() {
+                            $(this).css({
+                                'position': 'relative', 
+                                'left': 0, 
+                                'opacity': 1, 
+                                'top': 0,
+                                'z-index': 0,
+                                'cursor': 'default',
+                                'width': '',
+                                'height': ''
+                            });
+                            $(this).removeClass('draging');
                         });
-                        if(finalIndex - rowNum > 0 || finalIndex - rowNum < 0) {
-                            var adjustRowData = _this.data.rows[rowNum];
-                            rowCells.attr(_this.rowIndexAttrName, finalIndex);
-                            _this.data.rows.splice(rowNum, 1);
-                            _this.data.rows.splice(finalIndex, 0, adjustRowData); 
+                        
+                        if(rowNum !== finalIndex) {
+                            if(finalIndex <= 0) {
+                                $('.body .cell:first', _this.container).before(rowCells);
+                            } else {
+                                $('.body .cell[data-row-index="' + (finalIndex > rowNum ? finalIndex : finalIndex - 1) + '"]:last', _this.container).after(rowCells);
+                            }
+                            
+                            var _rowNum;
+                            $('.body .cell', _this.container).each(function() {
+                                _rowNum = +$(this).attr(_this.rowIndexAttrName);
+                                if(finalIndex - rowNum > 0) {
+                                    if(_rowNum > rowNum && _rowNum <= finalIndex) {
+                                        $(this).attr(_this.rowIndexAttrName, _rowNum - 1);
+                                    }
+                                } else {
+                                    if(_rowNum >= finalIndex && _rowNum < rowNum) {
+                                        $(this).attr(_this.rowIndexAttrName, _rowNum + 1);
+                                    }
+                                }
+                            });
+                            if(finalIndex - rowNum > 0 || finalIndex - rowNum < 0) {
+                                var adjustRowData = _this.data.rows[rowNum];
+                                rowCells.attr(_this.rowIndexAttrName, finalIndex);
+                                _this.data.rows.splice(rowNum, 1);
+                                _this.data.rows.splice(finalIndex, 0, adjustRowData); 
+                            }
                         }
-                    }
-                    tipLine.remove();
-                    _this.container.removeClass('noneselect');
-                    _this.solveBorder();
-                    beginDrag = false;                
+                        tipLine.remove();
+                        _this.container.removeClass('noneselect');
+                        _this.solveBorder();
+                        beginDrag = false;
+                   }, delay);                  
                 });
             }, 200);  
         }).on('mouseup.grid', '.body .cell', function(evt) {
