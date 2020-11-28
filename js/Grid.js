@@ -74,20 +74,23 @@ Grid.prototype = {
             $gridBody.css('grid-template-rows', 'repeat(0, 0)');
         }
     },
-    solveLastBorder: function() {
+    solveBorder: function() {
         var $gridBody = $('.q-grid.body', this.container);
         var $scrolBox = $('.q-grid-scroll', this.container);
         if(this.data.rows && this.data.rows.length) {
             var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
             var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (lastIndex - 1) +'"]', $gridBody);
             if($lastRows.length) {
-                $scrolBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
-                $lastRows.css('border-bottom', 'none');
+                this.gridBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
+                if(this.container.height() < $('.q-grid.body',this.container).height() + $('.q-grid.header',this.container).height() ||
+                    (this.data.pageCount && this.data.showPage !== false)) {
+                    $lastRows.css('border-bottom', 'none');
+                }
             } else {
-                $scrolBox.css('border-bottom', 'none');
+                this.gridBox.css('border-bottom', 'none');
             }
         } else {
-            $scrolBox.css('border-bottom', 'none');
+           this.gridBox.css('border-bottom', 'none');
         }
     },
     previousPage: function() {
@@ -197,7 +200,7 @@ Grid.prototype = {
         if(isSelected) {
             $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $body).addClass('selected');
         }
-        this.solveLastBorder();
+        this.solveBorder();
     },
     validRowData: function(rowData) {
         if(!$.isArray(rowData)) {
@@ -263,13 +266,12 @@ Grid.prototype = {
     },
     renderGrid: function() {
         this.container.empty().css('min-height', this.numberToPx(this.data.height, this.minHeight));
-        this.container.attr('tabindex', 1);//使其能捕获keydown/keyup事件
         if(!this.data.freezeHeader) {
-            this.container.css({'overflow-y': 'auto'});
-            this.container.css({'overflow-y':'overlay'});
+            //this.container.css({'overflow-y': 'auto'});
+            //this.container.css({'overflow-y':'overlay'});
         }
         this.gridStyles = [];
-        var gridBoxStyles = ['width:100%;height: 100%'];
+        var gridBoxStyles = ['width:100%;height: 100%','border-top:1px '+this.data.border+' '+this.data.borderColor];
         if(!this.data.freezeHeader) {
             gridBoxStyles.push('overflow-y:overlay');
         } 
@@ -321,7 +323,7 @@ Grid.prototype = {
             }
         }
         var scrolBox = $('<div style="' + scrolBoxStyles.join(';') + '" class="q-grid-scroll"></div>');
-        var contentBox = $('<div class="q-grid body" style="' + bodyGridStyles.join(';') + '"></div>');
+        var contentBox = $('<div class="q-grid body" tabindex="1" style="' + bodyGridStyles.join(';') + '"></div>');
         contentBox.css('width', '100%');
 
         if(this.data.rows && this.data.rows.length) {
@@ -432,7 +434,7 @@ Grid.prototype = {
             });
             $('.check-all', this.container).prop('disabled', needDisabledHeader);
         }
-        this.solveLastBorder();
+        this.solveBorder();
     },
     renderRow: function(rowData, rowIndex, isHeader) {
         var cellsHtml = '';
@@ -1066,7 +1068,7 @@ Grid.prototype = {
                     _this.unCheckOne(rowNum, true);
                 }
             }            
-        }).on('dblclick', '.body .cell', function(evt) {
+        }).on('dblclick.grid', '.body .cell', function(evt) {
             if($(this).hasClass('checkbox')) {
                 return;
             }
@@ -1106,7 +1108,7 @@ Grid.prototype = {
                 return;
             }
             _this.container.addClass('noneselect');
-            var rowNum = $(this).attr(_this.rowIndexAttrName);
+            var rowNum = +$(this).attr(_this.rowIndexAttrName);
             var rowCells = $('.body .cell[data-row-index="' + rowNum + '"]', _this.container);
             var offsetY = evt.pageY - $(this).offset().top;
             var beginDrag = false;
@@ -1163,18 +1165,22 @@ Grid.prototype = {
                 rowCells.css({'position': 'fixed'});//这个必须单独写， 否则获取宽度异常
                 beginDrag = true;
                 var lastY = evt.pageY, currentY;
-                var rowsLength = _this.data.rows.length;
+                var currentPageMaxRowNum = _this.data.pageCount ? (_this.page === Math.ceil(_this.data.rows.length / _this.data.pageCount) ? _this.data.rows.length - 1 : _this.data.pageCount * _this.page - 1) : _this.data.rows.length - 1;
+                if(rowNum === currentPageMaxRowNum) {
+                    $('.body .cell[data-row-index="' + (currentPageMaxRowNum - 1) + '"]', _this.container).css('border-bottom', '1px '+ _this.data.border + ' ' + _this.data.borderColor);
+                }
                 $(document).on('mousemove.grid', function(e) {
                     if(!beginDrag) {
                         return;
                     }
                     currentY = e.pageY;
-                    if(currentY > cacheY[rowsLength - 1].top + cacheY[rowsLength - 1].height / 2) {
-                        tipLine.css('top', cacheY[rowsLength - 1].top + cacheY[rowsLength - 1].height).attr('index', rowsLength);
+                    if(currentY > cacheY[currentPageMaxRowNum].top + cacheY[currentPageMaxRowNum].height / 2) {
+                        tipLine.css('top', cacheY[currentPageMaxRowNum].top + cacheY[currentPageMaxRowNum].height).attr('index', currentPageMaxRowNum);
                     } else {
                         for(var index in cacheY) {
                             if(currentY - lastY > 0) {//往下拖
                                 if(currentY < cacheY[index].top + cacheY[index].height / 2) {
+                                    console.log(index);
                                     tipLine.css('top', cacheY[index].top).attr('index', index);
                                     break;
                                 }
@@ -1214,39 +1220,37 @@ Grid.prototype = {
                         $(this).removeClass('draging');
                     });
                     placeholder.remove();
-                    var finalIndex = tipLine.attr('index');
+                    var finalIndex = +tipLine.attr('index');
                     if(finalIndex && rowNum !== finalIndex) {
-                        if(finalIndex >= rowsLength) {
-                            $('.body', _this.container).append(rowCells);
+                        if(finalIndex >= currentPageMaxRowNum) {
+                            console.log(finalIndex, currentPageMaxRowNum);
+                            $('.body .cell[data-row-index="' + finalIndex + '"]:last', _this.container).after(rowCells);
                         } else {
-                            $('.body .cell[data-row-index="' + finalIndex + '"]', _this.container).eq(0).before(rowCells);
+                            $('.body .cell[data-row-index="' + finalIndex + '"]:first', _this.container).before(rowCells);
                         }
                         var _rowNum;
                         $('.body .cell', _this.container).each(function() {
-                            _rowNum = $(this).attr(_this.rowIndexAttrName);
+                            _rowNum = +$(this).attr(_this.rowIndexAttrName);
                             if(finalIndex - rowNum > 0) {
-                                if(+_rowNum > +rowNum && +_rowNum < +finalIndex) {
+                                if(_rowNum > rowNum && _rowNum <= finalIndex) {
                                     $(this).attr(_this.rowIndexAttrName, _rowNum - 1);
                                 }
                             } else {
-                                if(+_rowNum >= +finalIndex && +_rowNum < +rowNum) {
-                                    $(this).attr(_this.rowIndexAttrName, _rowNum * 1 + 1);
+                                if(_rowNum >= finalIndex && _rowNum < rowNum) {
+                                    $(this).attr(_this.rowIndexAttrName, _rowNum + 1);
                                 }
                             }
                         });
-                        if(finalIndex - rowNum > 0) {
-                            rowCells.attr(_this.rowIndexAttrName, finalIndex - 1);
-                            _this.data.rows.splice(finalIndex, 0, _this.data.rows[rowNum]);
-                            _this.data.rows.splice(rowNum, 1);
-                        } else {
+                        if(finalIndex - rowNum > 0 || finalIndex - rowNum < 0) {
+                            var adjustRowData = _this.data.rows[rowNum];
                             rowCells.attr(_this.rowIndexAttrName, finalIndex);
-                            _this.data.rows.splice(finalIndex, 0, _this.data.rows[rowNum]);
-                            _this.data.rows.splice(rowNum * 1 + 1, 1);
+                            _this.data.rows.splice(rowNum, 1);
+                            _this.data.rows.splice(finalIndex, 0, adjustRowData); 
                         }
                     }
                     tipLine.remove();
                     _this.container.removeClass('noneselect');
-                    _this.solveLastBorder();
+                    _this.solveBorder();
                     beginDrag = false;                
                 });
             }, 200);  
@@ -1349,7 +1353,7 @@ Grid.prototype = {
             var select = $('<select class="editting-ele" style="width:100%;text-align-last:' + align + '"></select>');
             if(options && $.isArray(options)) {
                 options.forEach(function(v, index) {
-                    select.append('<option class="i18n" value="' + v + '">' + v + '</option>');
+                    select.append('<option value="' + v + '">' + v + '</option>');
                     options[index] = v + '';
                 });
                 if(options.indexOf(text) > -1) {
