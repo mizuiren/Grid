@@ -165,9 +165,7 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### rows:
     表格的数据，数组，数组的每一项为表格的每一行数据
-
     1. 数组，数组每一项为每一个单元格数据, 可以为纯数字，对象，任意字符串（包括dom字符串）
-
     1. 如果是个对象, 对象的键值对应的参数意义：
         ```
         {
@@ -200,12 +198,10 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### filter:
     - 开启过滤功能：filter:true
-
     - 关闭过滤功能：filter:false或者不设置filter
 
 1. ### pageCount:
     - 分页：number类型，设置是否分页且每页的数目，主要用于针对大数据避免dom过多造成页面卡顿问题
-
     - 不分页：不设置pageCount
 
 1. ### showPage:
@@ -220,6 +216,7 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### onSelect(rowData)
     选中表格行触发
+
     rowData选中行的数据
 
 1. ### onClick(rowData, cellData, evt)
@@ -230,14 +227,17 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### onUnSelect(rowData)
     取消选中表格行触发
+
     rowData选中行的数据
 
 1. ### onSelectAll(data)
     全选触发
+
     data表格的数据
 
 1. ### onUnSelectAll(data)
     取消全选触发
+
     data表格的数据
 
 1. ### onBeforeSelect(rowData, evt)
@@ -247,18 +247,22 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### onCheck(rowData)
     勾选的时候触发
+
     rowData表格行的数据
 
 1. ### onUnCheck(rowData)
     取消勾选的时候触发
+
     rowData表格行的数据
 
 1. ###onCheckAll(rowData)
     勾选全部的时候触发
+
     rowData表格行的数据
 
 1. ### onUnCheckAll(rowData)
     取消勾选全部的时候触发
+
     rowData表格行的数据
 
 1. ### onBeforeEdit(rowNum, columnNum, oldValue)
@@ -288,10 +292,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### onBeforePageChange(page):
     翻页触发函数，renturn false将不执行系统预设翻页，用户可自定义翻页内容展示
+
     page: 将要翻的页数
 
 1. ### onPageChange(page):
     翻页后触发函数
+
     page: 目前所处的页数
 
 1. ### onSort(sortType):
@@ -336,10 +342,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### unSelectRowById(id, isMulti);
     根据id取消选中
+
     跟selectRowById类似
 
 1. ### unSelectRow(rowNum);
     取消选择某一行
+
     rowNum：行号
 
 1. ### selectAll()
@@ -347,6 +355,7 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### unSelectAll(filterRows)
     filterRows: 可选，意为排除哪些行，没有则取消全部
+
     取消除filterRows之外的全部选择
 
 1. ### checkAll()
@@ -357,10 +366,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### checkOne(rowNum)
     勾选某条数据
+
     rowNum：行号
 
 1. ### unCheckOne(rowNum)
     取消勾选某条数据
+
     rowNum：行号
 
 1. ### endEdit()
@@ -389,6 +400,7 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### deleteRow(rowNum)
     删除行
+
     rowNum:行数
 
 1. ### updateRow(rowData, rowIndex);
@@ -405,12 +417,13 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
     myGrid.checkById('firstRow');则会选中第二行
 
-    2. [[5,5,5,5,5,5], [{id: 'secondRow',type: 'checkbox'},2,3,4,5,6,7,8,9]]
+    1. [[5,5,5,5,5,5], [{id: 'secondRow',type: 'checkbox'},2,3,4,5,6,7,8,9]]
 
     myGrid.checkById('secondRow', true);则会选中第二行
 
 1. ### getRowDataById(id);
     通过id获取表格行数据
+
     id: id值，指的是渲染数据所绑定的id
 
 1. ### previousPage:
@@ -421,6 +434,7 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### jumpToPage(page):
     跳到某一页
+    
     page:要跳到的页数
 
 author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
