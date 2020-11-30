@@ -191,12 +191,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
     id只有当有通过数据去选中表格行的需求情况下才需要用到，大部分情况下不需要这个。
 
     ##### 样例：
-        1. [['5.1','5.2','5.3','5.4', '5.5'],['6.1','6.2','6.3','6.4', '6.5']]
-        2. [[{value: 'aaa', id: 'xxx', type: 'checkbox'},'3.1', '3.2','3.3','3.4', '3.5']]
-        3. [[{value: 'aaa', id: 'name',size:2, style:'background:#ccc;font-size:16px;color:white;'},{value: 'aaa', id: 'sex',size:2},'3.3','3.4', '3.5']]
-        4. rows可以没有或者为空数组，后续再单独updateData渲染数据:
-            let grid = new Grid(data, div);
-            grid.updateData(rowsData);
+    1. [['5.1','5.2','5.3','5.4', '5.5'],['6.1','6.2','6.3','6.4', '6.5']]
+    1. [[{value: 'aaa', id: 'xxx', type: 'checkbox'},'3.1', '3.2','3.3','3.4', '3.5']]
+    1. [[{value: 'aaa', id: 'name',size:2, style:'background:#ccc;font-size:16px;color:white;'},{value: 'aaa', id: 'sex',size:2},'3.3','3.4', '3.5']]
+    1. rows可以没有或者为空数组，后续再单独updateData渲染数据:
+        let grid = new Grid(data, div);
+        grid.updateData(rowsData);
 
 1. ### filter:
     - 开启过滤功能：filter:true
