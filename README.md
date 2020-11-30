@@ -1,5 +1,3 @@
-author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
-
 ![表格主要功能演示](http://img.mizuiren.com/grid_test_case.gif)
 
 演示链接：http://htmlpreview.github.io/?https://github.com/mizuiren/Grid/blob/master/demo/demo.html
@@ -7,58 +5,44 @@ author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
 Responsive table grid to meet various usage scenarios, with: width and height settings, drag and drop sorting, adjustment of column width, editing of cells (check, click, single double-click editing), fixed table header, etc...<br>
 满足各种使用场景的响应式表格组件(Responsive table grid)，具备：宽高设置、拖拽排序、调节列宽、编辑单元格（勾选、点选、单双击编辑）、表头固定等...
 
-Some of the features it contains are:<br>
-### 它包含的一些特性有：
+### 它包含的一些特性有：(Some of the features it contains are:)
 
-**Parameter data is easy to configure, simple column data only needs character strings.**<br>
-1. 参数数据易配置性，简单的列数据只需要字符串即可。
+1. 参数数据易配置性，简单的列数据只需要字符串即可。(Parameter data is easy to configure, simple column data only needs character strings.)
 
-**Column width liberalization and absoluteization, unlike table td is difficult to control**<br>
-1. 列宽自由化绝对化，不像table的td难以控制
+1. 列宽自由化绝对化，不像table的td难以控制(Column width liberalization and absoluteization, unlike table td is difficult to control)
 
-**Simplified dom structure**<br>
-1. dom结构简易化
+1. dom结构简易化(Simplified dom structure)
 
-**Fully customizable cell styles and arbitrary attributes can be configured**<br>
-1. 单元格样式全自定义化，可配置任意属性
+1. 单元格样式全自定义化，可配置任意属性(Fully customizable cell styles and arbitrary attributes can be configured)
 
-**Responsive width, width change does not require re-rendering. The width depends on the width of the container, which is the responsibility of the page.**<br>
-1. 响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。
+1. 响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。(Responsive width, width change does not require re-rendering. The width depends on the width of the container, which is the responsibility of the page.)
 
-**The number of columns automatically changes according to the data**<br>
-1. 列数自动根据数据变化
+1. 列数自动根据数据变化(The number of columns automatically changes according to the data)
 
-**Sort Row By Drag**<br>
-1. 拖拽排序表格行
+1. 拖拽排序表格行(Sort Row By Drag)
 
-**flex layout, more beautiful and compact**<br>
-1. flex布局，更加美观紧凑
+1. flex布局，更加美观紧凑(flex layout, more beautiful and compact)
 
-**Rich event monitoring interface**
-1. 丰富的事件监听接口
+1. 丰富的事件监听接口(Rich event monitoring interface)
 
-**Big data paging function**
-1. 大数据分页功能
+1. 大数据分页功能(Big data paging function)
 
-**Multi-choice interaction imitating windows system**
-1. 仿windows系统多选交互
+1. 仿windows系统多选交互(Multi-choice interaction imitating windows system)
 
-**Rich data interface for addition, deletion and modification**
-1. 丰富的增删改数据接口
+1. 丰富的增删改数据接口(Rich data interface for addition, deletion and modification)
 
-**Data filtering function**
-1. 数据过滤功能
+1. 数据过滤功能(Data filtering function)
 
 声明：支持主流前沿浏览器，不支持IE浏览器！
 
-如何使用？
+### 如何使用？
+
 如渲染一个表格：
 ```
 let myGrid = new Grid(data, container);
 ```
-myGrid.data绑定了所有渲染表格所要用到的数据，可灵活手动更新
-
-data是表格的数据，为一个对象。container为表格的容器，为jq对象。
+- data是表格的数据，为一个对象。
+- container为表格的容器，为jq对象。
 
 使用表格的方法：
 ```
@@ -68,6 +52,7 @@ myGrid.selectRow(5);
 
 container[0].grid.selectRow(5);
 ```
+myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数据，可灵活手动更新
 
 ## 参数设置（data）：
 
@@ -513,3 +498,5 @@ id: id值，指的是渲染数据所绑定的id
 ### 27.jumpToPage(page):
 跳到某一页
 page:要跳到的页数
+
+author blog: 秋叶博客[https://www.mizuiren.com](https://www.mizuiren.com)
