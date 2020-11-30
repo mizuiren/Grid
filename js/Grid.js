@@ -12,9 +12,16 @@ function Grid(data, $container) {
     if(this.data.pageCount) {
         this.page = 1;
     }
+
+    var _this = this;
+    this.container.each(function() {
+        $.fn.extend(this, {grid: _this});
+    });
+    
     this.bindEvent();
     this.renderGrid();
 }
+
 Grid.prototype = {
     minHeight: '30px',
     rowIndexAttrName: 'data-row-index',

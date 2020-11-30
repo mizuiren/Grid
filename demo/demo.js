@@ -398,7 +398,8 @@ function refreshData() {
             break;
             
     }
-    grid = new Grid(_copyData, $('.container')), $textarea = $('#textarea');
+    grid = new Grid(_copyData, $('.container'));
+    var $textarea = $('#textarea');
     if(index >= 21) {
         $textarea.val(JSON.stringify(_copyData.rows, null, 2));
     } else {
