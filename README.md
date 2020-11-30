@@ -10,44 +10,44 @@ Responsive table grid to meet various usage scenarios, with: width and height se
 Some of the features it contains are:<br>
 它包含的一些特性有：
 
-**1.Parameter data is easy to configure, simple column data only needs character strings.**<br>
-1.参数数据易配置性，简单的列数据只需要字符串即可。
+**Parameter data is easy to configure, simple column data only needs character strings.**<br>
+1. 参数数据易配置性，简单的列数据只需要字符串即可。
 
-**2.Column width liberalization and absoluteization, unlike table td is difficult to control**<br>
-2.列宽自由化绝对化，不像table的td难以控制
+**Column width liberalization and absoluteization, unlike table td is difficult to control**<br>
+1. 列宽自由化绝对化，不像table的td难以控制
 
-**3.Simplified dom structure**<br>
-3.dom结构简易化
+**Simplified dom structure**<br>
+1. dom结构简易化
 
-**4.Fully customizable cell styles and arbitrary attributes can be configured**<br>
-4.单元格样式全自定义化，可配置任意属性
+**Fully customizable cell styles and arbitrary attributes can be configured**<br>
+1. 单元格样式全自定义化，可配置任意属性
 
-**5.Responsive width, width change does not require re-rendering. The width depends on the width of the container, which is the responsibility of the page.**<br>
-5.响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。
+**Responsive width, width change does not require re-rendering. The width depends on the width of the container, which is the responsibility of the page.**<br>
+1. 响应式宽度，宽度变更不需要重新渲染。宽度取决于容器宽度，容器宽度是页面负责。
 
-**6.The number of columns automatically changes according to the data**<br>
-6.列数自动根据数据变化
+**The number of columns automatically changes according to the data**<br>
+1. 列数自动根据数据变化
 
-**7.Sort Row By Drag**<br>
-7.拖拽排序表格行
+**Sort Row By Drag**<br>
+1. 拖拽排序表格行
 
-**8.flex layout, more beautiful and compact**<br>
-8.flex布局，更加美观紧凑
+**flex layout, more beautiful and compact**<br>
+1. flex布局，更加美观紧凑
 
-**9.Rich event monitoring interface**
-9.丰富的事件监听接口
+**Rich event monitoring interface**
+1. 丰富的事件监听接口
 
-**10.Big data paging function**
-10.大数据分页功能
+**Big data paging function**
+1. 大数据分页功能
 
-**11.Multi-choice interaction imitating windows system**
-11.仿windows系统多选交互
+**Multi-choice interaction imitating windows system**
+1. 仿windows系统多选交互
 
-**12.Rich data interface for addition, deletion and modification**
-12.丰富的增删改数据接口
+**Rich data interface for addition, deletion and modification**
+1. 丰富的增删改数据接口
 
-**13.Data filtering function**
-13.数据过滤功能
+**Data filtering function**
+1. 数据过滤功能
 
 声明：支持主流前沿浏览器，不支持IE浏览器！
 
