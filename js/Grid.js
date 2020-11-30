@@ -529,6 +529,9 @@ Grid.prototype = {
             }
             value = typeof item !== 'object' ? item : item.value;
             cellStyles.push('border: ' + (_this.data.border === 'none' ? '0' : 1) + 'px ' + _this.data.border + ' ' + _this.data.borderColor);
+            if(isHeader) {
+                cellStyles.push('border-top: none');
+            }
             var hoverTitle = _this.data.hoverTitle === false ? '': index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value;
             var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
             cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + (needSpan ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' + hoverTitle + '">';
