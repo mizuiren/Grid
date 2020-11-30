@@ -255,7 +255,7 @@ $('#buttonPre').click(function() {
 function refreshData() {
     var _copyData = copyData(gridData);
     $('#jump').val(index);
-    location.hash = index;
+    location.hash = index + 1;
     switch(index) {
         case 0:
             _copyData.header.forEach(function(item) {
@@ -416,7 +416,7 @@ function refreshData() {
     $('#tip-next').html('<span style="font-size:12px;">'+next.title+'</span>');
 }
 if(location.hash && location.hash.match(/^#\d+/)) {
-    index = parseInt(location.hash.replace('#', ''));
+    index = parseInt(location.hash.replace('#', '')) - 1;
 }
 refreshData();
 function copyData(data) {
