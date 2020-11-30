@@ -60,6 +60,15 @@ myGrid.data绑定了所有渲染表格所要用到的数据，可灵活手动更
 
 data是表格的数据，为一个对象。container为表格的容器，为jq对象。
 
+使用表格的方法：
+```
+myGrid.selectRow(5);
+
+或者
+
+container[0].grid.selectRow(5);
+```
+
 ## 参数设置（data）：
 
 ### 1.header:
@@ -450,32 +459,35 @@ multiEdit：是否需要取消上一个编辑状态， multiEdit为true则不取
 ### 16.getSelectedData()
 获取选中行的数据
 
-### 17.getCheckedData()
+### 17.getSelectedrowNumbers()
+获取选中的行号
+
+### 18.getCheckedData()
 获取勾选行的数据
 
-### 18.getColumLength()
+### 19.getColumLength()
 获取列的数据
 
-### 19.appendRow(rowData, index)
+### 20.appendRow(rowData, index)
 新增行数据
 
 rowData:行数据，数组
 
 index: 插在第几行
 
-### 20.deleteRow(rowNum)
+### 21.deleteRow(rowNum)
 删除行
 
 rowNum:行数
 
-### 21.updateRow(rowData, rowIndex);
+### 22.updateRow(rowData, rowIndex);
 更新行
 
 rowData：行新数据
 
 rowIndex: 行号
 
-### 22.checkRowById(id);
+### 23.checkRowById(id);
 id:id值，指的是渲染数据所绑定的id
 
 比如数据：
@@ -488,16 +500,16 @@ myGrid.checkById('firstRow');则会选中第二行
 
 myGrid.checkById('secondRow', true);则会选中第二行
 
-### 23.getRowDataById(id);
+### 24.getRowDataById(id);
 通过id获取表格行数据
 id: id值，指的是渲染数据所绑定的id
 
-### 24.previousPage:
+### 25.previousPage:
 后退一页
 
-### 25.nextPage:
+### 26.nextPage:
 前进一页
 
-### 25.jumpToPage(page):
+### 27.jumpToPage(page):
 跳到某一页
 page:要跳到的页数
