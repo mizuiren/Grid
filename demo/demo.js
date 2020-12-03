@@ -230,6 +230,8 @@ var options = '';
 tips.forEach(function(item, index){
     options += '<option value="' + index + '">'+(index+1) + '.' + item.title + ' </option>'
 });
+options += '<option value="-1" style="display:none;">customize</option>'
+
 $('#jump').html(options).change(function() {
     index = +$(this).val();
     refreshData();
@@ -400,11 +402,7 @@ function refreshData() {
     }
     grid = new Grid(_copyData, $('.container'));
     var $textarea = $('#textarea');
-    if(index >= 21) {
-        $textarea.val(JSON.stringify(_copyData.rows, null, 2));
-    } else {
-        $textarea.val(JSON.stringify(_copyData, null, 2));
-    }
+    $textarea.val(JSON.stringify(_copyData, null, 2));
     $textarea[0].scrollTop = 0;
 
     let next = tips[index + 1];
@@ -420,6 +418,22 @@ if(location.hash && location.hash.match(/^#\d+/)) {
     index = parseInt(location.hash.replace('#', '')) - 1;
 }
 refreshData();
+$('#textarea').on('change', function() {
+    try{
+        var newData = JSON.parse($(this).val());
+        var _copyData = copyData(gridData);
+        for(var key in newData) {
+            if(newData.hasOwnProperty(key)) {
+                _copyData[key] = newData[key];
+            }
+        }
+        grid = new Grid(_copyData, $('.container'));
+        $('#jump').val(-1);
+        index = -1;
+    } catch(e) {
+        alert(e.message);
+    }
+});
 function copyData(data) {
   var t = type(data), o, i, ni;
   
