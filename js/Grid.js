@@ -750,82 +750,86 @@ Grid.prototype = {
         var _this = this;
         _this.container.off('click').on('click', '.body .cell', function(evt) {
             var rowNum = +$(this).attr(_this.rowIndexAttrName);
-            var $cell = $(evt.target).closest('.cell');
-            if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
-                return;
-            }
-            if($cell.hasClass('checkbox')) {               
-                var $input = $(evt.target).closest('.cell').find('input');
-                if(!$input.prop('disabled')) {
-                    if($input.prop('checked') === true) {
-                        _this.unCheckOne(rowNum);
-                    } else {
-                        _this.checkOne(rowNum);
-                    }
-                }
-                return;
-            }
             var columnNum = $(this).attr(_this.columnIndexAttrName);
-            if(evt.target.tagName !== 'INPUT') {
-                _this.endEdit();
-            }
-            if(_this.data.onClick) {
-                if(_this.data.rows.length && _this.data.rows[rowNum]) {
-                    var cellNum =  _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
-                    _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
+            var __this = this;
+            _this.shortTimer = setTimeout(function() {
+                var $cell = $(evt.target).closest('.cell');
+                if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
+                    return;
                 }
-            }
-            
-            if(_this.data.editable && !$(this).hasClass('editing') && _this.data.editWhenClick) {
-                _this.editCell($(this));
-            }
-            
-            if(_this.data.selectable) {
-                if(!evt.shiftKey) {
-                    _this.continuSelectStartRowNum = rowNum;
-                }            
-                
-                if(!evt.ctrlKey && !evt.shiftKey) {
-                    _this.unSelectAll([rowNum]);
-                    if(!$cell.hasClass('selected')) {
-                       _this.selectRow(rowNum, evt); 
-                    }
-                } else if(evt.ctrlKey) {
-                    if(!$cell.hasClass('selected')) {
-                        _this.selectRow(rowNum, evt, _this.data.multiSelect);
-                    } else {
-                        _this.unSelectRow(rowNum, evt);
-                    }
-                } else if(evt.shiftKey) {
-                    if(!_this.getSelectedData().length) {
-                        _this.continuSelectStartRowNum = rowNum;
-                    }
-                    if(_this.data.multiSelect) {
-                        var needSelects = [], notNeedSelects = [], i;
-                        if(_this.continuSelectStartRowNum > rowNum) {
-                            for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
-                                if(_this.isRowSelected(i)) {
-                                    notNeedSelects.push(i);
-                                } else {
-                                    needSelects.push(i);
-                                }
-                            }
+                if($cell.hasClass('checkbox')) {               
+                    var $input = $(evt.target).closest('.cell').find('input');
+                    if(!$input.prop('disabled')) {
+                        if($input.prop('checked') === true) {
+                            _this.unCheckOne(rowNum);
                         } else {
-                            for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
-                                if(_this.isRowSelected(i)) {
-                                    notNeedSelects.push(i);
-                                } else {
-                                    needSelects.push(i);
+                            _this.checkOne(rowNum);
+                        }
+                    }
+                    return;
+                }
+                
+                if(evt.target.tagName !== 'INPUT') {
+                    _this.endEdit();
+                }
+                if(_this.data.onClick) {
+                    if(_this.data.rows.length && _this.data.rows[rowNum]) {
+                        var cellNum =  _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
+                        _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
+                    }
+                }
+                
+                if(_this.data.editable && !$(__this).hasClass('editing') && _this.data.editWhenClick) {
+                    _this.editCell($(__this));
+                }
+                
+                if(_this.data.selectable) {
+                    if(!evt.shiftKey) {
+                        _this.continuSelectStartRowNum = rowNum;
+                    }            
+                    
+                    if(!evt.ctrlKey && !evt.shiftKey) {
+                        _this.unSelectAll([rowNum]);
+                        if(!$cell.hasClass('selected')) {
+                           _this.selectRow(rowNum, evt); 
+                        }
+                    } else if(evt.ctrlKey) {
+                        if(!$cell.hasClass('selected')) {
+                            _this.selectRow(rowNum, evt, _this.data.multiSelect);
+                        } else {
+                            _this.unSelectRow(rowNum, evt);
+                        }
+                    } else if(evt.shiftKey) {
+                        if(!_this.getSelectedData().length) {
+                            _this.continuSelectStartRowNum = rowNum;
+                        }
+                        if(_this.data.multiSelect) {
+                            var needSelects = [], notNeedSelects = [], i;
+                            if(_this.continuSelectStartRowNum > rowNum) {
+                                for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
+                                    if(_this.isRowSelected(i)) {
+                                        notNeedSelects.push(i);
+                                    } else {
+                                        needSelects.push(i);
+                                    }
+                                }
+                            } else {
+                                for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
+                                    if(_this.isRowSelected(i)) {
+                                        notNeedSelects.push(i);
+                                    } else {
+                                        needSelects.push(i);
+                                    }
                                 }
                             }
-                        }
-                        _this.unSelectAll(notNeedSelects);
-                        needSelects.forEach(function(item) {
-                            _this.selectRow(item, evt, true);
-                        });
-                    }      
+                            _this.unSelectAll(notNeedSelects);
+                            needSelects.forEach(function(item) {
+                                _this.selectRow(item, evt, true);
+                            });
+                        }      
+                    }
                 }
-            }
+            }, 50); 
         }).on('click.grid', '.pages a', function(evt) {
             var page = $(this).attr('page');
             if(isNaN(page)) {
@@ -1080,6 +1084,10 @@ Grid.prototype = {
         }).on('dblclick.grid', '.body .cell', function(evt) {
             if($(this).hasClass('checkbox')) {
                 return;
+            }
+            clearTimeout(_this.shortTimer);
+            if(evt.target.tagName !== 'INPUT') {
+                _this.endEdit();
             }
             if(_this.data.editable) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);

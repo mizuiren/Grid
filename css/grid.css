@@ -71,6 +71,7 @@
 }
 .q-grid.body .cell {
     overflow: hidden;
+    cursor: default;
 }
 .q-grid.body .cell.selected {
     background: #c5edfc;
