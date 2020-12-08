@@ -203,7 +203,10 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 1. ### pageCount:
     - 分页：number类型，设置是否分页且每页的数目，主要用于针对大数据避免dom过多造成页面卡顿问题
     - 不分页：不设置pageCount
-
+1. ### dilatationResize:
+    - 是否以扩容式调节列宽，调节列宽的时候容器会扩大并产生滚动条，默认不扩容
+    - 扩容：dilatationResize为true
+    - 不扩容：dilatationResize为false或者不设置dilatationResize
 1. ### showPage:
     布尔值，是否显示翻页控制区域
     - 显示： true或者不设置showPage字段

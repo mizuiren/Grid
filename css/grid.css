@@ -8,6 +8,13 @@
     -webkit-user-select:none;
     user-select:none;
 }
+.q-grid-box .resize-tip-line {
+    width: 1px;
+    border-left:2px dotted #8BC34A;
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
 .q-grid *:not(input) {
     /*-moz-user-select:none;
     -webkit-user-select:none;
@@ -110,6 +117,7 @@ header.q-grid .cell {
 } */
 .q-grid-box {
     width: 100%;
+    position: relative;
 }
 .q-grid .cell input[type="text"] {
     width: 100%;

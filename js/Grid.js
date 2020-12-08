@@ -542,7 +542,11 @@ Grid.prototype = {
                 cellsHtml += value;
             }
             if(isHeader) {
-                cellsHtml += resizeLine;
+                if(index !== cloneColumnData.length - 1 && !_this.data.dilatationResize) {
+                    cellsHtml += resizeLine;
+                } else if(_this.data.dilatationResize) {
+                    cellsHtml += resizeLine;
+                }
             }
             cellsHtml += '</div>'
         });
@@ -829,7 +833,7 @@ Grid.prototype = {
                         }      
                     }
                 }
-            }, 50); 
+            }, 50);
         }).on('click.grid', '.pages a', function(evt) {
             var page = $(this).attr('page');
             if(isNaN(page)) {
@@ -920,8 +924,11 @@ Grid.prototype = {
             var $resizeBar = $(this);
             var columnWidths = _this.getColumnWidth().split(' ');
             var originX = evt.pageX;
-            var currentX;
+            var currentX, minWidth = 30, maxWidth = 500;
             $resizeBar.addClass('isDraging');
+            var gridBoxX = _this.gridBox.offset().left;
+            var $resizeTipLine = $('<div class="resize-tip-line" style="left:' + ($resizeBar.offset().left - gridBoxX) + 'px;"></div>');
+            _this.gridBox.append($resizeTipLine);
             var width;
             if(_this.data.width) {
                 if((_this.data.width + '').match(/\d+%$/)) {
@@ -932,41 +939,79 @@ Grid.prototype = {
             } else {
                 width = _this.container.width();
             }
+            var fixedColumnWidths = [], cellWidth;
+            $('.q-grid.header .cell[data-row-index="0"]', _this.container).each(function() {
+                cellWidth = $(this).outerWidth();
+                if(cellWidth <= 2) {//小于2说明是隐藏的单元格，不能让其显示出来，哪怕漏出1px
+                    cellWidth = 0;
+                }
+                fixedColumnWidths.push(cellWidth + 'px');
+            });
+            var originWidth = parseFloat(fixedColumnWidths[cellIndex + 1]);
+            var gridBoxWidth = _this.gridBox.width();
             $(document).on('mousemove.grid', function(e) {
                 currentX = e.pageX;
                 if(Math.abs(currentX - originX) < 3) {//微距防抖，避免双击的时候抖动导致双击错主体
                     return;
                 }
-                if(currentX > cellLeft + 10) {
-                    var pxWidth = currentX - cellLeft;
-                    var allPxWidth = 0;
-                    if(currentX - originX > 0) {
+                var newWidth = currentX - cellLeft;
+                if(_this.data.dilatationResize) {
+                   if(newWidth > minWidth && newWidth < maxWidth) {//最小宽度30, 最大宽度500
+                        _this.container.css({'overflow-x': 'auto', 'overflow-y': 'hidden', 'padding-bottom': '5px'});
+                        _this.gridBox.css('width', (gridBoxWidth + newWidth - originWidth) + 'px');
+                        $resizeTipLine.css('left', currentX - gridBoxX + 'px');
+                        fixedColumnWidths[cellIndex + 1] = newWidth + 'px';
+                        $header.css('grid-template-columns', fixedColumnWidths.join(' '));
+                        $body.css('grid-template-columns', fixedColumnWidths.join(' '));
+                    }
+                } else {
+                    if(newWidth > minWidth && newWidth < maxWidth) {//最小宽度30, 最大宽度500
+                        var allPxWidth = 0, numberVal;
+                        var percent = (newWidth / width * 100) + '%';
+                        columnWidths[cellIndex + 1] = percent;
                         columnWidths.forEach(function(setting, index) {
                             if(typeof setting === 'number' || !isNaN(setting)) {
-                                allPxWidth += setting * 1;
+                                numberVal = setting * 1;
                             } else if(setting.match(/\d+%$/)) {
-                                allPxWidth += (parseFloat(setting)) / 100 * width;
+                                numberVal = (parseFloat(setting)) / 100 * width;
                             } else  if(setting.match(/\d+px$/)) {
-                                allPxWidth += parseFloat(setting);
+                                numberVal = parseFloat(setting);
+                            } else {
+                                numberVal = minWidth;
                             }
+                            allPxWidth += numberVal > minWidth ? numberVal : minWidth;
                         });
+                        if(allPxWidth <= width) {
+                            _this.data.header[cellIndex].width = percent;
+                            $header.css('grid-template-columns', columnWidths.join(' '));
+                            $body.css('grid-template-columns', columnWidths.join(' '));
+                            $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px');
+                        }
                     }
-                    if(allPxWidth < (cellIndex + 2 === _this.columLength ? width : width - 5)) {
-                        var percent = (pxWidth / width * 100) + '%';
-                        columnWidths[cellIndex + 1] = percent;
-                        _this.data.header[cellIndex].width = percent;
-                        $header.css('grid-template-columns', columnWidths.join(' '));
-                        $body.css('grid-template-columns', columnWidths.join(' ')); 
-                    }
-                    
-                }
+                } 
             });
             
             $(document).on('mouseup.grid', function(e) {             
                 $(document).off('mousemove.grid');
                 $(document).off('mouseup.grid');
+                $resizeTipLine.remove();
                 $resizeBar.removeClass('isDraging');
                 _this.container.removeClass('noneselect');
+                if(_this.data.dilatationResize) {
+                    //监听容器宽度变动，如有变动立即恢复原状，保证响应式特性
+                    var beforeChangeWidth = _this.container.width();
+                    if(_this.listenResize) {
+                       clearInterval(_this.listenResize); 
+                    }
+                    _this.listenResize = setInterval(function() {
+                        if(_this.container.width() !== beforeChangeWidth) {
+                            _this.gridBox.css('width', '100%');
+                            $header.css('grid-template-columns', columnWidths.join(' '));
+                            $body.css('grid-template-columns', columnWidths.join(' '));
+                            clearInterval(_this.listenResize);
+                        }
+                    }, 30);
+                } 
             });
         }).off('dblclick.grid').on('dblclick.grid', 'header.q-grid .cell .resizebar', function(evt) {
             var $cell = $(this).parent();
