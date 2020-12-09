@@ -307,7 +307,6 @@ Grid.prototype = {
             header.append(this.getFilterRow());
             this.gridBox.append(header);
         }
-        this.gridStyles.push('padding-bottom: 1px');
 
         var bodyGridStyles = JSON.parse(JSON.stringify(this.gridStyles));
         if(this.data.showHeader) {
