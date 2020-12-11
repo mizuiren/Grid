@@ -225,6 +225,10 @@ tips = [
     {
         title: 'showPage:false',
         des: '有pageCount的时候但是不显示分页样式',
+    },
+    {
+        title: 'dilatationResize:true',
+        des: '调节列宽会扩容出现滚动条',
     }
 ];
 var options = '';
@@ -399,7 +403,9 @@ function refreshData() {
             _copyData.pageCount = 5;
             _copyData.showPage = false;
             break;
-            
+        case 29:
+            _copyData.dilatationResize = true;
+            break;
     }
     grid = new Grid(_copyData, $('.container'));
     var $textarea = $('#textarea');
