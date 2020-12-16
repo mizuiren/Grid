@@ -958,10 +958,10 @@ Grid.prototype = {
                    if(newWidth > minWidth && newWidth < maxWidth) {//最小宽度30, 最大宽度500
                         _this.container.css({'overflow-x': 'auto', 'overflow-y': 'hidden', 'padding-bottom': '5px'});
                         _this.gridBox.css('width', (gridBoxWidth + newWidth - originWidth) + 'px');
-                        $resizeTipLine.css('left', currentX - gridBoxX + 'px');
                         fixedColumnWidths[cellIndex + 1] = newWidth + 'px';
                         $header.css('grid-template-columns', fixedColumnWidths.join(' '));
                         $body.css('grid-template-columns', fixedColumnWidths.join(' '));
+                        $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px');
                     }
                 } else {
                     if(newWidth > minWidth && newWidth < maxWidth) {//最小宽度30, 最大宽度500
