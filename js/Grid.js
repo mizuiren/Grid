@@ -948,8 +948,9 @@ Grid.prototype = {
             });
             var originWidth = parseFloat(fixedColumnWidths[cellIndex + 1]);
             var gridBoxWidth = _this.gridBox.width();
-            var bodyCursor = $('body').css('cursor');
-            $('body').attr('origin-cursor', bodyCursor || 'default').css('cursor', 'col-resize');
+            var $documentBody = $('body');
+            var bodyCursor = $documentBody.css('cursor');
+            $documentBody.attr('origin-cursor', bodyCursor || 'default').css('cursor', 'col-resize');
             $(document).on('mousemove.grid', function(e) {
                 currentX = e.pageX;
                 if(Math.abs(currentX - originX) < 3) {//微距防抖，避免双击的时候抖动导致双击错主体
@@ -995,7 +996,7 @@ Grid.prototype = {
             $(document).on('mouseup.grid', function(e) {             
                 $(document).off('mousemove.grid');
                 $(document).off('mouseup.grid');
-                $('body').css('cursor', $('body').attr('origin-cursor'));
+                $documentBody.css('cursor', $documentBody.attr('origin-cursor'));
                 $resizeTipLine.remove();
                 $resizeBar.removeClass('isDraging');
                 _this.container.removeClass('noneselect');
