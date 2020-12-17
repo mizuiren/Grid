@@ -217,22 +217,24 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 ## 事件监听：
 
-1. ### onSelect(rowData)
+1. ### onSelect(rowData, rowNum)
     选中表格行触发
 
     rowData选中行的数据
 
+    rowNum行号
 1. ### onClick(rowData, cellData, evt)
     点击单元格触发
     - rowData选中行的数据
     - cellData单元格数据
     - evt事件对象
 
-1. ### onUnSelect(rowData)
+1. ### onUnSelect(rowData, rowNum)
     取消选中表格行触发
 
     rowData选中行的数据
 
+    rowNum行号
 1. ### onSelectAll(data)
     全选触发
 

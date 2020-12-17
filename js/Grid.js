@@ -591,7 +591,7 @@ Grid.prototype = {
         }
         $('.cell[data-row-index="' + rowNum + '"]', $parent).addClass('selected');
         if(_this.data.onSelect && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
-            _this.data.onSelect(_this.data.rows[parseInt(rowNum)]);
+            _this.data.onSelect(_this.data.rows[parseInt(rowNum)], rowNum);
         }
         if(_this.data.onSelectAll) {
             if(!$('.cell:not(".seleted")', $parent).length) {
@@ -623,7 +623,7 @@ Grid.prototype = {
         }
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
         if(this.data.onUnSelect && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {
-            this.data.onUnSelect(this.data.rows[parseInt(rowNum)]);
+            this.data.onUnSelect(this.data.rows[parseInt(rowNum)], rowNum);
         }
         if(this.data.onUnSelectAll) {
             if(!$('.cell.seleted', $('.body', this.container)).length) {
