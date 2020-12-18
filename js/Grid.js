@@ -425,10 +425,10 @@ Grid.prototype = {
             this.data.rows.forEach(function(arr, index) {
                 if(_this.isCheckboxCell(arr[0])) {
                     if(_this.data.checkbox && arr[0].checked) {
-                        _this.checkOne(index);
+                        _this.checkOne(index, {notTriggerEvent: true});
                     }
                     if(_this.data.selectable && arr[0].selected) {
-                        _this.selectRow(index, {}, _this.data.multiSelect);
+                        $('.q-grid.body .cell[data-row-index=' + index + ']', _this.container).addClass('selected');
                     }
                     if(!arr[0].disabled) {
                         needDisabledHeader = false;
@@ -701,7 +701,7 @@ Grid.prototype = {
     },
     checkOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        if(isNaN(rowNum) || $input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
+        if(isNaN(rowNum) || $input.prop('checked') || (fromEvent && !fromEvent.notTriggerEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', true);
@@ -713,15 +713,17 @@ Grid.prototype = {
         if(this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', true);
         }
-        
-        if(this.data.onCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
-            this.data.onCheck(this.data.rows[parseInt(rowNum)]);
-        }
-        if(this.data.onCheckAll) {
-            if(!$('.cell.checkbox input:not(":checked")', $('.body', this.container)).length) {
-                this.data.onCheckAll(this.data.rows);
+        if(!fromEvent || !fromEvent.notTriggerEvent) {
+            if(this.data.onCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
+                this.data.onCheck(this.data.rows[parseInt(rowNum)]);
+            }
+            if(this.data.onCheckAll) {
+                if(!$('.cell.checkbox input:not(":checked")', $('.body', this.container)).length) {
+                    this.data.onCheckAll(this.data.rows);
+                }
             }
         }
+        
         if(this.data.selectWhenCheck && this.data.selectable) {
             this.selectRow(rowNum, {},  !!this.data.multiSelect);
         }
