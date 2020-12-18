@@ -62,7 +62,7 @@ let gridData = {
     rowHeight: '30px',
     height: 300,
     rows: [
-        ['7.1','7.2','7.3','7.4', '7.5'],
+        [{type:'checkbox', selected: true}, '7.1','7.2','7.3','7.4', '7.5'],
         ['8.1','8.2','8.3','8.4', '8.5'],
         ['1.1','1.2','1.3','1.4', '1.5'],
         [{id: 'myRow', type: 'checkbox', checked:true, disabled:true}, '2.1','2.2','2.3','2.4', '2.5'],

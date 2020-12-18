@@ -589,6 +589,11 @@ Grid.prototype = {
         if(!multiSelect) {
             _this.unSelectAll();
         }
+        var checkObj = this.isCheckboxCell(this.data.rows[rowNum][0]);
+
+        if(checkObj) {
+            this.data.rows[rowNum][0].checked = true;
+        }
         $('.cell[data-row-index="' + rowNum + '"]', $parent).addClass('selected');
         if(_this.data.onSelect && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
             _this.data.onSelect(_this.data.rows[parseInt(rowNum)], rowNum);
@@ -620,6 +625,11 @@ Grid.prototype = {
     unSelectRow: function(rowNum) {
         if(!this.isRowSelected(rowNum)) {
             return;
+        }
+        var checkObj = this.isCheckboxCell(this.data.rows[rowNum][0]);
+
+        if(checkObj) {
+            this.data.rows[rowNum][0].selected = false;
         }
         $('.q-grid.body .cell.selected[data-row-index="' + rowNum + '"]', this.container).removeClass('selected');
         if(this.data.onUnSelect && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {
