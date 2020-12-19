@@ -592,7 +592,7 @@ Grid.prototype = {
         var checkObj = this.isCheckboxCell(this.data.rows[rowNum][0]);
 
         if(checkObj) {
-            this.data.rows[rowNum][0].checked = true;
+            this.data.rows[rowNum][0].selected = true;
         }
         $('.cell[data-row-index="' + rowNum + '"]', $parent).addClass('selected');
         if(_this.data.onSelect && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
