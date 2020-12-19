@@ -595,8 +595,10 @@ Grid.prototype = {
             this.data.rows[rowNum][0].selected = true;
         }
         $('.cell[data-row-index="' + rowNum + '"]', $parent).addClass('selected');
-        if(_this.data.onSelect && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
-            _this.data.onSelect(_this.data.rows[parseInt(rowNum)], rowNum);
+        if(!evt || !evt.notTriggerEvent) {
+            if(_this.data.onSelect && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
+                _this.data.onSelect(_this.data.rows[parseInt(rowNum)], rowNum);
+            }
         }
         if(_this.data.onSelectAll) {
             if(!$('.cell:not(".seleted")', $parent).length) {
@@ -725,7 +727,7 @@ Grid.prototype = {
         }
         
         if(this.data.selectWhenCheck && this.data.selectable) {
-            this.selectRow(rowNum, {},  !!this.data.multiSelect);
+            this.selectRow(rowNum, {notTriggerEvent: fromEvent && fromEvent.notTriggerEvent},  !!this.data.multiSelect);
         }
         if(this.data.editable) {
             this.endEdit();
