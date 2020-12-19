@@ -995,14 +995,17 @@ Grid.prototype = {
                             } else {
                                 numberVal = minWidth;
                             }
-                            allPxWidth += numberVal > minWidth ? numberVal : minWidth;
+                            allPxWidth += numberVal > minWidth || numberVal === 0 ? numberVal : minWidth;
                         });
-                        if(allPxWidth <= width) {
-                            _this.data.header[cellIndex].width = percent;
-                            $header.css('grid-template-columns', columnWidths.join(' '));
-                            $body.css('grid-template-columns', columnWidths.join(' '));
-                            $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px');
+                        if(allPxWidth > width) {
+                           newWidth = width - (allPxWidth - newWidth);
+                           percent = (newWidth / width) * 100 + '%';
+                           columnWidths[cellIndex + 1] = percent;
                         }
+                        _this.data.header[cellIndex].width = percent;
+                        $header.css('grid-template-columns', columnWidths.join(' '));
+                        $body.css('grid-template-columns', columnWidths.join(' '));
+                        $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px');
                     }
                 } 
             });
