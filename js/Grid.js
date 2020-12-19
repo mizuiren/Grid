@@ -1362,7 +1362,7 @@ Grid.prototype = {
         });
         $(document).off('click.grid').on('click.grid', function(evt) {
             if(!$(evt.target).closest('.cell').length) {
-                $('.cell.editing').each(function() {
+                $('.q-grid.body .cell.editing').each(function() {
                     let $container = $(this).closest('.q-grid-box').parent();
                     $container[0].grid.endEditOne($(this));
                 })
