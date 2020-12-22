@@ -87,10 +87,13 @@ Grid.prototype = {
             var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
             var $lastRows = $('.cell[' + this.rowIndexAttrName +'="'+ (lastIndex - 1) +'"]', $gridBody);
             if($lastRows.length) {
-                this.gridBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
-                if(this.container.height() < $('.q-grid.body',this.container).height() + $('.q-grid.header',this.container).height() ||
+                var bodyHeaderHeight = $('.q-grid.body',this.container).height() + $('.q-grid.header',this.container).height();
+                if(this.container.height() < bodyHeaderHeight ||
                     (this.data.pageCount && this.data.showPage !== false)) {
                     $lastRows.css('border-bottom', 'none');
+                    this.gridBox.css('border-bottom', '1px ' + this.data.border + ' ' + this.data.borderColor);
+                } else {
+                    this.gridBox.css('border-bottom', 'none');
                 }
             } else {
                 this.gridBox.css('border-bottom', 'none');
@@ -974,7 +977,7 @@ Grid.prototype = {
                 if(_this.data.dilatationResize) {
                    if(newWidth > minWidth && newWidth < maxWidth) {//最小宽度30, 最大宽度500
                         _this.container.css({'overflow-x': 'auto', 'overflow-y': 'hidden', 'padding-bottom': '5px'});
-                        _this.gridBox.css('width', (gridBoxWidth + newWidth - originWidth) + 'px');
+                        _this.gridBox.css('width', (gridBoxWidth + (newWidth - originWidth)) + 'px');
                         fixedColumnWidths[cellIndex + 1] = newWidth + 'px';
                         $header.css('grid-template-columns', fixedColumnWidths.join(' '));
                         $body.css('grid-template-columns', fixedColumnWidths.join(' '));
@@ -997,6 +1000,7 @@ Grid.prototype = {
                             }
                             allPxWidth += numberVal > minWidth || numberVal === 0 ? numberVal : minWidth;
                         });
+                        //重算该列的宽度，使其刚好撑满整个容器
                         if(allPxWidth > width) {
                            newWidth = width - (allPxWidth - newWidth);
                            percent = (newWidth / width) * 100 + '%';
