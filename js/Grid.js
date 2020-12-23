@@ -7,6 +7,7 @@
 function Grid(data, $container) {
     this.data = data;
     this.data.borderColor = this.data.borderColor || '#ddd';
+    this.data.border = this.data.border || 'dotted';
     this.container = $container;
     this.columLength = this.getColumnLength();
     if(this.data.pageCount) {
@@ -1371,7 +1372,7 @@ Grid.prototype = {
             if(!$(evt.target).closest('.cell').length) {
                 $('.q-grid.body .cell.editing').each(function() {
                     let $container = $(this).closest('.q-grid-box').parent();
-                    $container[0].grid.endEditOne($(this));
+                    $container[0] && $container[0].grid.endEditOne($(this));
                 })
             }
         });
