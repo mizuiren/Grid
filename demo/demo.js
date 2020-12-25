@@ -1,7 +1,7 @@
 let gridData = {
     showHeader: true,
     dragable: false,
-    dilatationResize: true,
+    dilatationResize: false,
     header: [
         {
             value:'姓名', 
