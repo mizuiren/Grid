@@ -200,9 +200,10 @@ Grid.prototype = {
         this.initUi();
     },
     updateRow: function(rowData, rowIndex) {
-        if(!this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
+        if(isNaN(rowIndex) || !this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
             return;
         }
+        rowIndex = +rowIndex;
         var $body = $('.q-grid.body', this.container);
         var isSelected = $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $body).hasClass('selected');
         this.deleteRow(rowIndex);
@@ -881,7 +882,10 @@ Grid.prototype = {
             $(this).hide();
         }).off('keyup.grid').on('keyup.grid', '.editting-ele', function(evt) {
             if(evt.keyCode === 13) {//按enter键
-                _this.endEditOne($(this).closest('.cell'));
+                var thisContainer = $(this).closest('.q-grid-box').parent()[0];
+                if(thisContainer) {
+                    thisContainer.grid.endEditOne($(this).closest('.cell'));
+                }
             }
         }).on('keyup.grid', function(evt) {
             if(evt.keyCode === 16) {//shift键抬起恢复到可选文字状态
@@ -1013,9 +1017,7 @@ Grid.prototype = {
                            columnWidths[cellIndex + 1] = percent;
                         }
                         _this.data.header[cellIndex].width = percent;
-                        
                     }
-                    //在双击调节线的时候宽度可能会在范围之外，这个时候要使其能拖回去
                     if(_this.listenResize) {
                         _this.gridBox.css('width', '100%');
                         clearInterval(_this.listenResize);
