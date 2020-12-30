@@ -63,6 +63,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
             value:'姓名', 
             id: 'name', 
             width: '20%', //缺省写auto,支持写百分比,注意如果数字和auto混合，所有数字之和不得等于或大于100%宽度，纯数字的话，所有之和应小于等于100%
+            sort: true
+        },
+        {
+            value:'年龄', 
+            id: 'age', 
+            width: '20%', 
             sort: function(a,b) {
                 var _a = typeof a === 'object' ? a.value : a;
                 var _b = typeof b === 'object' ? b.value : b;
@@ -73,15 +79,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
                 } else {
                     return 0;
                 }
-            }
+            },
+            ellipsis: true
         },
         {
-            value:'年龄', 
-            id: 'age', 
-            width: '20%', 
-            sort: false,
-            ellipsis: true
-        }
+            value:'性别'
+        },
     ]
     ```
     列的配置数据如下：
