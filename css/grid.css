@@ -127,6 +127,9 @@ header.q-grid .cell {
 }
 .q-grid .cell input.filter {
     padding-right: 20px;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    outline: 0;
 }
 .q-grid .sort-icon {
     position: absolute;

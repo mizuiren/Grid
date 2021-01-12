@@ -305,7 +305,12 @@ Grid.prototype = {
         var header;
         if(this.data.showHeader) {
             var newHeader = JSON.parse(JSON.stringify(this.data.header));
-            newHeader.unshift({value:'<input type="checkbox" class="check-all"/><span></span>', id: 'id', type: 'checkbox'});
+            var checkboxHtml = '<input type="checkbox" class="check-all"/><span></span>';
+            if(this.isCheckboxCell(newHeader[0])) {
+                newHeader[0].value = checkboxHtml;
+            } else {
+                newHeader.unshift({value:checkboxHtml, id: 'id', type: 'checkbox'});
+            }
 
             header = $('<header class="q-grid header" style="' + this.gridStyles.join(';') + '"></header>');
             header.append(this.renderRow(newHeader, 0, 'header'));
@@ -1565,8 +1570,9 @@ Grid.prototype = {
     getColumnLength: function() {
         var count = 1;
         if(this.data.header && this.data.header.length) {
-            if(this.data.header.length > count) {
-                count = this.data.header.length;
+            var headerLength = this.isCheckboxCell(this.data.header[0]) ? this.data.header.length - 1 : this.data.header.length;
+            if(headerLength > count) {
+                count = headerLength;
             }
         }
         var _this = this;
