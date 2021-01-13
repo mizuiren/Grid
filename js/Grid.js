@@ -266,10 +266,10 @@ Grid.prototype = {
     getColumnWidth: function() {
         //每列的宽度
         var cwidth = new Array(this.columLength).fill('1fr');
-
+        var hadCheckedData = this.isCheckboxCell(this.data.header[0]);
         this.data.header.forEach(function(item, index) {
             if(item.width !== undefined && item.width !== 'auto') {
-                cwidth[index + 1] = item.width;
+                cwidth[hadCheckedData ? index : index + 1] = item.width;
             }
         });
         cwidth[0] = this.data.checkbox ? '30px' : '0px';
@@ -448,6 +448,9 @@ Grid.prototype = {
                 }
             });
             $('.check-all', this.container).prop('disabled', needDisabledHeader);
+        }
+        if(this.data.header && this.isCheckboxCell(this.data.header[0]) && this.data.header[0].checked === true) {
+            $('.check-all', this.container).prop('checked', true).trigger('change');
         }
         this.solveBorder();
     },
@@ -689,6 +692,9 @@ Grid.prototype = {
     },
     checkAll: function(fromEvent) {
         var rowNum, _this = this;
+        if(this.data.header && this.isCheckboxCell(this.data.header[0])) {
+            this.data.header[0].checked = true;
+        }
         $('.body .checkbox input', this.container).each(function() {
             rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
             _this.checkOne(rowNum, fromEvent);
@@ -696,6 +702,9 @@ Grid.prototype = {
     },
     unCheckAll: function(fromEvent) {
         var rowNum, _this = this;
+        if(this.data.header && this.isCheckboxCell(this.data.header[0])) {
+            this.data.header[0].checked = false;
+        }
         $('.body .checkbox input', this.container).each(function() {
             rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
             _this.unCheckOne(rowNum, fromEvent);
@@ -724,6 +733,9 @@ Grid.prototype = {
 
         if(this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', true);
+            if(this.data.header && this.isCheckboxCell(this.data.header[0])) {
+                this.data.header[0].checked = true;
+            }
         }
         if(!fromEvent || !fromEvent.notTriggerEvent) {
             if(this.data.onCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
@@ -756,6 +768,9 @@ Grid.prototype = {
         }
         if(!this.isAllChecked()) {
             $('.check-all', this.container).prop('checked', false);
+            if(this.data.header && this.isCheckboxCell(this.data.header[0])) {
+                this.data.header[0].checked = false;
+            }
         }
 
         if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
