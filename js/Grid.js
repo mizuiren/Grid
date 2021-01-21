@@ -278,8 +278,8 @@ Grid.prototype = {
     renderGrid: function() {
         this.container.empty().css('min-height', this.numberToPx(this.data.height, this.minHeight));
         if(!this.data.freezeHeader) {
-            //this.container.css({'overflow-y': 'auto'});
-            //this.container.css({'overflow-y':'overlay'});
+            this.container.css({'overflow-y': 'auto'});
+            this.container.css({'overflow-y':'overlay'});
         }
         this.gridStyles = [];
         var gridBoxStyles = ['width:100%;height: 100%','border-top:1px '+this.data.border+' '+this.data.borderColor];
@@ -1525,7 +1525,7 @@ Grid.prototype = {
             var select = $('<select class="editting-ele" style="width:100%;text-align-last:' + align + '"></select>');
             if(options && $.isArray(options)) {
                 options.forEach(function(v, index) {
-                    select.append('<option value="' + v + '">' + v + '</option>');
+                    select.append('<option value="' + v + '" ' + (text === v ? 'selected' : '') + '>' + v + '</option>');
                     options[index] = v + '';
                 });
                 if(options.indexOf(text) > -1) {
