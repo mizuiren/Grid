@@ -9,7 +9,7 @@ function Grid(data, $container) {
     this.data.borderColor = this.data.borderColor || '#ddd';
     this.data.border = this.data.border || 'dotted';
     this.container = $container;
-    this.columLength = this.getColumnLength();
+    this.columnLength = this.getColumnLength();
     if(this.data.pageCount) {
         this.page = 1;
     }
@@ -44,7 +44,7 @@ Grid.prototype = {
         });
         var $gridBody = $('.q-grid.body', this.container);
         if(!$gridBody.length) {
-            this.columLength = this.getColumnLength();
+            this.columnLength = this.getColumnLength();
             this.renderGrid();
         } else {
             rowsHtml += this.getPageControlHtml();
@@ -222,7 +222,7 @@ Grid.prototype = {
         if(!this.isCheckboxCell(rowData[0])) {
             realLength = realLength + 1;
         }
-        if(realLength > this.columLength) {
+        if(realLength > this.columnLength) {
             console.error('Cell length exceed!');
             return false;
         }
@@ -265,7 +265,7 @@ Grid.prototype = {
     },
     getColumnWidth: function() {
         //每列的宽度
-        var cwidth = new Array(this.columLength).fill('1fr');
+        var cwidth = new Array(this.columnLength).fill('1fr');
         var hadCheckedData = this.isCheckboxCell(this.data.header[0]);
         this.data.header.forEach(function(item, index) {
             if(item.width !== undefined && item.width !== 'auto') {
@@ -288,7 +288,7 @@ Grid.prototype = {
         } 
         this.gridBox = $('<div class="q-grid-box" style="' + gridBoxStyles.join(';') + '"></div>');
         this.container.append(this.gridBox);
-        this.columLength = this.columLength + 1;//checkbox多一列
+        this.columnLength = this.columnLength + 1;//checkbox多一列
         
         this.gridStyles.push('grid-template-columns:' + this.getColumnWidth());
         //表格间隙
@@ -396,7 +396,7 @@ Grid.prototype = {
         var rowsHtml = '';
         if(this.data.pageCount && !isNaN(this.data.pageCount)) {
             if(this.data.pageCount < this.data.rows.length) {
-                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;grid-column-start: 1;grid-column-end: ' + (this.columLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none">';
+                rowsHtml += '<div style="display: flex;align-items: center;justify-content: flex-end;grid-column-start: 1;grid-column-end: ' + (this.columnLength + 1) + ';border: 1px ' + this.data.border + ' ' + this.data.borderColor +';border-bottom: none">';
                 rowsHtml += pageInit(this.page, Math.ceil(this.data.rows.length / this.data.pageCount), '');
                 rowsHtml += '&nbsp;&nbsp;&nbsp;&nbsp;</div>';
             }
@@ -406,7 +406,7 @@ Grid.prototype = {
     getFilterRow: function() {
         if(this.data.filter) {
             var inputHtml = '<input class="filter" placeholder="Filter" type="text"/><span class="filter-cancel" style="display:none;"></span>';
-            var filterInputs = new Array(this.columLength - 1).fill(inputHtml);
+            var filterInputs = new Array(this.columnLength - 1).fill(inputHtml);
             return this.renderRow(filterInputs, 'filterRow');
         } else {
             return '';
@@ -469,8 +469,8 @@ Grid.prototype = {
                 cloneColumnData.unshift(rowIndex === 'filterRow' ? '' : {value:'<input type="checkbox" ' + (cloneColumnData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
             } 
         }
-        if(_this.getCellLength(cloneColumnData) < _this.columLength) {
-            cloneColumnData = cloneColumnData.concat(new Array(_this.columLength - cloneColumnData.length).fill(''));
+        if(_this.getCellLength(cloneColumnData) < _this.columnLength) {
+            cloneColumnData = cloneColumnData.concat(new Array(_this.columnLength - cloneColumnData.length).fill(''));
         }
         var cellStyles, classes, needSort, resizeLine, value, columnSeting, attrs;
         cloneColumnData.forEach(function(item, index) {
@@ -1236,7 +1236,7 @@ Grid.prototype = {
                     'class': 'placeholder',
                     'data-row-index': 'null'
                 }).css({
-                    'grid-column': '1 / ' + ( _this.columLength + 1),
+                    'grid-column': '1 / ' + ( _this.columnLength + 1),
                     'border': 'none',
                     'background': '#ddd',
                     'height': lastCell.outerHeight(),
