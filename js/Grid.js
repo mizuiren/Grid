@@ -546,10 +546,10 @@ Grid.prototype = {
             }
             var hoverTitle = _this.data.hoverTitle === false ? '': index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value;
             var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
-            cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + (needSpan ? classes.join(' ').replace(item.class, '') : classes.join(' ')) + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' + hoverTitle + '">';
+            cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' + hoverTitle + '">';
             
             if(needSpan) {
-                cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (rowIndex === 'filterRow' ? 'contents' : '') + ' ' + (item.class || '') + ' txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
+                cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (rowIndex === 'filterRow' ? 'contents ' : ' ')  + 'txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
             } else {
                 cellsHtml += value;
             }

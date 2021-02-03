@@ -18,7 +18,8 @@ let gridData = {
                     return 0;
                 }
             },
-            resizeable: false
+            resizeable: false,
+            ellipsis: true,
         }, 
         {
             value:'年龄', 
@@ -67,7 +68,7 @@ let gridData = {
         ['1.1','1.2','1.3','1.4', '1.5'],
         [{id: 'myRow', type: 'checkbox', checked:true, disabled:true}, '2.1','2.2','2.3','2.4', '2.5'],
         [{id: 'special-row', type: 'checkbox'},'3.1', '3.2','3.3','3.4', '3.5'],
-        [{value: '4.1',editType: {type: 'select', options: [1,2,3,4,5,6]}, attributes: {aaa: 'bbb', ccc: '123'}},'4.2','4.3','4.4', '4.5'],
+        [{class: 'aaa bbb', value: '4.1',editType: {type: 'select', options: [1,2,3,4,5,6]}, attributes: {aaa: 'bbb', ccc: '123'}},'4.2','4.3','4.4', '4.5'],
         ['5.1','5.2','5.3','5.4', '5.5'],
         ['6.1','6.2','6.3',{value:'6.4', style: 'color:red;'}, '6.5'],
         ['9.1','9.2','9.3','9.4', '9.5'],
