@@ -124,6 +124,11 @@ header.q-grid .cell {
     height: 100%;
     border-radius: 0;
     text-align: center;
+    border: 1px solid #ccc;
+}
+.q-grid .cell input[type="text"]:focus {
+    outline: 1px solid #444;
+    border: none;
 }
 .q-grid .cell input.filter {
     padding-right: 20px;
