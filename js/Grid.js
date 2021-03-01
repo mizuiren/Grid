@@ -261,7 +261,7 @@ Grid.prototype = {
         }
     },
     isContainTag: function(string) {
-        return (string + '').match(/<(\S*?) [^>]*>/);
+        return (string + '').match(/<(\S*?)\s*[^>]*>/) || (string + '').match(/&lt;(\S*?)\s*[^&gt;]*&gt;/);
     },
     getColumnWidth: function() {
         //每列的宽度
