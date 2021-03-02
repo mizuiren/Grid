@@ -173,21 +173,24 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
     1. 如果是个对象, 对象的键值对应的参数意义：
         ```
         {
-            value：实际展示到单元格的数据，可以为纯数字，对象，任意字符串（包括dom字符串）
-            size:(可选)，数字，表示单元格占几格，默认1格，大部分情况无需设置
-            style: (可选)，单元格样式，可以设置背景，颜色等，如"background:#ccc;font-size:16px;color:white;"
-            align: (可选)，字符串，单元格对齐方式，'left|center|right',默认是center
-            id: (可选)，单元格识别码。 当type:checkbox是表示行id（便于查找行用于选中）, 否则表示列id（便于选择器定位）。
-            class:(可选)，指定class。
-            type:(可选)，当type为"checkbox"时, 此项会被当作一个隐含的识别元素，相应的属性会绑到该行的勾选框上
-            selected:(可选)，此行是否需要选上，前提是type:checkbox才有效果
-            checked:(可选)，此行是否需要勾选，前提是type:checkbox才有效果
-            disable:(可选)，此行是否需要禁用勾选，前提是type:checkbox才有效果
-            editType: {(可选)，此单元格的编辑模式
+            value："白居易",//实际展示到单元格的数据，可以为纯数字，对象，任意字符串（包括dom字符串）
+            size:2,//(可选)，数字，表示单元格占几格，默认1格，大部分情况无需设置
+            style: "background:#ccc;font-size:16px;color:white;",//(可选)，单元格样式，可以设置背景，颜色等
+            align: "left",//(可选)，字符串，单元格对齐方式，'left|center|right',默认是center
+            id: "yellowRow",//(可选)，单元格识别码。 当type:checkbox是表示行id（便于查找行用于选中）, 否则表示列id（便于选择器定位）。
+            class:"i18n", //(可选)，指定class。
+            type:"checkbox", //(可选)，必须用在行数据的第一列数据配置，当要指定此单元格是勾选框的时候设置, 相应的一些行属性会绑到该行的勾选框上，如selected、checked、id、disable
+            selected:true,//(可选)，此行是否需要选上，前提是type:checkbox才有效果
+            checked:true,//(可选)，此行是否需要勾选，前提是type:checkbox才有效果
+            disable:true,//(可选)，此行是否需要禁用勾选，前提是type:checkbox才有效果
+            editType: {//(可选)，此单元格的编辑模式
                 type: 'select',目前支持input和select, 默认input
                 options: ['a','b','c','d','e'] 如果type是select的话，这是下拉框的选项（数组）
             }
-            attributes:(可选) 属性对象
+            attributes:{//(可选) 属性对象, 注意系统关键字(class、style)和data-id（id），如果相同会覆盖配置项
+                name: 'myCell',
+                data-key: 'myKey'
+            }
         }
         ```
     id只有当有通过数据去选中表格行的需求情况下才需要用到，大部分情况下不需要这个。
