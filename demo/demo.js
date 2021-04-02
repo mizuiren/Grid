@@ -100,8 +100,11 @@ let gridData = {
     onBeforeEdit: function(rowNum, columnNum, oldValue) {
         //console.log('onBeforeEdit', rowNum, columnNum, oldValue);
     },
-    onEdit: function(rowNum, columnNum, oldValue, newValue) {
-        //console.log('onEdit', rowNum, columnNum, oldValue, newValue);
+    onEndEdit: function(rowNum, columnNum, oldValue, newValue) {
+        //console.log('onEndEdit', rowNum, columnNum, oldValue, newValue);
+    },
+    onBeforeEndEdit: function(rowNum, columnNum, oldValue, newValue) {
+        //console.log('onBeforeEndEdit', rowNum, columnNum, oldValue, newValue);
     },
     onContextmenu: function(rowData, cellData, evt) {
         //console.log('onContextmenu', rowData, cellData, evt);

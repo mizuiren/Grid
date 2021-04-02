@@ -19,8 +19,8 @@ function Grid(data, $container) {
         $.fn.extend(this, {grid: _this});
     });
     
-    this.bindEvent();
-    this.renderGrid();
+    this._bindEvent();
+    this._renderGrid();
 }
 
 Grid.prototype = {
@@ -32,7 +32,7 @@ Grid.prototype = {
         var rowsHtml = '';
         var _this = this;
         this.data.rows.forEach(function(rowData, index) {
-            if(!_this.validRowData(rowData)) {
+            if(!_this._validRowData(rowData)) {
                 return;
             }
             if(_this.data.pageCount) {
@@ -40,22 +40,22 @@ Grid.prototype = {
                     return;
                 }
             }
-            rowsHtml += _this.renderRow(rowData, index, false);
+            rowsHtml += _this._renderRow(rowData, index, false);
         });
         var $gridBody = $('.q-grid.body', this.container);
         if(!$gridBody.length) {
             this.columnLength = this.getColumnLength();
-            this.renderGrid();
+            this._renderGrid();
         } else {
-            rowsHtml += this.getPageControlHtml();
+            rowsHtml += this._getPageControlHtml();
             $gridBody.html(rowsHtml);
-            this.updateRowHeight();
+            this._updateRowHeight();
         }
         var scrolBox = $('.q-grid-scroll', this.container);
         scrolBox.scrollTop(0);
-        this.initUi();
+        this._initUi();
     },
-    updateRowHeight: function() {
+    _updateRowHeight: function() {
         var $gridBody = $('.q-grid.body', this.container);
         if(this.data.rows && this.data.rows.length) {
             if(this.data.rowHeight) {
@@ -76,13 +76,13 @@ Grid.prototype = {
                 /*if(this.data.filter) {
                     rowLength += 1;
                 }*/
-                $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this.numberToPx(this.data.rowHeight, '30px')+')');
+                $gridBody.css('grid-template-rows', 'repeat(' + rowLength + ', '+this._numberToPx(this.data.rowHeight, '30px')+')');
             }
         } else {
             $gridBody.css('grid-template-rows', 'repeat(0, 0)');
         }
     },
-    solveBorder: function() {
+    _solveBorder: function() {
         var $gridBody = $('.q-grid.body', this.container);
         if(this.data.rows && this.data.rows.length) {
             var lastIndex = this.data.pageCount ? (this.data.rows.length > this.page * this.data.pageCount ? this.page * this.data.pageCount : this.data.rows.length) : this.data.rows.length;
@@ -146,10 +146,10 @@ Grid.prototype = {
         }
     },
     appendRow: function(rowData, index) {
-        if(!this.validRowData(rowData)) {
+        if(!this._validRowData(rowData)) {
             return;
         }
-        this.clearSortData();
+        this._clearSortData();
         if(index === undefined || index > this.data.rows.length) {
             index = this.data.rows.length;
         }
@@ -159,7 +159,7 @@ Grid.prototype = {
         var $gridBody = $('.q-grid.body', this.container);
         
         this.data.rows.splice(index, 0, rowData);   
-        var newRowHtml = this.renderRow(rowData, index, false);
+        var newRowHtml = this._renderRow(rowData, index, false);
         
         var _this = this;
         if(index < this.data.rows.length) {
@@ -178,11 +178,11 @@ Grid.prototype = {
             var $after = $('['+this.rowIndexAttrName+'="'+(index - 1)+'"]:last', $gridBody);
             $after.after(newRowHtml);
         }
-        this.updateRowHeight();
-        this.initUi();
+        this._updateRowHeight();
+        this._initUi();
     },
     deleteRow: function(rowIndex) {
-        this.clearSortData();
+        this._clearSortData();
         var $gridBody = $('.q-grid.body', this.container);
         this.data.rows.splice(rowIndex, 1);
         
@@ -196,11 +196,11 @@ Grid.prototype = {
                 }
             });
         }
-        this.updateRowHeight();
-        this.initUi();
+        this._updateRowHeight();
+        this._initUi();
     },
     updateRow: function(rowData, rowIndex) {
-        if(isNaN(rowIndex) || !this.validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
+        if(isNaN(rowIndex) || !this._validRowData(rowData) || rowIndex === undefined || rowIndex < 0 ||  rowIndex > this.data.rows.length - 1) {
             return;
         }
         rowIndex = +rowIndex;
@@ -211,14 +211,14 @@ Grid.prototype = {
         if(isSelected) {
             $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $body).addClass('selected');
         }
-        this.solveBorder();
+        this._solveBorder();
     },
-    validRowData: function(rowData) {
+    _validRowData: function(rowData) {
         if(!$.isArray(rowData)) {
             console.error('Invalid data format!');
             return false;
         }
-        var realLength = this.getCellLength(rowData);
+        var realLength = this._getCellLength(rowData);
         if(!this.isCheckboxCell(rowData[0])) {
             realLength = realLength + 1;
         }
@@ -235,8 +235,8 @@ Grid.prototype = {
         return true;
     },
     updateCell: function($cell, newValue) {
-        this.clearSortData();
-        newValue = this.htmlEncode(newValue);
+        this._clearSortData();
+        newValue = this._htmlEncode(newValue);
     	var rowIndex = $cell.attr(this.rowIndexAttrName);
     	var columnIndex = $cell.attr(this.columnIndexAttrName);
     	var rowData = this.data.rows[rowIndex];
@@ -256,14 +256,14 @@ Grid.prototype = {
     		}
     	}
     	$cell.html(newValue);
-        if(!this.isContainTag(newValue) && this.data.hoverTitle !== false) {
+        if(!this._isContainTag(newValue) && this.data.hoverTitle !== false) {
             $cell.attr('title', newValue);
         }
     },
-    isContainTag: function(string) {
+    _isContainTag: function(string) {
         return (string + '').match(/<(\S*?)\s*[^>]*>/) || (string + '').match(/&lt;(\S*?)\s*[^&gt;]*&gt;/);
     },
-    getColumnWidth: function() {
+    _getColumnWidth: function() {
         //每列的宽度
         var cwidth = new Array(this.columnLength).fill('1fr');
         var hadCheckedData = this.isCheckboxCell(this.data.header[0]);
@@ -275,8 +275,8 @@ Grid.prototype = {
         cwidth[0] = this.data.checkbox ? '30px' : '0px';
         return cwidth.join(' ');
     },
-    renderGrid: function() {
-        this.container.empty().css('min-height', this.numberToPx(this.data.height, this.minHeight));
+    _renderGrid: function() {
+        this.container.empty().css('min-height', this._numberToPx(this.data.height, this.minHeight));
         if(!this.data.freezeHeader) {
             this.container.css({'overflow-y': 'auto'});
             this.container.css({'overflow-y':'overlay'});
@@ -290,16 +290,16 @@ Grid.prototype = {
         this.container.append(this.gridBox);
         this.columnLength = this.columnLength + 1;//checkbox多一列
         
-        this.gridStyles.push('grid-template-columns:' + this.getColumnWidth());
+        this.gridStyles.push('grid-template-columns:' + this._getColumnWidth());
         //表格间隙
-        this.data.rowGap = this.numberToPx(this.data.rowGap, '0px');
+        this.data.rowGap = this._numberToPx(this.data.rowGap, '0px');
         this.gridStyles.push('grid-row-gap: ' + this.data.rowGap);
 
-        this.data.columnGap = this.numberToPx(this.data.columnGap, '0px');
+        this.data.columnGap = this._numberToPx(this.data.columnGap, '0px');
         this.gridStyles.push('grid-column-gap: ' + this.data.columnGap);
 
         //表格宽度
-        this.data.width = this.numberToPx(this.data.width, '100%');
+        this.data.width = this._numberToPx(this.data.width, '100%');
         this.gridStyles.push('width: ' + this.data.width);
 
         var header;
@@ -313,8 +313,8 @@ Grid.prototype = {
             }
 
             header = $('<header class="q-grid header" style="' + this.gridStyles.join(';') + '"></header>');
-            header.append(this.renderRow(newHeader, 0, 'header'));
-            header.append(this.getFilterRow());
+            header.append(this._renderRow(newHeader, 0, 'header'));
+            header.append(this._getFilterRow());
             this.gridBox.append(header);
         }
 
@@ -350,18 +350,18 @@ Grid.prototype = {
                         return;
                     }
                 }
-                rowsHtml += _this.renderRow(rowData, index, false);
+                rowsHtml += _this._renderRow(rowData, index, false);
             });
-            rowsHtml += this.getPageControlHtml();
+            rowsHtml += this._getPageControlHtml();
             contentBox.append(rowsHtml);
         }
 
         scrolBox.append(contentBox);
         this.gridBox.append(scrolBox);
-        this.updateRowHeight();
-        this.initUi();
+        this._updateRowHeight();
+        this._initUi();
     },
-    getPageControlHtml: function() {
+    _getPageControlHtml: function() {
         if(this.data.showPage === false) {
             return '';
         }
@@ -403,22 +403,22 @@ Grid.prototype = {
         }
         return rowsHtml;
     },
-    getFilterRow: function() {
+    _getFilterRow: function() {
         if(this.data.filter) {
             var inputHtml = '<input class="filter" placeholder="Filter" type="text"/><span class="filter-cancel" style="display:none;"></span>';
             var filterInputs = new Array(this.columnLength - 1).fill(inputHtml);
-            return this.renderRow(filterInputs, 'filterRow');
+            return this._renderRow(filterInputs, 'filterRow');
         } else {
             return '';
         }
     },
-    initUi:function() {
+    _initUi:function() {
         var scrolBox = $('.q-grid-scroll', this.container);
         var header = $('.q-grid.header', this.container);
         var scrollTop = scrolBox.scrollTop();
         var _this = this;
         //判断有没有滚动条，有滚动条火狐要特殊处理，保证表头和表体单元格对齐
-        if(this.isFirefox()) {
+        if(this._isFirefox()) {
             var fixWidth = 'calc(' + this.data.width + ' - 17px)';//火狐下滚动条宽度固定为17px
             if(scrollTop > 0) {
                 header.css('width', fixWidth);
@@ -452,11 +452,11 @@ Grid.prototype = {
         if(this.data.header && this.isCheckboxCell(this.data.header[0]) && this.data.header[0].checked === true) {
             $('.check-all', this.container).prop('checked', true).trigger('change');
         }
-        this.solveBorder();
+        this._solveBorder();
     },
-    renderRow: function(rowData, rowIndex, isHeader) {
+    _renderRow: function(rowData, rowIndex, isHeader) {
         var cellsHtml = '';
-        if(!this.validRowData(rowData)) {
+        if(!this._validRowData(rowData)) {
             return cellsHtml;
         }
         var _this = this;
@@ -469,7 +469,7 @@ Grid.prototype = {
                 cloneColumnData.unshift(rowIndex === 'filterRow' ? '' : {value:'<input type="checkbox" ' + (cloneColumnData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
             } 
         }
-        if(_this.getCellLength(cloneColumnData) < _this.columnLength) {
+        if(_this._getCellLength(cloneColumnData) < _this.columnLength) {
             cloneColumnData = cloneColumnData.concat(new Array(_this.columnLength - cloneColumnData.length).fill(''));
         }
         var cellStyles, classes, needSort, resizeLine, value, columnSeting, attrs;
@@ -544,7 +544,7 @@ Grid.prototype = {
             if(isHeader) {
                 cellStyles.push('border-top: none');
             }
-            var hoverTitle = _this.data.hoverTitle === false ? '': index === 0 || rowIndex === 'filterRow' ? '' : _this.isContainTag(value) ? '' : value;
+            var hoverTitle = _this.data.hoverTitle === false ? '': index === 0 || rowIndex === 'filterRow' ? '' : _this._isContainTag(value) ? '' : value;
             var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
             cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' + hoverTitle + '">';
             
@@ -564,7 +564,7 @@ Grid.prototype = {
         });
         return cellsHtml;
     },
-    getCellLength: function(arr) {
+    _getCellLength: function(arr) {
         var count = 0;
         arr.forEach(function(item) {
             if(typeof item !== 'object') {
@@ -577,7 +577,7 @@ Grid.prototype = {
         });
         return count;
     },
-    htmlEncode:function (html){
+    _htmlEncode:function (html){
         var temp = document.createElement ("div");
         (temp.textContent != undefined ) ? (temp.textContent = html) : (temp.innerText = html);
         var output = temp.innerHTML;
@@ -619,11 +619,11 @@ Grid.prototype = {
             }
         }
     },
-    toggleSelectById: function(rowId, selectStatu, multiSelect) {
+    _toggleSelectById: function(rowId, selectStatu, multiSelect) {
         var $cell = $('.cell[data-id="' + rowId + '"]', this.container), _this = this;
         if($cell.length) {
             $cell.each(function() {
-                var rowNum = $(this).attr(_this.rowIndexAttrName);
+                var rowNum = +$(this).attr(_this.rowIndexAttrName);
                 if(_this.data.selectable) {
                     var selectFn = selectStatu ? _this.selectRow : _this.unSelectRow;
                     selectFn.call(_this, rowNum, {}, multiSelect === undefined ? _this.data.multiSelect : multiSelect);
@@ -632,10 +632,10 @@ Grid.prototype = {
         }
     },
     selectRowById: function(rowId, multiSelect) {
-        this.toggleSelectById(rowId, true, multiSelect);
+        this._toggleSelectById(rowId, true, multiSelect);
     },
     unSelectRowById: function(rowId, multiSelect) {
-        this.toggleSelectById(rowId, false, multiSelect);
+        this._toggleSelectById(rowId, false, multiSelect);
     },
     unSelectRow: function(rowNum) {
         if(!this.isRowSelected(rowNum)) {
@@ -685,7 +685,7 @@ Grid.prototype = {
         var $cell = $('.cell[data-id="' + rowId + '"]', this.container), _this = this;
         if($cell.length) {
             $cell.each(function() {
-                var rowNum = $(this).attr(_this.rowIndexAttrName);
+                var rowNum = +$(this).attr(_this.rowIndexAttrName);
                 _this.checkOne(rowNum);
             });
         }
@@ -696,7 +696,7 @@ Grid.prototype = {
             this.data.header[0].checked = true;
         }
         $('.body .checkbox input', this.container).each(function() {
-            rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
+            rowNum = +$(this).closest('.cell').attr(_this.rowIndexAttrName);
             _this.checkOne(rowNum, fromEvent);
         });
     },
@@ -706,7 +706,7 @@ Grid.prototype = {
             this.data.header[0].checked = false;
         }
         $('.body .checkbox input', this.container).each(function() {
-            rowNum = $(this).closest('.cell').attr(_this.rowIndexAttrName);
+            rowNum = +$(this).closest('.cell').attr(_this.rowIndexAttrName);
             _this.unCheckOne(rowNum, fromEvent);
         });
     },
@@ -788,11 +788,11 @@ Grid.prototype = {
     isRowSelected: function(rowNum) {
         return !!$('.body .cell.checkbox.selected[data-row-index="' + rowNum + '"]', this.container).length;
     },
-    bindEvent: function() {
+    _bindEvent: function() {
         var _this = this;
         _this.container.off('click').on('click', '.body .cell', function(evt) {
             var rowNum = +$(this).attr(_this.rowIndexAttrName);
-            var columnNum = $(this).attr(_this.columnIndexAttrName);
+            var columnNum = +$(this).attr(_this.columnIndexAttrName);
             var __this = this;
             _this.shortTimer = setTimeout(function() {
                 var $cell = $(evt.target).closest('.cell');
@@ -963,7 +963,7 @@ Grid.prototype = {
             var $header = $('.q-grid.header', _this.container);
             var $body = $('.q-grid.body', _this.container);
             var $resizeBar = $(this);
-            var columnWidths = _this.getColumnWidth().split(' ');
+            var columnWidths = _this._getColumnWidth().split(' ');
             var originX = evt.pageX;
             var currentX, lastX = 0, minWidth = 30, maxWidth = 500;
             $resizeBar.addClass('isDraging');
@@ -1072,7 +1072,7 @@ Grid.prototype = {
                             cellValue = cellValue.value;
                         }
                         cellValue = cellValue + '';
-                        if(!_this.isContainTag(cellValue)) {
+                        if(!_this._isContainTag(cellValue)) {
                             if(cellValue.length > maxLength) {
                                 maxLength = cellValue.length;
                                 maxLengthValue = cellValue;
@@ -1151,18 +1151,17 @@ Grid.prototype = {
             }, 200);
         }).off('change').on('change', '.checkbox input[type="checkbox"]', function(evt) {
             var $cell = $(this).closest('.cell');
+            var rowNum = +$cell.attr(_this.rowIndexAttrName);
             if($(this).prop('checked') === true) {
                 if($(this).hasClass('check-all')) {
                     _this.checkAll(true);
                 } else {
-                    var rowNum = $cell.attr(_this.rowIndexAttrName);
                     _this.checkOne(rowNum, true);
                 }
             } else {
                 if($(this).hasClass('check-all')) {
                     _this.unCheckAll(true);
                 } else {
-                    var rowNum = $cell.attr(_this.rowIndexAttrName);
                     _this.unCheckOne(rowNum, true);
                 }
             }            
@@ -1174,6 +1173,7 @@ Grid.prototype = {
             if(evt.target.tagName !== 'INPUT') {
                 _this.endEdit();
             }
+            var rowNum = +$(this).attr(_this.rowIndexAttrName);
             if(_this.data.editable) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
                 if(!isNaN(rowNum)) {
@@ -1182,13 +1182,12 @@ Grid.prototype = {
                     });
                 }
             }
-            if(_this.data.onDblclick) {
-                var rowNum = $(this).attr(_this.rowIndexAttrName);
+            if(_this.data.onDblclick) {     
                 if(!isNaN(rowNum)) {
-                    var columnNum = $(this).attr(_this.columnIndexAttrName);
-                    var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
-                    if(_this.data.rows && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
-                        _this.data.onDblclick(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                    var columnNum = +$(this).attr(_this.columnIndexAttrName);
+                    var cellNum = _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
+                    if(_this.data.rows && _this.data.rows.length && _this.data.rows[rowNum]) {
+                        _this.data.onDblclick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
                     }
                 }
             }
@@ -1197,11 +1196,11 @@ Grid.prototype = {
                 return;
             }
             if(_this.data.onContextmenu) {
-                var rowNum = $(this).attr(_this.rowIndexAttrName);
-                var columnNum = $(this).attr(_this.columnIndexAttrName);
-                var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
-                if(_this.data.rows && _this.data.rows.length && _this.data.rows[parseInt(rowNum)]) {
-                    _this.data.onContextmenu(_this.data.rows[parseInt(rowNum)], _this.data.rows[parseInt(rowNum)][cellNum] || '', evt);
+                var rowNum = +$(this).attr(_this.rowIndexAttrName);
+                var columnNum = +$(this).attr(_this.columnIndexAttrName);
+                var cellNum = _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
+                if(_this.data.rows && _this.data.rows.length && _this.data.rows[rowNum]) {
+                    _this.data.onContextmenu(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
                 }
             }
             return false;
@@ -1374,7 +1373,7 @@ Grid.prototype = {
                         }
                         tipLine.remove();
                         _this.container.removeClass('noneselect');
-                        _this.solveBorder();
+                        _this._solveBorder();
                         beginDrag = false;
                    }, delay);                  
                 });
@@ -1397,7 +1396,7 @@ Grid.prototype = {
         var _this = this;
         var $header = $('.q-grid.header', _this.container);
         var $body = $('.q-grid.body', _this.container);
-        var columnWidths = _this.getColumnWidth().split(' ');
+        var columnWidths = _this._getColumnWidth().split(' ');
         var cellWidth;
         var newBodyWidth = 0;
         if(fixedColumnWidths) {
@@ -1444,28 +1443,40 @@ Grid.prototype = {
             return;
         }
 
-        _this.clearSortData();
-        var value = _this.htmlEncode($input.val() || '');
-        var rowNum = $cell.attr(_this.rowIndexAttrName);
-        var columnNum = $cell.attr(_this.columnIndexAttrName);
-        var cellNum = _this.isCheckboxCell(_this.data.rows[parseInt(rowNum)][0]) ? columnNum : columnNum - 1;
+        _this._clearSortData();
+        var value = _this._htmlEncode($input.val() || '');
+        var rowNum = +$cell.attr(_this.rowIndexAttrName);
+        var columnNum = +$cell.attr(_this.columnIndexAttrName);
+        var cellNum = _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
         var oldValue;
         if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum] !== undefined) {
             if(typeof _this.data.rows[rowNum][cellNum] !== 'object') {
                 oldValue = _this.data.rows[rowNum][cellNum];
-                _this.data.rows[rowNum][cellNum] = value;
             } else {
                 oldValue = _this.data.rows[rowNum][cellNum].value;
+            }
+        }
+        if(_this.data.onBeforeEndEdit) {
+            if (_this.data.onBeforeEndEdit(rowNum, cellNum, oldValue, value) === false) {
+                return;
+            }
+            value = _this._htmlEncode($input.val() || '');//onBeforeEndEdit可能会修改输入框的值，所以这里重新取值
+        }
+        if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum] !== undefined) {
+            if(typeof _this.data.rows[rowNum][cellNum] !== 'object') {
+                _this.data.rows[rowNum][cellNum] = value;
+            } else {
                 _this.data.rows[rowNum][cellNum].value = value;
             }
-        } 
+        }
+        
         $textContain.html(value).removeClass('contents');
         $cell.removeClass('editing');
-        if(!this.isContainTag(value) && this.data.hoverTitle !== false) {
+        if(!this._isContainTag(value) && this.data.hoverTitle !== false) {
             $cell.attr('title', value);
         }
-        if(_this.data.onEdit) {
-            _this.data.onEdit(rowNum, cellNum, oldValue, value);
+        if(_this.data.onEndEdit) {
+            _this.data.onEndEdit(rowNum, cellNum, oldValue, value);
         }
     },
     endEdit: function() {
@@ -1474,7 +1485,7 @@ Grid.prototype = {
             _this.endEditOne($(this));
         });      
     },
-    clearSortData: function() {
+    _clearSortData: function() {
         var originData = this.container.data('originData');
         if(originData) {
             this.container.data('originData', null);//清除排序原始数据，否则会造成维护不当
@@ -1491,8 +1502,8 @@ Grid.prototype = {
         if(!multiEdit) {
             _this.endEdit();
         }
-        var rowNum = $cell.attr(_this.rowIndexAttrName);
-        var columnNum = $cell.attr(_this.columnIndexAttrName);
+        var rowNum = +$cell.attr(_this.rowIndexAttrName);
+        var columnNum = +$cell.attr(_this.columnIndexAttrName);
         if(_this.data.onBeforeEdit) {
             var _edit = _this.data.onBeforeEdit(rowNum, columnNum, text);
             if(_edit === false) {
@@ -1579,8 +1590,11 @@ Grid.prototype = {
         });
         return data;
     },
+    getCell: function(rowNum, columnNum) {
+        return $('.body .cell[' + this.rowIndexAttrName + '="' + rowNum + '"][' + this.columnIndexAttrName + '="' + columnNum + '"]', this.container);
+    },
     isCheckboxCell: function(obj) {
-        return typeof obj === 'object' && obj.type === 'checkbox'
+        return typeof obj === 'object' && obj.type === 'checkbox';
     },
     getColumnLength: function() {
         var count = 1;
@@ -1609,10 +1623,10 @@ Grid.prototype = {
         }
         return count;
     },
-    isFirefox: function() {
+    _isFirefox: function() {
         return navigator.userAgent.indexOf('Firefox/') > -1;
     },
-    numberToPx: function(num, _default) {
+    _numberToPx: function(num, _default) {
         if(num) {
             if(!isNaN(num)) {
                 return num + 'px';

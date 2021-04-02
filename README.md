@@ -285,13 +285,18 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
     - columnNum列号
     - oldValue编辑前的旧值
 
-1. ### onEdit(rowNum, columnNum, oldValue, newValue)
+1. ### onEndEdit(rowNum, columnNum, oldValue, newValue)
     编辑结束触发
     - rowNum行号
     - columnNum列号
     - oldValue编辑前的旧值
     - newValue编辑后的值
-
+1. ### onBeforeEndEdit(rowNum, columnNum, oldValue, newValue)
+    编辑结束前触发，常用于编辑结束前的数据校验，返回false将不会结束编辑状态
+    - rowNum行号
+    - columnNum列号
+    - oldValue编辑前的旧值
+    - newValue编辑后的值
 1. ### onContextmenu(rowData, cellData, evt)
     右键的时候触发
     - rowData选中行的数据
@@ -328,7 +333,10 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
 1. ### updateData([[1,2,3,4,5,6,7,8,9]]);
     更新表格数据
-
+1. ### getCell(rowNum, columnNum)
+    获取单元格的dom元素
+    rowNum行号，注意是从0开始
+    columnNum列号，注意是从0开始，勾选框占一列，不显示勾选框的时候不影响其占位号
 1. ### updateCell($cell, newValue);
     - $cell: 单元格对象
     - newValue: 新的值
@@ -416,7 +424,11 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
     删除行
 
     rowNum:行数
-
+1. ### isRowSelected(rowNum)
+    判断某一行有没有选中
+    rowNum行号
+1. ### isAllChecked()
+    判断是否全部勾选
 1. ### updateRow(rowData, rowIndex);
     更新行
     - rowData：行新数据
