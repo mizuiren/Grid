@@ -1504,8 +1504,9 @@ Grid.prototype = {
         }
         var rowNum = +$cell.attr(_this.rowIndexAttrName);
         var columnNum = +$cell.attr(_this.columnIndexAttrName);
+        var cellNum = _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
         if(_this.data.onBeforeEdit) {
-            var _edit = _this.data.onBeforeEdit(rowNum, columnNum, text);
+            var _edit = _this.data.onBeforeEdit(rowNum, cellNum, text);
             if(_edit === false) {
                 return;
             }
