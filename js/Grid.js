@@ -722,7 +722,7 @@ Grid.prototype = {
     },
     checkOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        if(isNaN(rowNum) || $input.prop('checked') || (fromEvent && !fromEvent.notTriggerEvent && $input.prop('disabled'))) {
+        if($input.is(':hidden') || isNaN(rowNum) || $input.prop('checked') || (fromEvent && !fromEvent.notTriggerEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', true);
@@ -757,7 +757,7 @@ Grid.prototype = {
     },
     unCheckOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
-        if(!$input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
+        if($input.is(':hidden') || !$input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', false);
