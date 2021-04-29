@@ -27,7 +27,7 @@ Grid.prototype = {
     minHeight: '30px',
     rowIndexAttrName: 'data-row-index',
     columnIndexAttrName: 'data-cell-index',
-    updateData: function(rowsData) {
+    updateData: function(rowsData, notClearCache) {
         this.data.rows = rowsData;
         var rowsHtml = '';
         var _this = this;
@@ -42,6 +42,9 @@ Grid.prototype = {
             }
             rowsHtml += _this._renderRow(rowData, index, false);
         });
+        if(!notClearCache) {
+            _this._clearSortData();
+        }
         var $gridBody = $('.q-grid.body', this.container);
         if(!$gridBody.length) {
             this.columnLength = this.getColumnLength();
@@ -958,7 +961,7 @@ Grid.prototype = {
         }).off('mousedown.grid').on('mousedown.grid', 'header.q-grid .cell .resizebar', function(evt) {
             clearTimeout(_this.shortTimer);
             _this.container.addClass('noneselect');
-            var $cell = $(this).parent(), cellLeft = $cell.offset().left;
+            var $cell = $(this).parent(), cellLeft = $cell.offset().left, originWidth = $cell.outerWidth();
             var cellIndex = $cell.attr(_this.columnIndexAttrName) - 1;
             var $header = $('.q-grid.header', _this.container);
             var $body = $('.q-grid.body', _this.container);
@@ -973,12 +976,12 @@ Grid.prototype = {
             var width;
             if(_this.data.width) {
                 if((_this.data.width + '').match(/\d+%$/)) {
-                    width = (parseFloat(_this.data.width)) / 100 * _this.container.width();
+                    width = (parseFloat(_this.data.width)) / 100 * _this.container.outerWidth();
                 } else {
                     width = parseFloat(_this.data.width)
                 }
             } else {
-                width = _this.container.width();
+                width = _this.container.outerWidth();
             }
             var fixedColumnWidths = [], cellWidth;
             $('.q-grid.header .cell[data-row-index="0"]', _this.container).each(function() {
@@ -999,20 +1002,40 @@ Grid.prototype = {
                 }
                 var newWidth = currentX - cellLeft;
                 if(_this.data.dilatationResize) {
-                    var addWidth;
+                    var addWidth = 0;
                     if((newWidth > minWidth && newWidth < maxWidth)) {
-                        addWidth = currentX - originX; 
-                    } else if((newWidth < minWidth && currentX - lastX > 0) || (newWidth > maxWidth && currentX - lastX < 0)) {
+                        addWidth = currentX - originX;
+                    } else if(newWidth < minWidth && currentX - lastX > 0) {
+                        let lineX = $resizeTipLine.offset().left;
+                        if(currentX > lineX) {
+                            addWidth = lineX - originX;  
+                        }
+                    } else if(newWidth > maxWidth && currentX - lastX < 0) {
+                        let lineX = $resizeTipLine.offset().left;
                         //在双击调节线的时候宽度可能会在范围之外，这个时候要使其能拖回去
-                        addWidth = $resizeTipLine.offset().left - originX;
+                        if(currentX < lineX) {
+                            addWidth = lineX - originX;  
+                        }
+                    } else {
+                        if(currentX - lastX > 0) {
+                            addWidth = maxWidth - originWidth;
+                        } else if (currentX - lastX < 0) {
+                            addWidth = minWidth - originWidth;
+                        }
                     }
-                    _this._addColumnWidth(addWidth, cellIndex + 1, JSON.parse(JSON.stringify(fixedColumnWidths)), bodyWidth);
-                    $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px');
+                    if(addWidth !== 0) {
+                        _this._addColumnWidth(addWidth, cellIndex + 1, JSON.parse(JSON.stringify(fixedColumnWidths)), bodyWidth);
+                        $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px'); 
+                    }
                 } else {
-                    if(newWidth < minWidth) {
+                    if(newWidth <= minWidth) {
                         newWidth = minWidth;
-                    } else if(newWidth > maxWidth) {
+                    } else if(newWidth >= maxWidth) {
                         newWidth = maxWidth;
+                    }
+                    if(_this.data.border) {
+                        //减1像素边框
+                        newWidth = newWidth - 1;
                     }
                     var percent = (newWidth / width * 100) + '%';
                     columnWidths[cellIndex + 1] = percent;
@@ -1105,7 +1128,7 @@ Grid.prototype = {
                     sortType = 0;
                     var originData = _this.container.data('originData');
                     if(originData) {
-                        _this.updateData(originData);
+                        _this.updateData(originData, true);
                         if(_this.data.onSort) {
                             _this.data.onSort(sortType);
                         }
@@ -1144,7 +1167,7 @@ Grid.prototype = {
                     }
                     return _return * (sortType === 1 ? -1 : 1);
                 });
-                _this.updateData(_this.data.rows);
+                _this.updateData(_this.data.rows, true);
                 if(_this.data.onSort) {
                     _this.data.onSort(sortType);
                 }
