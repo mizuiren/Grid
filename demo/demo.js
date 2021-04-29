@@ -51,6 +51,7 @@ let gridData = {
             resizeable: true
         }],//表头
     freezeHeader: true,
+    checkbox: true,
     editable: true,
     multiSelect: true,
     selectable: true,
