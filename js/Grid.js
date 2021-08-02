@@ -762,7 +762,7 @@ Grid.prototype = {
     unCheckOne: function(rowNum, fromEvent) {
         var $input = $('.q-grid.body .checkbox[data-row-index="' + rowNum + '"] input', this.container);
         var $cell = $input.closest('.cell');
-        if($cell.css('display') === 'none' || !$input.prop('checked') || (fromEvent && $input.prop('disabled'))) {
+        if($cell.css('display') === 'none' || !$input.prop('checked') || (fromEvent && !fromEvent.notTriggerEvent && $input.prop('disabled'))) {
             return;
         }
         $input.prop('checked', false);
@@ -777,13 +777,14 @@ Grid.prototype = {
                 this.data.header[0].checked = false;
             }
         }
-
-        if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
-            this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
-        }
-        if(this.data.onUnCheckAll) {
-            if(!$('.cell.checkbox input:checked', $('.body', this.container)).length) {
-                this.data.onUnCheckAll(this.data.rows);
+        if(!fromEvent || !fromEvent.notTriggerEvent) {
+            if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
+                this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
+            }
+            if(this.data.onUnCheckAll) {
+                if(!$('.cell.checkbox input:checked', $('.body', this.container)).length) {
+                    this.data.onUnCheckAll(this.data.rows);
+                }
             }
         }
         if(this.data.selectWhenCheck) {
