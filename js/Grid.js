@@ -1003,18 +1003,18 @@ Grid.prototype = {
                 if(Math.abs(currentX - originX) < 3) {//微距防抖，避免双击的时候抖动导致双击错主体
                     return;
                 }
-                var newWidth = currentX - cellLeft;
+                var newWidth = currentX - cellLeft, lineX;
                 if(_this.data.dilatationResize) {
                     var addWidth = 0;
                     if((newWidth > minWidth && newWidth < maxWidth)) {
                         addWidth = currentX - originX;
                     } else if(newWidth < minWidth && currentX - lastX > 0) {
-                        let lineX = $resizeTipLine.offset().left;
+                        lineX = $resizeTipLine.offset().left;
                         if(currentX > lineX) {
                             addWidth = lineX - originX;  
                         }
                     } else if(newWidth > maxWidth && currentX - lastX < 0) {
-                        let lineX = $resizeTipLine.offset().left;
+                        lineX = $resizeTipLine.offset().left;
                         //在双击调节线的时候宽度可能会在范围之外，这个时候要使其能拖回去
                         if(currentX < lineX) {
                             addWidth = lineX - originX;  
@@ -1411,7 +1411,7 @@ Grid.prototype = {
         $(document).off('click.grid').on('click.grid', function(evt) {
             if(!$(evt.target).closest('.cell').length) {
                 $('.q-grid.body .cell.editing').each(function() {
-                    let $container = $(this).closest('.q-grid-box').parent();
+                    var $container = $(this).closest('.q-grid-box').parent();
                     $container[0] && $container[0].grid.endEditOne($(this));
                 })
             }
