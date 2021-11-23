@@ -800,8 +800,58 @@ Grid.prototype = {
             var rowNum = +$(this).attr(_this.rowIndexAttrName);
             var columnNum = +$(this).attr(_this.columnIndexAttrName);
             var __this = this;
+            var $cell = $(evt.target).closest('.cell');
+            if(!$cell.hasClass('editing')) {
+                _this.endEdit();
+            }
+            if(_this.data.selectable) {
+                if(!evt.shiftKey) {
+                    _this.continuSelectStartRowNum = rowNum;
+                }            
+                
+                if(!evt.ctrlKey && !evt.shiftKey) {
+                    _this.unSelectAll([rowNum]);
+                    if(!$cell.hasClass('selected')) {
+                       _this.selectRow(rowNum, evt); 
+                    }
+                } else if(evt.ctrlKey) {
+                    if(!$cell.hasClass('selected')) {
+                        _this.selectRow(rowNum, evt, _this.data.multiSelect);
+                    } else {
+                        _this.unSelectRow(rowNum, evt);
+                    }
+                } else if(evt.shiftKey) {
+                    if(!_this.getSelectedData().length) {
+                        _this.continuSelectStartRowNum = rowNum;
+                    }
+                    if(_this.data.multiSelect) {
+                        var needSelects = [], notNeedSelects = [], i;
+                        if(_this.continuSelectStartRowNum > rowNum) {
+                            for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
+                                if(_this.isRowSelected(i)) {
+                                    notNeedSelects.push(i);
+                                } else {
+                                    needSelects.push(i);
+                                }
+                            }
+                        } else {
+                            for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
+                                if(_this.isRowSelected(i)) {
+                                    notNeedSelects.push(i);
+                                } else {
+                                    needSelects.push(i);
+                                }
+                            }
+                        }
+                        _this.unSelectAll(notNeedSelects);
+                        needSelects.forEach(function(item) {
+                            _this.selectRow(item, evt, true);
+                        });
+                    }      
+                }
+            }
             _this.shortTimer = setTimeout(function() {
-                var $cell = $(evt.target).closest('.cell');
+                
                 if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                     return;
                 }
@@ -817,9 +867,6 @@ Grid.prototype = {
                     return;
                 }
                 
-                if(evt.target.tagName !== 'INPUT') {
-                    _this.endEdit();
-                }
                 if(_this.data.onClick) {
                     if(_this.data.rows.length && _this.data.rows[rowNum]) {
                         var cellNum =  _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
@@ -829,53 +876,6 @@ Grid.prototype = {
                 
                 if(_this.data.editable && !$(__this).hasClass('editing') && _this.data.editWhenClick) {
                     _this.editCell($(__this));
-                }
-                
-                if(_this.data.selectable) {
-                    if(!evt.shiftKey) {
-                        _this.continuSelectStartRowNum = rowNum;
-                    }            
-                    
-                    if(!evt.ctrlKey && !evt.shiftKey) {
-                        _this.unSelectAll([rowNum]);
-                        if(!$cell.hasClass('selected')) {
-                           _this.selectRow(rowNum, evt); 
-                        }
-                    } else if(evt.ctrlKey) {
-                        if(!$cell.hasClass('selected')) {
-                            _this.selectRow(rowNum, evt, _this.data.multiSelect);
-                        } else {
-                            _this.unSelectRow(rowNum, evt);
-                        }
-                    } else if(evt.shiftKey) {
-                        if(!_this.getSelectedData().length) {
-                            _this.continuSelectStartRowNum = rowNum;
-                        }
-                        if(_this.data.multiSelect) {
-                            var needSelects = [], notNeedSelects = [], i;
-                            if(_this.continuSelectStartRowNum > rowNum) {
-                                for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
-                                    if(_this.isRowSelected(i)) {
-                                        notNeedSelects.push(i);
-                                    } else {
-                                        needSelects.push(i);
-                                    }
-                                }
-                            } else {
-                                for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
-                                    if(_this.isRowSelected(i)) {
-                                        notNeedSelects.push(i);
-                                    } else {
-                                        needSelects.push(i);
-                                    }
-                                }
-                            }
-                            _this.unSelectAll(notNeedSelects);
-                            needSelects.forEach(function(item) {
-                                _this.selectRow(item, evt, true);
-                            });
-                        }      
-                    }
                 }
             }, 50);
         }).on('click.grid', '.pages a', function(evt) {
@@ -1196,9 +1196,6 @@ Grid.prototype = {
                 return;
             }
             clearTimeout(_this.shortTimer);
-            if(evt.target.tagName !== 'INPUT') {
-                _this.endEdit();
-            }
             var rowNum = +$(this).attr(_this.rowIndexAttrName);
             if(_this.data.editable) {
                 var rowNum = $(this).attr(_this.rowIndexAttrName);
@@ -1206,6 +1203,12 @@ Grid.prototype = {
                     $('.q-grid.body .cell[data-row-index="' + rowNum + '"]:not(.checkbox)', _this.container).each(function() {
                         _this.editCell($(this), true);
                     });
+                }
+                var $cell = $(evt.target).closest('.cell');
+                var $editingInput = $cell.find('input');
+                if($editingInput.length) {
+                    var val = $editingInput.val();
+                    $editingInput.val('').focus().val(val);
                 }
             }
             if(_this.data.onDblclick) {     
