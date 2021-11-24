@@ -851,7 +851,6 @@ Grid.prototype = {
                 }
             }
             _this.shortTimer = setTimeout(function() {
-                
                 if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                     return;
                 }
@@ -1193,6 +1192,9 @@ Grid.prototype = {
             }            
         }).on('dblclick.grid', '.body .cell', function(evt) {
             if($(this).hasClass('checkbox')) {
+                return;
+            }
+            if(evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || evt.target.tagName === 'TEXTAREA') {
                 return;
             }
             clearTimeout(_this.shortTimer);
