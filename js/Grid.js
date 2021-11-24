@@ -1207,7 +1207,7 @@ Grid.prototype = {
                     });
                 }
                 var $cell = $(evt.target).closest('.cell');
-                var $editingInput = $cell.find('input');
+                var $editingInput = $cell.find('input.editting-ele');
                 if($editingInput.length) {
                     var val = $editingInput.val();
                     $editingInput.val('').focus().val(val);
