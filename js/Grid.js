@@ -1479,9 +1479,10 @@ Grid.prototype = {
         var rowNum = +$cell.attr(_this.rowIndexAttrName);
         var columnNum = +$cell.attr(_this.columnIndexAttrName);
         var cellNum = _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
+        var isObjCell = typeof _this.data.rows[rowNum][cellNum] === 'object';
         var oldValue;
         if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum] !== undefined) {
-            if(typeof _this.data.rows[rowNum][cellNum] !== 'object') {
+            if(!isObjCell) {
                 oldValue = _this.data.rows[rowNum][cellNum];
             } else {
                 oldValue = _this.data.rows[rowNum][cellNum].value;
@@ -1494,7 +1495,7 @@ Grid.prototype = {
             value = _this._htmlEncode($input.val() || '');//onBeforeEndEdit可能会修改输入框的值，所以这里重新取值
         }
         if(_this.data.rows[rowNum] && _this.data.rows[rowNum][cellNum] !== undefined) {
-            if(typeof _this.data.rows[rowNum][cellNum] !== 'object') {
+            if(!isObjCell) {
                 _this.data.rows[rowNum][cellNum] = value;
             } else {
                 _this.data.rows[rowNum][cellNum].value = value;
