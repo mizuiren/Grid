@@ -804,7 +804,7 @@ Grid.prototype = {
             if(!$cell.hasClass('editing')) {
                 _this.endEdit();
             }
-            if(_this.data.selectable) {
+            if(_this.data.selectable && !$cell.hasClass('checkbox')) {
                 if(!evt.shiftKey) {
                     _this.continuSelectStartRowNum = rowNum;
                 }            
