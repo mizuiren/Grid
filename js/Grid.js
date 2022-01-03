@@ -18,7 +18,7 @@ function Grid(data, $container) {
     this.container.each(function() {
         $.fn.extend(this, {grid: _this});
     });
-    
+
     this._bindEvent();
     this._renderGrid();
 }
@@ -103,13 +103,13 @@ Grid.prototype = {
                 this.gridBox.css('border-bottom', 'none');
             }
         } else {
-           this.gridBox.css('border-bottom', 'none');
+            this.gridBox.css('border-bottom', 'none');
         }
     },
     previousPage: function() {
         this.page--;
         if(this.page > 0) {
-           if(this.data.onBeforePageChange) {
+            if(this.data.onBeforePageChange) {
                 if(!this.data.onBeforePageChange(this.page)) {
                     return;
                 }
@@ -117,13 +117,13 @@ Grid.prototype = {
             this.updateData(this.data.rows);
             if(this.data.onPageChange) {
                 this.data.onPageChange(this.page);
-            } 
+            }
         }
     },
     nextPage: function() {
         this.page++;
         if(this.page <= Math.ceil(this.data.rows.length / this.data.pageCount)) {
-           if(this.data.onBeforePageChange) {
+            if(this.data.onBeforePageChange) {
                 if(!this.data.onBeforePageChange(this.page)) {
                     return;
                 }
@@ -131,13 +131,13 @@ Grid.prototype = {
             this.updateData(this.data.rows);
             if(this.data.onPageChange) {
                 this.data.onPageChange(this.page);
-            } 
+            }
         }
     },
     jumpToPage: function(page) {
         this.page = page * 1;
         if(this.page > 0 && this.page <= Math.ceil(this.data.rows.length / this.data.pageCount)) {
-           if(this.data.onBeforePageChange) {
+            if(this.data.onBeforePageChange) {
                 if(!this.data.onBeforePageChange(this.page)) {
                     return;
                 }
@@ -145,7 +145,7 @@ Grid.prototype = {
             this.updateData(this.data.rows);
             if(this.data.onPageChange) {
                 this.data.onPageChange(this.page);
-            } 
+            }
         }
     },
     appendRow: function(rowData, index) {
@@ -160,10 +160,10 @@ Grid.prototype = {
             index = 0;
         }
         var $gridBody = $('.q-grid.body', this.container);
-        
-        this.data.rows.splice(index, 0, rowData);   
+
+        this.data.rows.splice(index, 0, rowData);
         var newRowHtml = this._renderRow(rowData, index, false);
-        
+
         var _this = this;
         if(index < this.data.rows.length) {
             $('.cell['+this.rowIndexAttrName+']', $gridBody).each(function() {
@@ -188,7 +188,7 @@ Grid.prototype = {
         this._clearSortData();
         var $gridBody = $('.q-grid.body', this.container);
         this.data.rows.splice(rowIndex, 1);
-        
+
         var _this = this;
         $('.cell['+this.rowIndexAttrName+'="'+rowIndex+'"]', $gridBody).remove();
         if(rowIndex < this.data.rows.length) {
@@ -240,25 +240,25 @@ Grid.prototype = {
     updateCell: function($cell, newValue) {
         this._clearSortData();
         newValue = this._htmlEncode(newValue);
-    	var rowIndex = $cell.attr(this.rowIndexAttrName);
-    	var columnIndex = $cell.attr(this.columnIndexAttrName);
-    	var rowData = this.data.rows[rowIndex];
-    	if(rowData) {
-    		if(this.isCheckboxCell(rowData[0])) {
+        var rowIndex = $cell.attr(this.rowIndexAttrName);
+        var columnIndex = $cell.attr(this.columnIndexAttrName);
+        var rowData = this.data.rows[rowIndex];
+        if(rowData) {
+            if(this.isCheckboxCell(rowData[0])) {
                 if(typeof rowData[columnIndex] === 'string') {
                     rowData[columnIndex] = newValue;
                 } else {
                     rowData[columnIndex].value = newValue;
                 }
-    		} else {
-    			if(typeof rowData[columnIndex-1] === 'string') {
+            } else {
+                if(typeof rowData[columnIndex-1] === 'string') {
                     rowData[columnIndex-1] = newValue;
                 } else {
                     rowData[columnIndex-1].value = newValue;
                 }
-    		}
-    	}
-    	$cell.html(newValue);
+            }
+        }
+        $cell.html(newValue);
         if(!this._isContainTag(newValue) && this.data.hoverTitle !== false) {
             $cell.attr('title', newValue);
         }
@@ -288,11 +288,11 @@ Grid.prototype = {
         var gridBoxStyles = ['width:100%;height: 100%','border-top:1px '+this.data.border+' '+this.data.borderColor];
         if(!this.data.freezeHeader) {
             gridBoxStyles.push('overflow-y:overlay');
-        } 
+        }
         this.gridBox = $('<div class="q-grid-box" style="' + gridBoxStyles.join(';') + '"></div>');
         this.container.append(this.gridBox);
         this.columnLength = this.columnLength + 1;//checkbox多一列
-        
+
         this.gridStyles.push('grid-template-columns:' + this._getColumnWidth());
         //表格间隙
         this.data.rowGap = this._numberToPx(this.data.rowGap, '0px');
@@ -370,30 +370,30 @@ Grid.prototype = {
         }
         var _this = this;
         function pageInit(current, total, link){
-           current = parseInt(current);
-           total = parseInt(total);
-           var count = 6;
-           var i;
-           var preLink = current > 1 ? link + (current-1) : "javascript:void(0)";
-           var nextLink = current < total ? link + (current + 1) : "javascript:void(0)";
-           var html = '<div class="pages">共 <b>' + _this.data.rows.length + '</b> 条记录 <a page="' + preLink + '" '+(current > 1 ? "" : "class=\"no-link\"") +'>&lt;&lt;</a>';
-           if(total <= count){
-              for(i = 1; i <= total; i++){
-                 var pageTag = i == current ? '<span class="act">' + current + '</span>' : '<a page="' + link + i + '">' + i + '</a>'
-                 html += pageTag;
-              }
-           }else{
-              i = current - count / 2 < 2 ? 2 : current - count / 2;
-              var end = (parseInt(current + count / 2) > (total - 1)) ? (total - 1) : parseInt(current + count / 2);
-              html += (current == 1) ? '<span class="act">1</span>' : '<a page="' + link + '1">1</a> ' + (i > 2 ? "..." : "");
-              for(; i <= end; i++){
-                  var pageTag = (i == current) ? '<span class="act">' + current + '</span>' : '<a page="' + (link + i) + '">' + i + '</a>'
-                  html += pageTag;
-              }
-              html += (end < (total - 2) ? "..." : "") + ((current == total) ? '<span class="act">' + total + '</span>' : ' <a page="' + link + total + '">' + total + '</a>');
-           }
-           html += '<a page="' + nextLink + '" ' + (current < total ? "" : "class=\"no-link\"") + '>&gt;&gt;</a></div>';
-           return html;
+            current = parseInt(current);
+            total = parseInt(total);
+            var count = 6;
+            var i;
+            var preLink = current > 1 ? link + (current-1) : "javascript:void(0)";
+            var nextLink = current < total ? link + (current + 1) : "javascript:void(0)";
+            var html = '<div class="pages">共 <b>' + _this.data.rows.length + '</b> 条记录 <a page="' + preLink + '" '+(current > 1 ? "" : "class=\"no-link\"") +'>&lt;&lt;</a>';
+            if(total <= count){
+                for(i = 1; i <= total; i++){
+                    var pageTag = i == current ? '<span class="act">' + current + '</span>' : '<a page="' + link + i + '">' + i + '</a>'
+                    html += pageTag;
+                }
+            }else{
+                i = current - count / 2 < 2 ? 2 : current - count / 2;
+                var end = (parseInt(current + count / 2) > (total - 1)) ? (total - 1) : parseInt(current + count / 2);
+                html += (current == 1) ? '<span class="act">1</span>' : '<a page="' + link + '1">1</a> ' + (i > 2 ? "..." : "");
+                for(; i <= end; i++){
+                    var pageTag = (i == current) ? '<span class="act">' + current + '</span>' : '<a page="' + (link + i) + '">' + i + '</a>'
+                    html += pageTag;
+                }
+                html += (end < (total - 2) ? "..." : "") + ((current == total) ? '<span class="act">' + total + '</span>' : ' <a page="' + link + total + '">' + total + '</a>');
+            }
+            html += '<a page="' + nextLink + '" ' + (current < total ? "" : "class=\"no-link\"") + '>&gt;&gt;</a></div>';
+            return html;
         }
 
         var rowsHtml = '';
@@ -426,12 +426,12 @@ Grid.prototype = {
             if(scrollTop > 0) {
                 header.css('width', fixWidth);
             } else {
-                 scrolBox.scrollTop(10);//控制滚动条下移10px
+                scrolBox.scrollTop(10);//控制滚动条下移10px
                 if(scrolBox.scrollTop() > 0){
                     header.css('width', fixWidth);
                 }
                 scrolBox.scrollTop(scrollTop);//滚动条返回原位
-            }           
+            }
         }
         if(this.data.rows && this.data.rows.length) {
             var needDisabledHeader = true;
@@ -470,7 +470,7 @@ Grid.prototype = {
                 cloneColumnData[0].value = '<input type="checkbox" ' + (cloneColumnData[0].disabled ? 'disabled' : '') + '/><span></span>';
             } else {
                 cloneColumnData.unshift(rowIndex === 'filterRow' ? '' : {value:'<input type="checkbox" ' + (cloneColumnData[0].disabled ? 'disabled' : '') + '/><span></span>', id: rowIndex, type: 'checkbox'});
-            } 
+            }
         }
         if(_this._getCellLength(cloneColumnData) < _this.columnLength) {
             cloneColumnData = cloneColumnData.concat(new Array(_this.columnLength - cloneColumnData.length).fill(''));
@@ -488,18 +488,18 @@ Grid.prototype = {
                 id = 'data-id="0"';
             }
             if(!isHeader) {
-				cellStyles.push('margin-top: -1px');
+                cellStyles.push('margin-top: -1px');
             }
             if(_this.data.checkbox) {
                 if(index !== 0) {
-                    cellStyles.push('margin-left: -1px');
-                } 
+                    cellStyles.push('margin-left: -1px !important');
+                }
             } else {
                 if(index !== 1 && index !== 0) {
-                    cellStyles.push('margin-left: -1px');
+                    cellStyles.push('margin-left: -1px !important');
                 }
             }
-            
+
             classes = ['cell'];
             attrs = '';
             if(typeof item === 'object') {
@@ -550,7 +550,7 @@ Grid.prototype = {
             var hoverTitle = _this.data.hoverTitle === false ? '': index === 0 || rowIndex === 'filterRow' ? '' : _this._isContainTag(value) ? '' : value;
             var needSpan = isHeader || (columnSeting && columnSeting.ellipsis);
             cellsHtml += '<div' + (needSpan ? '' : attrs) + ' ' + id + ' class="' + classes.join(' ') + '" data-cell-index="' + index + '" data-row-index="' + rowIndex + '" style="' + cellStyles.join(';') + '" title="' + hoverTitle + '">';
-            
+
             if(needSpan) {
                 cellsHtml += '<span' + (needSpan ? attrs : '') + ' class="' + (rowIndex === 'filterRow' ? 'contents ' : ' ')  + 'txt '+(columnSeting && columnSeting.ellipsis ? 'ellipsis' : '')+'">' + value +'</span> ' + (needSort ? '<span class="sort-icon"> </span>' : '');
             } else {
@@ -598,9 +598,9 @@ Grid.prototype = {
                 var needSelect = _this.data.onBeforeSelect(_this.data.rows[parseInt(rowNum)], evt);
                 if(needSelect === false) {
                     return;
-                } 
+                }
             }
-            
+
         }
         if(!multiSelect) {
             _this.unSelectAll();
@@ -742,7 +742,7 @@ Grid.prototype = {
             }
         }
         if(!fromEvent || !fromEvent.notTriggerEvent) {
-            if(this.data.onCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
+            if(this.data.onCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {
                 this.data.onCheck(this.data.rows[parseInt(rowNum)]);
             }
             if(this.data.onCheckAll) {
@@ -751,7 +751,7 @@ Grid.prototype = {
                 }
             }
         }
-        
+
         if(this.data.selectWhenCheck && this.data.selectable) {
             this.selectRow(rowNum, {notTriggerEvent: fromEvent && fromEvent.notTriggerEvent},  !!this.data.multiSelect);
         }
@@ -778,7 +778,7 @@ Grid.prototype = {
             }
         }
         if(!fromEvent || !fromEvent.notTriggerEvent) {
-            if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {   
+            if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {
                 this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
             }
             if(this.data.onUnCheckAll) {
@@ -807,12 +807,12 @@ Grid.prototype = {
             if(_this.data.selectable && !$cell.hasClass('checkbox')) {
                 if(!evt.shiftKey) {
                     _this.continuSelectStartRowNum = rowNum;
-                }            
-                
+                }
+
                 if(!evt.ctrlKey && !evt.shiftKey) {
                     _this.unSelectAll([rowNum]);
                     if(!$cell.hasClass('selected')) {
-                       _this.selectRow(rowNum, evt); 
+                        _this.selectRow(rowNum, evt);
                     }
                 } else if(evt.ctrlKey) {
                     if(!$cell.hasClass('selected')) {
@@ -847,14 +847,14 @@ Grid.prototype = {
                         needSelects.forEach(function(item) {
                             _this.selectRow(item, evt, true);
                         });
-                    }      
+                    }
                 }
             }
             _this.shortTimer = setTimeout(function() {
                 if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                     return;
                 }
-                if($cell.hasClass('checkbox')) {               
+                if($cell.hasClass('checkbox')) {
                     var $input = $(evt.target).closest('.cell').find('input');
                     if(!$input.prop('disabled')) {
                         if($input.prop('checked') === true) {
@@ -865,14 +865,14 @@ Grid.prototype = {
                     }
                     return;
                 }
-                
+
                 if(_this.data.onClick) {
                     if(_this.data.rows.length && _this.data.rows[rowNum]) {
                         var cellNum =  _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
                         _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
                     }
                 }
-                
+
                 if(_this.data.editable && !$(__this).hasClass('editing') && _this.data.editWhenClick) {
                     _this.editCell($(__this));
                 }
@@ -922,7 +922,7 @@ Grid.prototype = {
             }
         }).on('click.grid', '.header .cell', function(evt) {
             var $cell = $(evt.target).closest('.cell');
-            if($cell.hasClass('checkbox')) {               
+            if($cell.hasClass('checkbox')) {
                 var $input = $(evt.target).closest('.cell').find('input');
                 if(!$input.prop('disabled')) {
                     if($input.closest('.header').length) {
@@ -1010,13 +1010,13 @@ Grid.prototype = {
                     } else if(newWidth < minWidth && currentX - lastX > 0) {
                         lineX = $resizeTipLine.offset().left;
                         if(currentX > lineX) {
-                            addWidth = lineX - originX;  
+                            addWidth = lineX - originX;
                         }
                     } else if(newWidth > maxWidth && currentX - lastX < 0) {
                         lineX = $resizeTipLine.offset().left;
                         //在双击调节线的时候宽度可能会在范围之外，这个时候要使其能拖回去
                         if(currentX < lineX) {
-                            addWidth = lineX - originX;  
+                            addWidth = lineX - originX;
                         }
                     } else {
                         if(currentX - lastX > 0) {
@@ -1027,7 +1027,7 @@ Grid.prototype = {
                     }
                     if(addWidth !== 0) {
                         _this._addColumnWidth(addWidth, cellIndex + 1, JSON.parse(JSON.stringify(fixedColumnWidths)), bodyWidth);
-                        $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px'); 
+                        $resizeTipLine.css('left', ($resizeBar.offset().left - gridBoxX) + 'px');
                     }
                 } else {
                     if(newWidth <= minWidth) {
@@ -1042,7 +1042,7 @@ Grid.prototype = {
                     var percent = (newWidth / width * 100) + '%';
                     columnWidths[cellIndex + 1] = percent;
                     if(newWidth > minWidth && newWidth < maxWidth) {//最小宽度30, 最大宽度500
-                        var allPxWidth = 0, numberVal; 
+                        var allPxWidth = 0, numberVal;
                         columnWidths.forEach(function(setting, index) {
                             if(typeof setting === 'number' || !isNaN(setting)) {
                                 numberVal = setting * 1;
@@ -1057,9 +1057,9 @@ Grid.prototype = {
                         });
                         //重算该列的宽度，使其刚好撑满整个容器
                         if(allPxWidth > width) {
-                           newWidth = width - (allPxWidth - newWidth);
-                           percent = (newWidth / width) * 100 + '%';
-                           columnWidths[cellIndex + 1] = percent;
+                            newWidth = width - (allPxWidth - newWidth);
+                            percent = (newWidth / width) * 100 + '%';
+                            columnWidths[cellIndex + 1] = percent;
                         }
                         _this.data.header[cellIndex].width = percent;
                     }
@@ -1074,8 +1074,8 @@ Grid.prototype = {
                 }
                 lastX = e.pageX;
             });
-            
-            $(document).on('mouseup.grid', function(e) {             
+
+            $(document).on('mouseup.grid', function(e) {
                 $(document).off('mousemove.grid');
                 $(document).off('mouseup.grid');
                 $documentBody.css('cursor', $documentBody.attr('origin-cursor'));
@@ -1110,7 +1110,7 @@ Grid.prototype = {
                 var maxLengthWidth = spanContainer.width();
                 $(spanContainer).remove();
                 _this._addColumnWidth(maxLengthWidth - oldWidth, cellIndex + 1);
-            }  
+            }
         }).on('mousedown.grid', 'header.q-grid .cell.sort', function(evt) {
             if($(evt.target).hasClass('search-icon' || $(evt.target).hasClass('resizebar')) || evt.button !== 0) {
                 return;
@@ -1119,7 +1119,7 @@ Grid.prototype = {
             _this.endEdit();
             _this.shortTimer = setTimeout(function() {
                 var cellIndex = $(eThis).attr(_this.columnIndexAttrName) - 1;
-                if($(evt.target).hasClass('resizebar')) {    
+                if($(evt.target).hasClass('resizebar')) {
                     return;
                 }
                 var useUserFn = typeof _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? cellIndex + 1 : cellIndex].sort === 'function';
@@ -1189,7 +1189,7 @@ Grid.prototype = {
                 } else {
                     _this.unCheckOne(rowNum, true);
                 }
-            }            
+            }
         }).on('dblclick.grid', '.body .cell', function(evt) {
             if($(this).hasClass('checkbox')) {
                 return;
@@ -1213,7 +1213,7 @@ Grid.prototype = {
                     $editingInput.val('').focus().val(val);
                 }
             }
-            if(_this.data.onDblclick) {     
+            if(_this.data.onDblclick) {
                 if(!isNaN(rowNum)) {
                     var columnNum = +$(this).attr(_this.columnIndexAttrName);
                     var cellNum = _this.isCheckboxCell(_this.data.rows[rowNum][0]) ? columnNum : columnNum - 1;
@@ -1235,7 +1235,7 @@ Grid.prototype = {
                 }
             }
             return false;
-        }).on('mousedown.grid', '.body .cell', function(evt) {   
+        }).on('mousedown.grid', '.body .cell', function(evt) {
             if(!_this.data.dragable) {
                 return;
             }
@@ -1282,12 +1282,12 @@ Grid.prototype = {
                     'z-index': 6
                 }).attr('class', 'baseline');
                 lastCell.after(tipLine);
-                
+
                 rowCells.each(function() {
                     $(this).css({
-                        'left': $(this).offset().left, 
+                        'left': $(this).offset().left,
                         'width': $(this).outerWidth(),
-                        'height': $(this).outerHeight(), 
+                        'height': $(this).outerHeight(),
                         'opacity': .7,
                         'z-index': 5,
                         'top': lastTop,
@@ -1323,7 +1323,7 @@ Grid.prototype = {
                             }
                         }
                     }
-                    
+
                     rowCells.each(function() {
                         $(this).css({
                             'top': e.pageY - offsetY
@@ -1332,17 +1332,17 @@ Grid.prototype = {
 
                     lastY = e.pageY;
                 });
-                
-                $(document).on('mouseup.grid', function(e) {                
+
+                $(document).on('mouseup.grid', function(e) {
                     $(document).off('mousemove.grid');
                     $(document).off('mouseup.grid');
                     clearTimeout(_this.shortTimer);
                     var finalIndex = +tipLine.attr('index');
-                    var delay = 100; 
+                    var delay = 100;
                     placeholder.remove();
-                   $('.body .cell', _this.container).each(function() {
+                    $('.body .cell', _this.container).each(function() {
                         thisRowNum = $(this).attr(_this.rowIndexAttrName);
-                         var __this = this;
+                        var __this = this;
                         if(!isNaN(thisRowNum)) {
                             thisRowNum = +thisRowNum;
                             if(finalIndex > rowNum) {
@@ -1358,14 +1358,14 @@ Grid.prototype = {
                                     });
                                 }
                             }
-                        } 
+                        }
                     });
                     setTimeout(function() {
                         rowCells.each(function() {
                             $(this).css({
-                                'position': 'relative', 
-                                'left': 0, 
-                                'opacity': 1, 
+                                'position': 'relative',
+                                'left': 0,
+                                'opacity': 1,
                                 'top': 0,
                                 'z-index': 0,
                                 'cursor': 'default',
@@ -1374,14 +1374,14 @@ Grid.prototype = {
                             });
                             $(this).removeClass('draging');
                         });
-                        
+
                         if(rowNum !== finalIndex) {
                             if(finalIndex <= 0) {
                                 $('.body .cell:first', _this.container).before(rowCells);
                             } else {
                                 $('.body .cell[data-row-index="' + (finalIndex > rowNum ? finalIndex : finalIndex - 1) + '"]:last', _this.container).after(rowCells);
                             }
-                            
+
                             var _rowNum;
                             $('.body .cell', _this.container).each(function() {
                                 _rowNum = +$(this).attr(_this.rowIndexAttrName);
@@ -1399,16 +1399,16 @@ Grid.prototype = {
                                 var adjustRowData = _this.data.rows[rowNum];
                                 rowCells.attr(_this.rowIndexAttrName, finalIndex);
                                 _this.data.rows.splice(rowNum, 1);
-                                _this.data.rows.splice(finalIndex, 0, adjustRowData); 
+                                _this.data.rows.splice(finalIndex, 0, adjustRowData);
                             }
                         }
                         tipLine.remove();
                         _this.container.removeClass('noneselect');
                         _this._solveBorder();
                         beginDrag = false;
-                   }, delay);                  
+                    }, delay);
                 });
-            }, 200);  
+            }, 200);
         }).on('mouseup.grid', '.body .cell', function(evt) {
             _this.container.removeClass('noneselect');
             clearTimeout(_this.shortTimer);
@@ -1447,15 +1447,15 @@ Grid.prototype = {
                 fixedColumnWidths.push(cellWidth + 'px');
             });
         }
-        
-        
+
+
         _this.container.css({'overflow-x': 'auto', 'overflow-y': 'hidden', 'padding-bottom': '5px'});
         _this.gridBox.css('width', newBodyWidth - 1 + 'px');
         $header.css('grid-template-columns', fixedColumnWidths.join(' '));
         $body.css('grid-template-columns', fixedColumnWidths.join(' '));
         if(!_this.listenResize) {
             var beforeChangeWidth = _this.container.width();
-           _this.listenResize = setInterval(function() {
+            _this.listenResize = setInterval(function() {
                 if(_this.container.width() !== beforeChangeWidth) {
                     _this.gridBox.css('width', '100%');
                     $header.css('grid-template-columns', columnWidths.join(' '));
@@ -1501,7 +1501,7 @@ Grid.prototype = {
                 _this.data.rows[rowNum][cellNum].value = value;
             }
         }
-        
+
         $textContain.html(value).removeClass('contents');
         $cell.removeClass('editing');
         if(!this._isContainTag(value) && this.data.hoverTitle !== false) {
@@ -1515,7 +1515,7 @@ Grid.prototype = {
         var _this = this;
         $('.body.q-grid .cell.editing', this.container).each(function() {
             _this.endEditOne($(this));
-        });      
+        });
     },
     _clearSortData: function() {
         var originData = this.container.data('originData');
@@ -1576,8 +1576,8 @@ Grid.prototype = {
                     select.val(text);
                 }
             }
-            $textContain.html('').append(select);   
-        }  
+            $textContain.html('').append(select);
+        }
     },
     getData: function() {
         var data = JSON.parse(JSON.stringify(this.data.rows));
@@ -1619,7 +1619,7 @@ Grid.prototype = {
                 rowIndex = $(this).attr(_this.rowIndexAttrName);
                 rowData = _this.data.rows[parseInt(rowIndex)];
                 rowData && data.push(JSON.parse(JSON.stringify(rowData)));
-            }   
+            }
         });
         return data;
     },
@@ -1665,7 +1665,7 @@ Grid.prototype = {
                 return num + 'px';
             } else {
                 return num;
-            }   
+            }
         } else {
             return _default;
         }
