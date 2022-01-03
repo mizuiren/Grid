@@ -59,6 +59,9 @@
 .q-grid.header {
     height: 35px;
 }
+.q-grid.header .cell {
+    margin-top: 0;
+}
 .q-grid.header .cell span {
     display: inherit;
 }
