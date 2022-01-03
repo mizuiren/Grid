@@ -56,8 +56,17 @@
     padding: 0 5px;
     color: #fff;
 }
+.q-grid.header {
+    height: 35px;
+}
+.q-grid.header .cell span {
+    display: inherit;
+}
 .q-grid .cell {
     display: flex;
+    margin-top: -1px !important;
+    margin-left: -1px !important;
+    margin-bottom: 0 !important;
     align-items: center;
     justify-content: center;
     border-radius: 0rem;
@@ -75,6 +84,8 @@
 .q-grid input[type="checkbox"] {
     width: 15px;
     height: 15px;
+    margin: 0 !important;
+    position: relative !important;
 }
 .q-grid.body .cell {
     overflow: hidden;
