@@ -917,7 +917,7 @@ Grid.prototype = {
             $(this).closest('.cell').find('input').val('').trigger('input');
             $(this).hide();
         }).off('keyup.grid').on('keyup.grid', '.editting-ele', function(evt) {
-            if(evt.keyCode === 13) {//按enter键
+            if(evt.keyCode === 13 && this.tagName !== 'TEXTAREA') {//按enter键
                 var thisContainer = $(this).closest('.q-grid-box').parent()[0];
                 if(thisContainer) {
                     thisContainer.grid.endEditOne($(this).closest('.cell'));
@@ -1575,6 +1575,11 @@ Grid.prototype = {
             $textContain.html('<input class="editting-ele" value="' + text + '" type="text" style="text-align:' + align + '">');
             if(!multiEdit) {
                 $textContain.find('input').select().focus();
+            }
+        } else if(editType === 'textarea') {
+            $textContain.html('<textarea class="editting-ele">' + text + '</textarea>');
+            if(!multiEdit) {
+                $textContain.find('textarea').select().focus();
             }
         } else if(editType === 'select') {
             var select = $('<select class="editting-ele" style="width:100%;text-align-last:' + align + '"></select>');

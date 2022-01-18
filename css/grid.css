@@ -131,16 +131,12 @@ header.q-grid .cell {
     width: 100%;
     position: relative;
 }
-.q-grid .cell input.editting-ele {
+.q-grid .cell .editting-ele {
     width: 100%;
     height: 100%;
     border-radius: 0;
     text-align: center;
     border: 1px solid #ccc;
-}
-.q-grid .cell select.editting-ele {
-    height: 100%;
-    width: 100%;
 }
 .q-grid .cell input[type="text"]:focus {
     outline: 1px solid #444;
