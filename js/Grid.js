@@ -279,7 +279,18 @@ Grid.prototype = {
         return cwidth.join(' ');
     },
     _renderGrid: function() {
-        this.container.empty().css('min-height', this._numberToPx(this.data.height, this.minHeight));
+        this.container.empty();
+        var userSettingHeight = this.container.height();
+        var maxHeight;
+        if(!userSettingHeight) {
+            maxHeight = this._numberToPx(this.data.height, 'auto');
+        } else if(this.data.height) {
+            //用户设置了css高度又设置了渲染高度，取最大的高度
+            this.container.css({'height': 'auto'});
+            maxHeight = this._numberToPx(Math.max(this.data.height, userSettingHeight), 'auto');
+            console.error('表格容器渲染高度跟css设置高度相冲突，默认取最大值！');
+        }
+        this.container.css({'max-height':maxHeight});
         if(!this.data.freezeHeader) {
             this.container.css({'overflow-y': 'auto'});
             this.container.css({'overflow-y':'overlay'});
