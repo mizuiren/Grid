@@ -56,8 +56,18 @@
     padding: 0 5px;
     color: #fff;
 }
+.q-grid.header {
+    height: 35px;
+}
+.q-grid.header .cell {
+    margin-top: 0;
+}
+.q-grid.header .cell span {
+    display: inherit;
+}
 .q-grid .cell {
     display: flex;
+    margin-bottom: 0 !important;
     align-items: center;
     justify-content: center;
     border-radius: 0rem;
@@ -75,6 +85,8 @@
 .q-grid input[type="checkbox"] {
     width: 15px;
     height: 15px;
+    margin: 0 !important;
+    position: relative !important;
 }
 .q-grid.body .cell {
     overflow: hidden;
@@ -119,12 +131,16 @@ header.q-grid .cell {
     width: 100%;
     position: relative;
 }
-.q-grid .cell input[type="text"] {
+.q-grid .cell input.editting-ele {
     width: 100%;
     height: 100%;
     border-radius: 0;
     text-align: center;
     border: 1px solid #ccc;
+}
+.q-grid .cell select.editting-ele {
+    height: 100%;
+    width: 100%;
 }
 .q-grid .cell input[type="text"]:focus {
     outline: 1px solid #444;
