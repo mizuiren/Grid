@@ -78,13 +78,13 @@ let gridData = {
         ['12.1','12.2','12.3','12.4', '12.5'],
     ],
     onSelect: function(rowData, evt) {
-        //console.log('onSelect', rowData, evt);
+        console.log('onSelect', rowData, evt);
     },
     onClick: function(rowData, cellData, evt) {
-        //console.log('onClick', rowData, cellData, evt);
+        console.log('onClick', rowData, cellData, evt);
     },
     onUnSelect: function(rowData, evt) {
-        //console.log('onUnSelect', rowData, evt);
+        console.log('onUnSelect', rowData, evt);
     },
     onSelectAll: function(data, evt) {
         //console.log('onSelectAll', data, evt);

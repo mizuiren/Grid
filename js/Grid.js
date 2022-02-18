@@ -815,52 +815,7 @@ Grid.prototype = {
             if(!$cell.hasClass('editing')) {
                 _this.endEdit();
             }
-            if(_this.data.selectable && !$cell.hasClass('checkbox')) {
-                if(!evt.shiftKey) {
-                    _this.continuSelectStartRowNum = rowNum;
-                }
-
-                if(!evt.ctrlKey && !evt.shiftKey) {
-                    _this.unSelectAll([rowNum]);
-                    if(!$cell.hasClass('selected')) {
-                        _this.selectRow(rowNum, evt);
-                    }
-                } else if(evt.ctrlKey) {
-                    if(!$cell.hasClass('selected')) {
-                        _this.selectRow(rowNum, evt, _this.data.multiSelect);
-                    } else {
-                        _this.unSelectRow(rowNum, evt);
-                    }
-                } else if(evt.shiftKey) {
-                    if(!_this.getSelectedData().length) {
-                        _this.continuSelectStartRowNum = rowNum;
-                    }
-                    if(_this.data.multiSelect) {
-                        var needSelects = [], notNeedSelects = [], i;
-                        if(_this.continuSelectStartRowNum > rowNum) {
-                            for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
-                                if(_this.isRowSelected(i)) {
-                                    notNeedSelects.push(i);
-                                } else {
-                                    needSelects.push(i);
-                                }
-                            }
-                        } else {
-                            for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
-                                if(_this.isRowSelected(i)) {
-                                    notNeedSelects.push(i);
-                                } else {
-                                    needSelects.push(i);
-                                }
-                            }
-                        }
-                        _this.unSelectAll(notNeedSelects);
-                        needSelects.forEach(function(item) {
-                            _this.selectRow(item, evt, true);
-                        });
-                    }
-                }
-            }
+            
             _this.shortTimer = setTimeout(function() {
                 if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                     return;
@@ -883,7 +838,52 @@ Grid.prototype = {
                         _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
                     }
                 }
+                if(_this.data.selectable && !$cell.hasClass('checkbox')) {
+                    if(!evt.shiftKey) {
+                        _this.continuSelectStartRowNum = rowNum;
+                    }
 
+                    if(!evt.ctrlKey && !evt.shiftKey) {
+                        _this.unSelectAll([rowNum]);
+                        if(!$cell.hasClass('selected')) {
+                            _this.selectRow(rowNum, evt);
+                        }
+                    } else if(evt.ctrlKey) {
+                        if(!$cell.hasClass('selected')) {
+                            _this.selectRow(rowNum, evt, _this.data.multiSelect);
+                        } else {
+                            _this.unSelectRow(rowNum, evt);
+                        }
+                    } else if(evt.shiftKey) {
+                        if(!_this.getSelectedData().length) {
+                            _this.continuSelectStartRowNum = rowNum;
+                        }
+                        if(_this.data.multiSelect) {
+                            var needSelects = [], notNeedSelects = [], i;
+                            if(_this.continuSelectStartRowNum > rowNum) {
+                                for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
+                                    if(_this.isRowSelected(i)) {
+                                        notNeedSelects.push(i);
+                                    } else {
+                                        needSelects.push(i);
+                                    }
+                                }
+                            } else {
+                                for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
+                                    if(_this.isRowSelected(i)) {
+                                        notNeedSelects.push(i);
+                                    } else {
+                                        needSelects.push(i);
+                                    }
+                                }
+                            }
+                            _this.unSelectAll(notNeedSelects);
+                            needSelects.forEach(function(item) {
+                                _this.selectRow(item, evt, true);
+                            });
+                        }
+                    }
+                }
                 if(_this.data.editable && !$(__this).hasClass('editing') && _this.data.editWhenClick) {
                     _this.editCell($(__this));
                 }
