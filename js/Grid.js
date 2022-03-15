@@ -279,7 +279,18 @@ Grid.prototype = {
         return cwidth.join(' ');
     },
     _renderGrid: function() {
-        this.container.empty().css('min-height', this._numberToPx(this.data.height, this.minHeight));
+        this.container.empty();
+        var userSettingHeight = this.container.height();
+        var maxHeight;
+        if(!userSettingHeight) {
+            maxHeight = this._numberToPx(this.data.height, 'auto');
+        } else if(this.data.height) {
+            //用户设置了css高度又设置了渲染高度，取最大的高度
+            this.container.css({'height': 'auto'});
+            maxHeight = this._numberToPx(Math.max(this.data.height, userSettingHeight), 'auto');
+            console.error('表格容器渲染高度跟css设置高度相冲突，默认取最大值！');
+        }
+        this.container.css({'max-height':maxHeight});
         if(!this.data.freezeHeader) {
             this.container.css({'overflow-y': 'auto'});
             this.container.css({'overflow-y':'overlay'});
@@ -812,52 +823,7 @@ Grid.prototype = {
             if(!$cell.hasClass('editing')) {
                 _this.endEdit();
             }
-            if(_this.data.selectable && !$cell.hasClass('checkbox')) {
-                if(!evt.shiftKey) {
-                    _this.continuSelectStartRowNum = rowNum;
-                }
-
-                if(!evt.ctrlKey && !evt.shiftKey) {
-                    _this.unSelectAll([rowNum]);
-                    if(!$cell.hasClass('selected')) {
-                        _this.selectRow(rowNum, evt);
-                    }
-                } else if(evt.ctrlKey) {
-                    if(!$cell.hasClass('selected')) {
-                        _this.selectRow(rowNum, evt, _this.data.multiSelect);
-                    } else {
-                        _this.unSelectRow(rowNum, evt);
-                    }
-                } else if(evt.shiftKey) {
-                    if(!_this.getSelectedData().length) {
-                        _this.continuSelectStartRowNum = rowNum;
-                    }
-                    if(_this.data.multiSelect) {
-                        var needSelects = [], notNeedSelects = [], i;
-                        if(_this.continuSelectStartRowNum > rowNum) {
-                            for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
-                                if(_this.isRowSelected(i)) {
-                                    notNeedSelects.push(i);
-                                } else {
-                                    needSelects.push(i);
-                                }
-                            }
-                        } else {
-                            for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
-                                if(_this.isRowSelected(i)) {
-                                    notNeedSelects.push(i);
-                                } else {
-                                    needSelects.push(i);
-                                }
-                            }
-                        }
-                        _this.unSelectAll(notNeedSelects);
-                        needSelects.forEach(function(item) {
-                            _this.selectRow(item, evt, true);
-                        });
-                    }
-                }
-            }
+            
             _this.shortTimer = setTimeout(function() {
                 if(isNaN(rowNum) || evt.target.tagName === 'INPUT' || evt.target.tagName === 'SELECT' || $cell.hasClass('editing')) {
                     return;
@@ -880,7 +846,52 @@ Grid.prototype = {
                         _this.data.onClick(_this.data.rows[rowNum], _this.data.rows[rowNum][cellNum] || '', evt);
                     }
                 }
+                if(_this.data.selectable && !$cell.hasClass('checkbox')) {
+                    if(!evt.shiftKey) {
+                        _this.continuSelectStartRowNum = rowNum;
+                    }
 
+                    if(!evt.ctrlKey && !evt.shiftKey) {
+                        _this.unSelectAll([rowNum]);
+                        if(!$cell.hasClass('selected')) {
+                            _this.selectRow(rowNum, evt);
+                        }
+                    } else if(evt.ctrlKey) {
+                        if(!$cell.hasClass('selected')) {
+                            _this.selectRow(rowNum, evt, _this.data.multiSelect);
+                        } else {
+                            _this.unSelectRow(rowNum, evt);
+                        }
+                    } else if(evt.shiftKey) {
+                        if(!_this.getSelectedData().length) {
+                            _this.continuSelectStartRowNum = rowNum;
+                        }
+                        if(_this.data.multiSelect) {
+                            var needSelects = [], notNeedSelects = [], i;
+                            if(_this.continuSelectStartRowNum > rowNum) {
+                                for(i = rowNum; i <= _this.continuSelectStartRowNum; i++) {
+                                    if(_this.isRowSelected(i)) {
+                                        notNeedSelects.push(i);
+                                    } else {
+                                        needSelects.push(i);
+                                    }
+                                }
+                            } else {
+                                for(i = _this.continuSelectStartRowNum; i <= rowNum; i++) {
+                                    if(_this.isRowSelected(i)) {
+                                        notNeedSelects.push(i);
+                                    } else {
+                                        needSelects.push(i);
+                                    }
+                                }
+                            }
+                            _this.unSelectAll(notNeedSelects);
+                            needSelects.forEach(function(item) {
+                                _this.selectRow(item, evt, true);
+                            });
+                        }
+                    }
+                }
                 if(_this.data.editable && !$(__this).hasClass('editing') && _this.data.editWhenClick) {
                     _this.editCell($(__this));
                 }
@@ -914,7 +925,7 @@ Grid.prototype = {
             $(this).closest('.cell').find('input').val('').trigger('input');
             $(this).hide();
         }).off('keyup.grid').on('keyup.grid', '.editting-ele', function(evt) {
-            if(evt.keyCode === 13) {//按enter键
+            if(evt.keyCode === 13 && this.tagName !== 'TEXTAREA') {//按enter键
                 var thisContainer = $(this).closest('.q-grid-box').parent()[0];
                 if(thisContainer) {
                     thisContainer.grid.endEditOne($(this).closest('.cell'));
@@ -1572,6 +1583,11 @@ Grid.prototype = {
             $textContain.html('<input class="editting-ele" value="' + text + '" type="text" style="text-align:' + align + '">');
             if(!multiEdit) {
                 $textContain.find('input').select().focus();
+            }
+        } else if(editType === 'textarea') {
+            $textContain.html('<textarea class="editting-ele">' + text + '</textarea>');
+            if(!multiEdit) {
+                $textContain.find('textarea').select().focus();
             }
         } else if(editType === 'select') {
             var select = $('<select class="editting-ele" style="width:100%;text-align-last:' + align + '"></select>');

@@ -69,7 +69,7 @@ let gridData = {
         ['1.1','1.2','1.3','1.4', '1.5'],
         [{id: 'myRow', type: 'checkbox', checked:true, disabled:true}, '2.1','2.2','2.3','2.4', '2.5'],
         [{id: 'special-row', type: 'checkbox'},'3.1', '3.2','3.3','3.4', '3.5'],
-        [{class: 'aaa bbb', value: '4.1',editType: {type: 'select', options: [1,2,3,4,5,6]}, attributes: {aaa: 'bbb', ccc: '123'}},'4.2','4.3','4.4', '4.5'],
+        [{class: 'aaa bbb', value: '4.1',editType: {type: 'select', options: [1,2,3,4,5,6,7,8,9,0]}, attributes: {aaa: 'bbb', ccc: '123'}},'4.2','4.3','4.4', '4.5'],
         ['5.1','5.2','5.3','5.4', '5.5'],
         ['6.1','6.2','6.3',{value:'6.4', style: 'color:red;'}, '6.5'],
         ['9.1','9.2','9.3','9.4', '9.5'],
@@ -78,13 +78,13 @@ let gridData = {
         ['12.1','12.2','12.3','12.4', '12.5'],
     ],
     onSelect: function(rowData, evt) {
-        //console.log('onSelect', rowData, evt);
+        console.log('onSelect', rowData, evt);
     },
     onClick: function(rowData, cellData, evt) {
-        //console.log('onClick', rowData, cellData, evt);
+        console.log('onClick', rowData, cellData, evt);
     },
     onUnSelect: function(rowData, evt) {
-        //console.log('onUnSelect', rowData, evt);
+        console.log('onUnSelect', rowData, evt);
     },
     onSelectAll: function(data, evt) {
         //console.log('onSelectAll', data, evt);
