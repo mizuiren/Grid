@@ -479,7 +479,15 @@ Grid.prototype = {
         cloneColumnData.forEach(function(item, index) {
             cellStyles = [];
             needSort = false;
-            columnSeting = _this.data.header && index !== 0 && _this.data.header[index - 1];
+            const headerHadCheckbox = _this.isCheckboxCell(_this.data.header[0]);
+            if(_this.data.header) {
+            	if(headerHadCheckbox) {
+            		columnSeting = _this.data.header[index];
+            	} else {
+            		columnSeting = index !== 0 && _this.data.header[index - 1];
+            	}
+            }
+            
             if(hadRowId && index === 0) {
                 id = 'data-id="' + cloneColumnData[0].id + '"';
             } else if(index !== 0) {
