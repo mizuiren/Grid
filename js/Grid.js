@@ -790,7 +790,7 @@ Grid.prototype = {
         }
         if(!fromEvent || !fromEvent.notTriggerEvent) {
             if(this.data.onUnCheck && this.data.rows.length && this.data.rows[parseInt(rowNum)]) {
-                this.data.onUnCheck(this.data.rows[parseInt(rowNum)]);
+                this.data.onUnCheck(this.data.rows[parseInt(rowNum)], rowNum);
             }
             if(this.data.onUnCheckAll) {
                 if(!$('.cell.checkbox input:checked', $('.body', this.container)).length) {

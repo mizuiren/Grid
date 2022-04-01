@@ -264,10 +264,12 @@ myGrid.data/container[0].grid.data绑定了所有渲染表格所要用到的数�
 
     rowData表格行的数据
 
-1. ### onUnCheck(rowData)
+1. ### onUnCheck(rowData, rowNum)
     取消勾选的时候触发
 
     rowData表格行的数据
+
+    rowNum行号
 
 1. ###onCheckAll(rowData)
     勾选全部的时候触发
