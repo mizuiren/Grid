@@ -440,6 +440,8 @@ Grid.prototype = {
                 scrolBox.scrollTop(10);//控制滚动条下移10px
                 if(scrolBox.scrollTop() > 0){
                     header.css('width', fixWidth);
+                } else {
+                    header.css('width', this.data.width);
                 }
                 scrolBox.scrollTop(scrollTop);//滚动条返回原位
             }
