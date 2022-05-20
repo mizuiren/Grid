@@ -57,7 +57,7 @@
     color: #fff;
 }
 .q-grid.header {
-    height: 35px;
+    min-height: 35px;
 }
 .q-grid.header .cell {
     margin-top: 0;
@@ -103,7 +103,8 @@ header.q-grid .cell {
 }
 .filter-cancel {
     position: absolute;
-    right: 8px;
+    right: 10px;
+    top: 11px;
     width: 12px;
     height: 12px;
     cursor: pointer;
@@ -147,6 +148,8 @@ header.q-grid .cell {
     border: 1px solid #ddd;
     border-radius: 0;
     outline: 0;
+    width:  100%;
+    height: 18px;
 }
 .q-grid .sort-icon {
     position: absolute;
