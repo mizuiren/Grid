@@ -1009,8 +1009,9 @@ Grid.prototype = {
             var fixedColumnWidths = [], cellWidth;
             $('.q-grid.header .cell[data-row-index="0"]', _this.container).each(function() {
                 cellWidth = $(this).outerWidth() - 1;
-                if(cellWidth <= 2) {//小于2说明是隐藏的单元格，不能让其显示出来，哪怕漏出1px
-                    cellWidth = 0;
+                var columnSetting = _this.data.header && _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? index : index - 1];
+                if((index === 0 && !_this.data.checkbox) || (columnSetting && !isNaN(parseFloat(columnSeting.width)) && parseFloat(columnSeting.width) === 0)) {
+                    cellWidth = 0;//隐藏的单元格，不能让其显示出来
                 }
                 fixedColumnWidths.push(cellWidth + 'px');
             });
@@ -1458,8 +1459,9 @@ Grid.prototype = {
             fixedColumnWidths = [];
             $('.cell[data-row-index="0"]', $body).each(function(index) {
                 cellWidth = $(this).outerWidth() - 1;
-                if(cellWidth <= 2) {//小于2说明是隐藏的单元格，不能让其显示出来，哪怕漏出1px
-                    cellWidth = 0;
+                var columnSetting = _this.data.header && _this.data.header[_this.isCheckboxCell(_this.data.header[0]) ? index : index - 1];
+                if((index === 0 && !_this.data.checkbox) || (columnSetting && !isNaN(parseFloat(columnSeting.width)) && parseFloat(columnSeting.width) === 0)) {
+                    cellWidth = 0;//隐藏的单元格，不能让其显示出来
                 }
                 if(columnIndex === index) {
                     cellWidth += addWidth;
