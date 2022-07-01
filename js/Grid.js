@@ -258,10 +258,15 @@ Grid.prototype = {
                 }
             }
         }
-        $cell.html(newValue);
         if(!this._isContainTag(newValue) && this.data.hoverTitle !== false) {
-            $cell.attr('title', newValue);
+            if(typeof newValue === 'string') {
+                $cell.attr('title', newValue); 
+           } else if(newValue) {
+                $cell.attr('title', newValue.value); 
+           }
         }
+        var $textContainer = $cell.find('.txt').length ? $cell.find('.txt') : $cell;
+        $textContainer.html(newValue);
     },
     _isContainTag: function(string) {
         return (string + '').match(/<(\S*?)\s*[^>]*>/) || (string + '').match(/&lt;(\S*?)\s*[^&gt;]*&gt;/);
