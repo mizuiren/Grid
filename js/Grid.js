@@ -16,7 +16,7 @@ function Grid(data, $container) {
 
     var _this = this;
     this.container.each(function() {
-        $.fn.extend(this, {grid: _this});
+        $.fn.extend(this, {grid: _this});//Notice:此处有循环引用，可能会造成内存泄漏，如果页面的表格容器存在频繁删除的情况，建议注释，抛弃使用$container[0].grid方式访问表格对象
     });
 
     this._bindEvent();
